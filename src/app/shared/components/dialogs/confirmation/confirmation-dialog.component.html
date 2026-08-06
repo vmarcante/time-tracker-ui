@@ -1,0 +1,28 @@
+<app-dialog
+  [title]="data.title"
+  [content]="content"
+  [footerContent]="footerContent"
+  [closeable]="data.closeable ?? true"
+  (closeClick)="dismiss()"
+>
+</app-dialog>
+
+<ng-template #content>
+  <div class="dialog-content">
+    <span class="dialog-content-text">{{ data.message }}</span>
+  </div>
+</ng-template>
+
+<ng-template #footerContent>
+  <div class="dialog-footer-buttons">
+    @for (button of buttons; track $index) {
+      <app-button
+        [rounded]="true"
+        [color]="button.color!"
+        [size]="{ fullWidth: true }"
+        [text]="button.text!"
+        (click)="onButtonClick(button)"
+      ></app-button>
+    }
+  </div>
+</ng-template>

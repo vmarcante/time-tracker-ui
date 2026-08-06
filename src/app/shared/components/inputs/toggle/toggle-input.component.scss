@@ -1,0 +1,132 @@
+:host {
+  display: block;
+  width: fit-content;
+}
+
+.toggle-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+
+  &:has(.toggle-input:disabled) {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  &--compact {
+    gap: var(--spacing-sm);
+
+    .toggle-slider {
+      width: 2rem;
+      height: 1rem;
+      min-width: 2rem;
+
+      &::before {
+        width: 0.75rem;
+        height: 0.75rem;
+      }
+    }
+
+    .toggle-input:checked + .toggle-slider::before {
+      transform: translateX(1rem);
+    }
+
+    .toggle-label {
+      font-size: 0.75rem;
+    }
+  }
+}
+
+.toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 3rem;
+  height: 1.5rem;
+  cursor: pointer;
+  z-index: 1;
+
+  &:checked + .toggle-slider {
+    background-color: var(--color-primary);
+
+    &::before {
+      transform: translateX(1.5rem);
+    }
+  }
+
+  &:focus + .toggle-slider {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 10%, transparent);
+  }
+
+  &:disabled + .toggle-slider {
+    background-color: var(--color-border);
+    cursor: not-allowed;
+
+    &::before {
+      background-color: var(--color-background-surface);
+    }
+  }
+}
+
+.toggle-slider {
+  position: relative;
+  width: 3rem;
+  height: 1.5rem;
+  min-width: 3rem;
+  background-color: var(--color-border);
+  border-radius: var(--radius-pill);
+  transition: background-color 0.2s ease-in-out;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0.125rem;
+    left: 0.125rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    background-color: var(--color-background-card);
+    border-radius: var(--radius-pill);
+    transition: transform 0.2s ease-in-out;
+    box-shadow:
+      0 1px 3px 0 rgba(15, 23, 42, 0.1),
+      0 1px 2px 0 rgba(15, 23, 42, 0.06);
+  }
+}
+
+.toggle-wrapper--compact .toggle-input {
+  width: 2rem;
+  height: 1rem;
+}
+
+.toggle-label {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  transition: color 0.2s ease-in-out;
+
+  .toggle-wrapper:has(.toggle-input:disabled) & {
+    color: var(--color-text-tertiary);
+  }
+}
+
+.input-wrapper__hint {
+  display: block;
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-size-hint);
+  color: var(--color-text-secondary);
+}
+
+.input-wrapper__error {
+  display: block;
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-size-hint);
+  color: var(--color-error);
+}
+
+.toggle-wrapper--compact ~ .input-wrapper__hint,
+.toggle-wrapper--compact ~ .input-wrapper__error {
+  font-size: 0.625rem;
+  margin-top: 2px;
+}

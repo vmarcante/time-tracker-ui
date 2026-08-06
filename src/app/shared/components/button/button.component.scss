@@ -1,0 +1,474 @@
+:host {
+  display: inline-block;
+  overflow: visible;
+}
+
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-weight: 400;
+  font-size: 0.8125rem;
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
+  border: 1px solid;
+  border-radius: 4px;
+  min-height: 33px;
+  padding: 9px 12px;
+  cursor: pointer;
+  outline: none;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  &:has(.btn__icon) {
+    gap: var(--spacing-sm);
+  }
+
+  &--small {
+    padding: 4px 6px;
+    font-size: 0.6rem;
+    min-height: 20px;
+
+    .btn__icon {
+      width: 0.6rem;
+      height: 0.6rem;
+    }
+  }
+
+  &--medium {
+    padding: 10px 20px !important;
+    font-size: 0.95rem;
+    min-height: 38px !important;
+
+    .btn__icon {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  &--large {
+    padding: 12px 24px !important;
+    font-size: 1rem;
+    min-height: 42px !important;
+
+    .btn__icon {
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+  }
+
+  &--full-width {
+    width: 100%;
+  }
+
+  &--rounded {
+    border-radius: 18px;
+    padding: 9px 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &.btn--icon-only {
+      border-radius: 50%;
+      aspect-ratio: 1;
+      padding: 0;
+      min-width: 2.5rem;
+      min-height: 2.5rem;
+      background-color: var(--color-background);
+    }
+
+    &.btn--large {
+      border-radius: 22px;
+      padding: 14px 28px;
+      min-height: 50px;
+      font-size: 1.0625rem;
+    }
+  }
+
+  &--circle {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border-radius: 50% !important;
+    aspect-ratio: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &.btn--large {
+      width: 2.75rem;
+      height: 2.75rem;
+      font-size: 1rem;
+    }
+  }
+
+  &--primary {
+    --btn-loading-bg: var(--color-primary);
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-text-inverse);
+
+    &:hover:not(.btn--disabled):not(.btn--loading) {
+      background-color: var(--color-primary-hover);
+      border-color: var(--color-primary-hover);
+      filter: none;
+    }
+
+    &:active:not(.btn--disabled):not(.btn--loading) {
+      background-color: var(--color-primary-active);
+      border-color: var(--color-primary-active);
+    }
+  }
+
+  &--secondary {
+    background-color: transparent;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+
+    &:hover:not(.btn--disabled):not(.btn--loading) {
+      background-color: var(--color-primary-50);
+      filter: none;
+    }
+
+    &:active:not(.btn--disabled):not(.btn--loading) {
+      background-color: var(--color-primary-100);
+    }
+
+    &.btn--filled {
+      background-color: var(--color-background-card);
+      color: var(--color-primary);
+
+      &:hover:not(.btn--disabled):not(.btn--loading) {
+        filter: brightness(0.95);
+      }
+    }
+  }
+
+  &--info {
+    --btn-loading-bg: var(--color-info);
+    background-color: var(--color-info);
+    border-color: var(--color-info);
+    color: var(--color-text-inverse);
+
+    &.btn--loading {
+      background-color: color-mix(in srgb, var(--color-info) 60%, transparent);
+    }
+  }
+
+  &--info-dark {
+    --btn-loading-bg: var(--color-info-dark);
+    background-color: var(--color-info-dark);
+    border-color: var(--color-info-dark);
+    color: var(--color-text-inverse);
+  }
+
+  &--success {
+    --btn-loading-bg: var(--color-success);
+    background-color: var(--color-success);
+    border-color: var(--color-success);
+    color: var(--color-text-inverse);
+
+    &.btn--loading {
+      background-color: color-mix(in srgb, var(--color-success) 60%, transparent);
+    }
+  }
+
+  &--success-dark {
+    --btn-loading-bg: var(--color-success-dark);
+    background-color: var(--color-success-dark);
+    border-color: var(--color-success-dark);
+    color: var(--color-text-inverse);
+  }
+
+  &--outline-success {
+    background-color: transparent;
+    border-color: var(--color-success);
+    color: var(--color-success);
+
+    &.btn--filled {
+      background-color: var(--color-background-card);
+      color: var(--color-success);
+
+      &:hover:not(.btn--disabled):not(.btn--loading) {
+        filter: brightness(0.95);
+      }
+    }
+  }
+
+  &--error {
+    --btn-loading-bg: var(--color-error);
+    background-color: var(--color-error);
+    border-color: var(--color-error);
+    color: var(--color-text-inverse);
+
+    &.btn--loading {
+      background-color: color-mix(in srgb, var(--color-error) 60%, transparent);
+    }
+  }
+
+  &--outline-error {
+    background-color: transparent;
+    border-color: var(--color-error);
+    color: var(--color-error);
+
+    &.btn--filled {
+      background-color: var(--color-background-card);
+      color: var(--color-error);
+
+      &:hover:not(.btn--disabled):not(.btn--loading) {
+        filter: brightness(0.95);
+      }
+    }
+  }
+
+  &--outline-info {
+    background-color: transparent;
+    border-color: var(--color-info);
+    color: var(--color-info);
+
+    &.btn--filled {
+      background-color: var(--color-background-card);
+      color: var(--color-info);
+
+      &:hover:not(.btn--disabled):not(.btn--loading) {
+        filter: brightness(0.95);
+      }
+    }
+  }
+
+  &--warning {
+    --btn-loading-bg: var(--color-warning);
+    background-color: var(--color-warning);
+    border-color: var(--color-warning);
+    color: var(--color-text-primary);
+
+    &.btn--loading {
+      background-color: color-mix(in srgb, var(--color-warning) 60%, transparent);
+    }
+  }
+
+  &--outline-warning {
+    background-color: transparent;
+    border-color: var(--color-warning);
+    color: var(--color-warning);
+
+    &.btn--filled {
+      background-color: var(--color-background-card);
+      color: var(--color-warning);
+
+      &:hover:not(.btn--disabled):not(.btn--loading) {
+        filter: brightness(0.95);
+      }
+    }
+  }
+
+  &--transparent {
+    background-color: transparent;
+    // border-color: var(--color-border-strong);
+    border: none;
+    color: var(--color-text-tertiary);
+
+    &.btn--filled {
+      background-color: var(--color-background-card);
+      color: var(--color-text-tertiary);
+
+      &:hover:not(.btn--disabled):not(.btn--loading) {
+        filter: brightness(0.95);
+      }
+    }
+  }
+
+  &--white {
+    background-color: var(--color-background-card);
+    border-color: var(--color-background-card);
+    color: var(--color-text-primary);
+  }
+
+  &--outline-white {
+    background-color: transparent;
+    border-color: var(--color-text-inverse);
+    color: var(--color-text-inverse);
+
+    &.btn--filled {
+      background-color: var(--color-text-inverse);
+      color: var(--color-text-primary);
+
+      &:hover:not(.btn--disabled):not(.btn--loading) {
+        filter: brightness(0.95);
+      }
+    }
+  }
+
+  &:hover:not(.btn--disabled):not(.btn--loading):not(.btn--primary):not(.btn--secondary):not(
+      .btn--filled
+    ) {
+    filter: brightness(0.9);
+    transform: scale(1.02);
+  }
+
+  &:active:not(.btn--disabled):not(.btn--loading):not(.btn--primary):not(.btn--secondary) {
+    transform: scale(1);
+  }
+
+  &--disabled {
+    cursor: not-allowed;
+    transform: scale(1);
+    box-shadow: none;
+
+    &:not(.btn--loading) {
+      background-color: var(--color-background) !important;
+      border-color: color-mix(in srgb, var(--color-border) 50%, var(--color-background)) !important;
+      color: color-mix(in srgb, var(--color-text-primary) 30%, var(--color-background)) !important;
+    }
+
+    &.btn--loading {
+      .btn__text,
+      .btn__icon {
+        opacity: 0.1;
+      }
+
+      .btn__spinner {
+        opacity: 1;
+      }
+    }
+
+    &:hover {
+      transform: scale(1);
+      box-shadow: none;
+    }
+  }
+
+  &--loading {
+    cursor: wait;
+    position: relative;
+    overflow: visible;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+
+    .btn__text,
+    .btn__icon {
+      position: relative;
+      z-index: 1;
+      opacity: 1 !important;
+    }
+
+    .btn__loading-border {
+      position: absolute;
+      top: -4px;
+      left: -4px;
+      width: calc(100% + 8px);
+      height: calc(100% + 8px);
+      pointer-events: none;
+      z-index: 0;
+      overflow: visible;
+    }
+
+    .btn__loading-border__rect {
+      fill: none;
+      stroke: var(--btn-loading-bg, var(--color-primary));
+      stroke-width: 2px;
+      animation: btn-border-travel 1s linear infinite;
+    }
+
+    .btn__loading-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: inherit;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        color-mix(in srgb, var(--btn-loading-bg, var(--color-primary)) 50%, transparent) 50%,
+        transparent 100%
+      );
+      background-size: 200% 100%;
+      animation: btn-gradient-travel 1s linear infinite;
+      opacity: 0.4;
+      z-index: 0;
+      pointer-events: none;
+    }
+  }
+
+  &--disabled.btn--loading {
+    .btn__text,
+    .btn__icon {
+      opacity: 1 !important;
+    }
+  }
+
+  &--icon-only {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    min-height: 38px;
+  }
+
+  &__text {
+    display: inline-block;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+    fill: currentColor;
+
+    &--left {
+      margin-right: -0.25rem;
+    }
+
+    &--right {
+      margin-left: -0.25rem;
+    }
+  }
+}
+
+// ====================
+// Keyframes
+// ====================
+
+@keyframes btn-border-travel {
+  0% {
+    stroke-dashoffset: var(--btn-perimeter, 100);
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes btn-gradient-travel {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 1400px) {
+  .btn {
+    min-height: 26px;
+    padding: 7px 10px;
+
+    &--icon-only {
+      width: 34px;
+      height: 34px;
+      min-height: 34px;
+    }
+  }
+}

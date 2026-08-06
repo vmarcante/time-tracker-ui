@@ -1,0 +1,17 @@
+<div class="popover">
+  @if (triggerTemplate) {
+    <ng-container *ngTemplateOutlet="triggerTemplate"></ng-container>
+  }
+
+  @if (isOpen && contentTemplate) {
+    <div
+      [class]="contentClasses"
+      [style.width]="options.width"
+    >
+      @if (options.showArrow) {
+        <div class="popover__arrow popover__arrow--{{ calculatedPosition }}"></div>
+      }
+      <ng-container *ngTemplateOutlet="contentTemplate"></ng-container>
+    </div>
+  }
+</div>

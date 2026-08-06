@@ -1,0 +1,64 @@
+{
+  "loading": {
+    "defaultLabel": "Carregando"
+  },
+  "common": {
+    "loading": "Carregando...",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "close": "Fechar",
+    "confirm": "Confirmar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "submit": "Enviar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "clear": "Limpar",
+    "yes": "Sim",
+    "no": "Não",
+    "increment": "Incrementar",
+    "decrement": "Decrementar",
+    "stepButtons": "Controles de incremento e decremento",
+    "dialog": {
+      "closeConfirmation": "Tem certeza que deseja fechar?",
+      "close": "Confirmar ação",
+      "cancel": "Cancelar",
+      "confirm": "Sim, sair"
+    },
+    "toastr": {
+      "types": {
+        "success": "Sucesso",
+        "error": "Erro",
+        "warning": "Aviso",
+        "info": "Informação"
+      },
+      "actions": {
+        "close": "Fechar alerta de {{type}}",
+        "clearQueue": "Limpar fila de alertas",
+        "next": "Próximo alerta",
+        "buttonAction": "Ação do alerta"
+      }
+    }
+  },
+  "validation": {
+    "required": "Obrigatório",
+    "invalidEmail": "Email inválido",
+    "minLength": "Mínimo de {{length}} caracteres",
+    "maxLength": "Máximo de {{length}} caracteres",
+    "min": "Valor mínimo é {{value}}",
+    "max": "Valor máximo é {{value}}",
+    "invalidFormat": "Formato inválido",
+    "usernamePattern": "Use apenas letras, números e underscore",
+    "invalidPhone": "Telefone inválido",
+    "passwordStrength": "A senha deve conter maiúsculas, minúsculas, números e caracteres especiais",
+    "checkAvailability": "Por favor, verifique se o username e email estão disponíveis",
+    "passwordMismatch": "As senhas não coincidem"
+  },
+  "language": {
+    "switcher": {
+      "ariaLabel": "Trocar idioma para {{language}}"
+    }
+  }
+}

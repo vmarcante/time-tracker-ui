@@ -1,0 +1,21 @@
+<div class="input-wrapper">
+  <mat-checkbox
+    [id]="generatedInputId"
+    [formControl]="formControl!"
+    [disabled]="readonly || formControl!.disabled"
+    [indeterminate]="indeterminate"
+    [attr.aria-describedby]="ariaDescribedBy"
+    [attr.aria-invalid]="ariaInvalid"
+    [attr.aria-required]="ariaRequired"
+    (change)="onChange($event)"
+  >
+    {{ label }}
+  </mat-checkbox>
+
+  @if (hint) {
+    <span [id]="hintId" class="input-wrapper__hint">{{ hint }}</span>
+  }
+  @if (hasError) {
+    <span [id]="errorId" class="input-wrapper__error">{{ errorMessage }}</span>
+  }
+</div>

@@ -1,0 +1,29 @@
+{
+  "header": {
+    "logoAriaLabel": "Time Tracker",
+    "navAriaLabel": "Main navigation",
+    "logoutAriaLabel": "Logout",
+    "logoutDialog": {
+      "title": "Logout",
+      "message": "Are you sure you want to logout?"
+    },
+    "navigation": {
+      "resources": "Resources",
+      "dashboard": "Dashboard"
+    },
+    "mobileMenu": {
+      "ariaLabel": "Mobile navigation menu",
+      "openAriaLabel": "Open navigation menu",
+      "closeAriaLabel": "Close navigation menu",
+      "login": "Login"
+    },
+    "user": {
+      "defaultName": "User"
+    }
+  },
+  "health": {
+    "status": {
+      "down": "Service unavailable"
+    }
+  }
+}

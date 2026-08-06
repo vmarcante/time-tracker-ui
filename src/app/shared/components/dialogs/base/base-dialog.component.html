@@ -1,0 +1,27 @@
+<app-dialog-shell>
+  @if (content) {
+    <div [class]="dialogClasses">
+      <div class="dialog-content__main">
+        @if (title || closeable) {
+          <div class="dialog-content__header">
+            @if (title) {
+              <div class="dialog-content__title">{{ title }}</div>
+            }
+            @if (closeable) {
+              <button type="button" class="dialog-content__close" (click)="closeClick.emit()">✕</button>
+            }
+          </div>
+
+          <div class="dialog-content__body">
+            <ng-container *ngTemplateOutlet="content"></ng-container>
+          </div>
+        }
+      </div>
+      @if (footerContent) {
+        <div class="dialog-content__footer">
+          <ng-container *ngTemplateOutlet="footerContent"></ng-container>
+        </div>
+      }
+    </div>
+  }
+</app-dialog-shell>

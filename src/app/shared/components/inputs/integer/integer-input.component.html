@@ -1,0 +1,83 @@
+@if (effectiveControl) {
+  @if (showLabel && label) {
+    <label class="integer-input-label" [for]="generatedInputId">
+      @if (labelIcon) {
+        <app-icon
+          class="integer-input-label__icon"
+          [name]="labelIcon"
+          [size]="14"
+        />
+      }
+      <span class="integer-input-label__text">
+        {{ label }}
+        @if (required) {
+          <span class="integer-input-required">*</span>
+        }
+      </span>
+    </label>
+  }
+
+  <div [class]="wrapperClasses">
+    <mat-form-field
+      [class]="fieldClasses"
+      appearance="outline"
+    >
+      <input
+        matInput
+        type="number"
+        [id]="generatedInputId"
+        [name]="generatedInputId"
+        [formControl]="effectiveControl"
+        [placeholder]="placeholder"
+        [attr.min]="min"
+        [attr.max]="max"
+        [attr.step]="step"
+        [readonly]="readonly"
+        [attr.aria-describedby]="ariaDescribedBy"
+        [attr.aria-invalid]="ariaInvalid"
+        [attr.aria-required]="ariaRequired"
+        (input)="onInput($event)"
+        (focus)="focus($event)"
+        (blur)="blur($event)"
+        (focusout)="focusOut($event)"
+      />
+      @if (hint) {
+        <mat-hint [id]="hintId">{{ hint }}</mat-hint>
+      }
+      @if (hasError) {
+        <mat-error [id]="errorId">{{ errorMessage }}</mat-error>
+      }
+    </mat-form-field>
+
+    @if (showStepButtons && !readonly) {
+      <div
+        class="integer-input-step-buttons"
+        role="group"
+        [attr.aria-label]="'common.stepButtons' | translate"
+      >
+        <button
+          type="button"
+          class="integer-input-step-button integer-input-step-button--increment"
+          [disabled]="!canIncrement"
+          (click)="increment()"
+          [attr.aria-label]="'common.increment' | translate"
+        >
+          <svg class="integer-input-step-button__icon">
+            <use xlink:href="/assets/icons/arrows/chevron-up.svg#icon"></use>
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="integer-input-step-button integer-input-step-button--decrement"
+          [disabled]="!canDecrement"
+          (click)="decrement()"
+          [attr.aria-label]="'common.decrement' | translate"
+        >
+          <svg class="integer-input-step-button__icon">
+            <use xlink:href="/assets/icons/arrows/chevron-down.svg#icon"></use>
+          </svg>
+        </button>
+      </div>
+    }
+  </div>
+}

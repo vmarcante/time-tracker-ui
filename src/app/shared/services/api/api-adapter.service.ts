@@ -1,0 +1,177 @@
+import { Injectable, inject, signal, DestroyRef } from '@angular/core';
+import { Observable, Subscription, forkJoin } from 'rxjs';
+import { ForkJoinRequestOptions, RequestOptions, ApiResponse, ApiTypedResponse } from '../../types';
+import { HttpErrorResponse } from '@angular/common/http';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class ApiAdapterService {
+  private destroyRef = inject(DestroyRef);
+
+  private requestsSubscriptionsMap = new Map<string, Subscription>();
+  private looseSubscriptions = new Set<Subscription>();
+
+  isLoading = signal(false);
+  customLoadings = signal<Map<string, boolean>>(new Map());
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.cancelAllRequests();
+    });
+  }
+
+  executeRequest<T>(request: Observable<T>, options: RequestOptions<T> = {}): Subscription {
+    if (!options.customLoadingName && !options.ignoreLoading) {
+      this.isLoading.set(true);
+    } else if (options.customLoadingName && !options.ignoreLoading) {
+      this.customLoadings.update((loadings) => {
+        const newLoadings = new Map(loadings);
+        newLoadings.set(options.customLoadingName!, true);
+        return newLoadings;
+      });
+    }
+
+    // Se for especificado, cancela a subscription anterior
+    if (options.subscriptionName && this.requestsSubscriptionsMap.has(options.subscriptionName)) {
+      this.requestsSubscriptionsMap.get(options.subscriptionName)?.unsubscribe();
+      this.requestsSubscriptionsMap.delete(options.subscriptionName);
+    }
+
+    // Cria uma nova subscription e a adiciona ao map caso tenha sido especificado a chave
+    const subscription = request.subscribe({
+      next: (response) => {
+        if (options.onSuccess) {
+          options.onSuccess(response);
+        }
+
+        if (options.customLoadingName && !options.ignoreLoading) {
+          this.customLoadings.update((loadings) => {
+            const newLoadings = new Map(loadings);
+            newLoadings.set(options.customLoadingName!, false);
+            return newLoadings;
+          });
+          return;
+        }
+
+        if (!options.ignoreLoading) {
+          this.isLoading.set(false);
+        }
+      },
+      error: (error) => {
+        if (options.onError) {
+          options.onError(error);
+        }
+
+        if (options.customLoadingName && !options.ignoreLoading) {
+          this.customLoadings.update((loadings) => {
+            const newLoadings = new Map(loadings);
+            newLoadings.set(options.customLoadingName!, false);
+            return newLoadings;
+          });
+          return;
+        }
+
+        if (!options.ignoreLoading) {
+          this.isLoading.set(false);
+        }
+      },
+    });
+
+    if (options.subscriptionName) {
+      this.requestsSubscriptionsMap.set(options.subscriptionName, subscription);
+    } else {
+      this.looseSubscriptions.add(subscription);
+    }
+
+    return subscription;
+  }
+
+  executeForkJoinRequest<T extends readonly unknown[]>(
+    requests: readonly [...{ [K in keyof T]: Observable<T[K]> }],
+    options: ForkJoinRequestOptions<T> = {},
+  ): Subscription {
+    const forkJoinRequest = forkJoin(requests);
+
+    return this.executeRequest<T>(forkJoinRequest, {
+      ...options,
+      onSuccess: (responses) => {
+        if (options.onSuccessForkJoin) {
+          options.onSuccessForkJoin(responses);
+        }
+      },
+    });
+  }
+
+  executeRequestWithPromise<T>(
+    request: ApiResponse<T>,
+    options: RequestOptions<ApiTypedResponse<T>> = {},
+  ): Promise<ApiTypedResponse<T>> {
+    return new Promise((resolve, reject) => {
+      this.executeRequest(request, {
+        ...options,
+        onSuccess: (response) => {
+          if (options.onSuccess) {
+            options.onSuccess(response);
+          }
+          resolve(response);
+        },
+        onError: (error) => {
+          if (options.onError) {
+            options.onError(error);
+          }
+          reject(error);
+        },
+      });
+    });
+  }
+
+  executeForkJoinWithPromise<T extends readonly unknown[]>(
+    requests: readonly [...{ [K in keyof T]: ApiResponse<T[K]> }],
+    options: ForkJoinRequestOptions<T> = {},
+  ): Promise<T> {
+    return new Promise((resolve, reject) => {
+      this.executeForkJoinRequest<T>(requests, {
+        ...options,
+        onSuccessForkJoin: (responses) => {
+          if (options.onSuccessForkJoin) {
+            options.onSuccessForkJoin(responses);
+          }
+          resolve(responses);
+        },
+        onError: (error) => {
+          if (options.onError) {
+            options.onError(error);
+          }
+          reject(error);
+        },
+      });
+    });
+  }
+
+  cancelRequest(subscriptionName: string): void {
+    if (this.requestsSubscriptionsMap.has(subscriptionName)) {
+      this.requestsSubscriptionsMap.get(subscriptionName)?.unsubscribe();
+      this.requestsSubscriptionsMap.delete(subscriptionName);
+    }
+  }
+
+  cancelAllRequests(): void {
+    this.requestsSubscriptionsMap.forEach((subscription) => {
+      subscription.unsubscribe();
+    });
+    this.requestsSubscriptionsMap.clear();
+
+    this.looseSubscriptions.forEach((subscription) => {
+      subscription.unsubscribe();
+    });
+    this.looseSubscriptions.clear();
+  }
+
+  getLoadingState(customLoadingName?: string): boolean {
+    if (customLoadingName) {
+      return this.customLoadings().get(customLoadingName) ?? false;
+    }
+    return this.isLoading();
+  }
+}

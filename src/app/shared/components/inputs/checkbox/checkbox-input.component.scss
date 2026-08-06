@@ -1,0 +1,98 @@
+:host {
+  display: block;
+  width: fit-content;
+}
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+
+  &:has(.checkbox-input:disabled) {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.checkbox-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+
+  &:checked + .checkbox-mark {
+    background-color: var(--color-primary, #3b82f6);
+    border-color: var(--color-primary, #3b82f6);
+
+    &::after {
+      opacity: 1;
+      transform: rotate(45deg) scale(1);
+    }
+  }
+
+  &:focus + .checkbox-mark {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  &:disabled + .checkbox-mark {
+    background-color: var(--color-bg-disabled, #f3f4f6);
+    border-color: var(--color-border, #d1d5db);
+    cursor: not-allowed;
+  }
+}
+
+.checkbox-mark {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border: 2px solid var(--color-border, #d1d5db);
+  border-radius: 0.25rem;
+  background-color: var(--color-bg-primary, #ffffff);
+  transition: all 0.2s ease-in-out;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 1px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    opacity: 0;
+    transform: rotate(45deg) scale(0);
+    transition: all 0.2s ease-in-out;
+  }
+
+  &.indeterminate {
+    background-color: var(--color-primary, #3b82f6);
+    border-color: var(--color-primary, #3b82f6);
+
+    &::after {
+      content: '';
+      left: 3px;
+      top: 7px;
+      width: 10px;
+      height: 2px;
+      border: none;
+      background-color: white;
+      opacity: 1;
+      transform: rotate(0) scale(1);
+    }
+  }
+}
+
+.checkbox-label {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--color-text-primary, #1f2937);
+  transition: color 0.2s ease-in-out;
+
+  .checkbox-wrapper:has(.checkbox-input:disabled) & {
+    color: var(--color-text-tertiary, #9ca3af);
+  }
+}

@@ -1,0 +1,7 @@
+.layout-wrapper {
+  &__content {
+    @media (max-width: 1024px) {
+      padding-top: 4rem;
+    }
+  }
+}

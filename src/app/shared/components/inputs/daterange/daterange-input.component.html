@@ -1,0 +1,49 @@
+<div class="input-wrapper">
+  @if (label) {
+    <label class="input-wrapper__label">{{ label }}</label>
+  }
+  <div class="daterange-wrapper">
+    <div class="daterange-input-group">
+      <div class="date-field">
+        <label [for]="getStartId()" class="date-label">Início</label>
+        <input
+          type="date"
+          class="date-input"
+          [id]="getStartId()"
+          [name]="getStartId()"
+          [value]="formattedStartValue"
+          [placeholder]="placeholder"
+          [attr.min]="startMinDate"
+          [attr.max]="startMaxDate"
+          [disabled]="readonly || formGroup.disabled"
+          (change)="onStartChange($event)"
+        />
+      </div>
+
+      <span class="date-separator">até</span>
+
+      <div class="date-field">
+        <label [for]="getEndId()" class="date-label">Fim</label>
+        <input
+          type="date"
+          class="date-input"
+          [id]="getEndId()"
+          [name]="getEndId()"
+          [value]="formattedEndValue"
+          [placeholder]="placeholder"
+          [attr.min]="endMinDate"
+          [attr.max]="endMaxDate"
+          [disabled]="readonly || formGroup.disabled"
+          (change)="onEndChange($event)"
+        />
+      </div>
+    </div>
+  </div>
+
+  @if (hint) {
+    <span [id]="hintId" class="input-wrapper__hint">{{ hint }}</span>
+  }
+  @if (hasError) {
+    <span [id]="errorId" class="input-wrapper__error">{{ errorMessage }}</span>
+  }
+</div>

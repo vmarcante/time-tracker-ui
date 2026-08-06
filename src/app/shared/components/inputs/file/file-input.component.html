@@ -1,0 +1,97 @@
+<div class="input-wrapper">
+  @if (label) {
+    <label class="input-wrapper__label">{{ label }}</label>
+  }
+  <div class="file-input-wrapper">
+    <input
+      #fileInput
+      type="file"
+      class="file-input-hidden"
+      [id]="generatedInputId"
+      [name]="generatedInputId"
+      [accept]="accept"
+      [multiple]="multiple"
+      [disabled]="readonly || formControl!.disabled"
+      (change)="onFileChange($event)"
+    />
+
+    <button
+      type="button"
+      class="file-input-button"
+      [disabled]="readonly || formControl!.disabled || (multiple && !canAddMore)"
+      (click)="triggerFileInput()"
+    >
+    <img
+      class="file-icon"
+      src="/assets/icons/cloud-upload.svg"
+      alt="Upload icon"
+      width="24"
+      height="24"
+    />
+    <span class="file-button-text">
+      @if (hasFiles && !multiple) {
+        Alterar arquivo
+      } @else if (hasFiles && multiple && canAddMore) {
+        Adicionar mais
+      } @else {
+        Selecionar {{ multiple ? 'arquivos' : 'arquivo' }}
+      }
+    </span>
+  </button>
+
+  @if (hasFiles) {
+    <div class="selected-files-list">
+      @for (file of selectedFiles; track file.name; let i = $index) {
+        <div class="file-item">
+          <div class="file-info">
+            <img
+              class="file-item-icon"
+              src="/assets/icons/file.svg"
+              alt="File icon"
+              width="24"
+              height="24"
+            />
+            <div class="file-details">
+              <span class="file-name">{{ file.name }}</span>
+              <span class="file-size">{{ formatFileSize(file.size) }}</span>
+            </div>
+          </div>
+          @if (!readonly && !formControl!.disabled) {
+            <button
+              type="button"
+              class="file-remove-button"
+              (click)="removeFile(i)"
+              [attr.aria-label]="'Remover ' + file.name"
+            >
+              <img src="/assets/icons/close.svg" alt="Remove icon" width="24" height="24" />
+            </button>
+          }
+        </div>
+      }
+    </div>
+  } @else {
+    <p class="file-empty-message">Nenhum arquivo selecionado</p>
+  }
+
+    @if (accept || maxFileSize || (multiple && maxFiles)) {
+      <div class="file-constraints">
+        @if (accept) {
+          <span class="constraint-item">Tipos: {{ accept }}</span>
+        }
+        @if (maxFileSize) {
+          <span class="constraint-item">Máx: {{ formatFileSize(maxFileSize) }}</span>
+        }
+        @if (multiple && maxFiles) {
+          <span class="constraint-item">Até {{ maxFiles }} arquivo{{ maxFiles > 1 ? 's' : '' }}</span>
+        }
+      </div>
+    }
+  </div>
+
+  @if (hint) {
+    <span [id]="hintId" class="input-wrapper__hint">{{ hint }}</span>
+  }
+  @if (hasError) {
+    <span [id]="errorId" class="input-wrapper__error">{{ errorMessage }}</span>
+  }
+</div>

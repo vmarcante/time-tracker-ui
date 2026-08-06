@@ -1,0 +1,64 @@
+{
+  "loading": {
+    "defaultLabel": "Loading"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "yes": "Yes",
+    "no": "No",
+    "increment": "Increment",
+    "decrement": "Decrement",
+    "stepButtons": "Increment and decrement controls",
+    "dialog": {
+      "closeConfirmation": "Are you sure you want to close?",
+      "close": "Confirm action",
+      "cancel": "Cancel",
+      "confirm": "Yes, close"
+    },
+    "toastr": {
+      "types": {
+        "success": "Success",
+        "error": "Error",
+        "warning": "Warning",
+        "info": "Information"
+      },
+      "actions": {
+        "close": "Close {{type}} alert",
+        "clearQueue": "Clear alert queue",
+        "next": "Next alert",
+        "buttonAction": "Alert action"
+      }
+    }
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email",
+    "minLength": "Minimum {{length}} characters",
+    "maxLength": "Maximum {{length}} characters",
+    "min": "Minimum value is {{value}}",
+    "max": "Maximum value is {{value}}",
+    "invalidFormat": "Invalid format",
+    "usernamePattern": "Use only letters, numbers and underscore",
+    "invalidPhone": "Invalid phone number",
+    "passwordStrength": "Password must contain uppercase, lowercase, numbers and special characters",
+    "checkAvailability": "Please check if username and email are available",
+    "passwordMismatch": "Passwords do not match"
+  },
+  "language": {
+    "switcher": {
+      "ariaLabel": "Switch language to {{language}}"
+    }
+  }
+}

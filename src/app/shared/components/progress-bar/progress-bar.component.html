@@ -1,0 +1,14 @@
+<div [class]="wrapperClasses">
+  @if (label) {
+    <div class="progress-bar__label" [style.text-align]="labelPosition">
+      {{ label }}
+    </div>
+  }
+
+  <div
+    [class]="containerClasses"
+    [style]="containerStyles"
+  >
+    <div class="progress-bar__fill" [ngStyle]="getProgressBarStyle()"></div>
+  </div>
+</div>

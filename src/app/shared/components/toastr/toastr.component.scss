@@ -1,0 +1,253 @@
+$toastr-success-bg: var(--color-success-light);
+$toastr-success-border: var(--color-success);
+$toastr-success-text: var(--color-text-primary);
+$toastr-success-progress: var(--color-success);
+
+$toastr-error-bg: var(--color-error-light);
+$toastr-error-border: var(--color-error);
+$toastr-error-text: var(--color-text-primary);
+$toastr-error-progress: var(--color-error);
+
+$toastr-warning-bg: var(--color-warning-light);
+$toastr-warning-border: var(--color-warning);
+$toastr-warning-text: var(--color-text-primary);
+$toastr-warning-progress: var(--color-warning);
+
+$toastr-info-bg: var(--color-info-light);
+$toastr-info-border: var(--color-info);
+$toastr-info-text: var(--color-text-primary);
+$toastr-info-progress: var(--color-info);
+
+.toastr-wrapper {
+  max-width: 400px;
+  min-width: 250px;
+  width: fit-content;
+  display: flex;
+  flex-direction: row;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  align-items: center;
+  border: solid 1px;
+  border-radius: var(--radius-lg);
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+
+  &.success-toastr {
+    background-color: $toastr-success-bg;
+    border-color: $toastr-success-border;
+    color: $toastr-success-text;
+  }
+
+  &.error-toastr {
+    background-color: $toastr-error-bg;
+    border-color: $toastr-error-border;
+    color: $toastr-error-text;
+  }
+
+  &.warning-toastr {
+    background-color: $toastr-warning-bg;
+    border-color: $toastr-warning-border;
+    color: $toastr-warning-text;
+  }
+
+  &.info-toastr {
+    background-color: $toastr-info-bg;
+    border-color: $toastr-info-border;
+    color: $toastr-info-text;
+  }
+
+  .toastr-icon-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+
+    img {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .toastr-content-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 1rem;
+    margin: 0;
+
+    .toastr-text-content {
+      margin: 0;
+    }
+
+    .toastr-custom-button {
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      text-decoration: underline;
+      font-weight: 600;
+      transition: transform 0.1s ease-in-out;
+      color: inherit;
+      padding: 0;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+
+      &:focus {
+        outline: 2px solid var(--color-border-focus);
+        outline-offset: 2px;
+        border-radius: var(--radius-sm);
+      }
+    }
+  }
+
+  .toastr-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    align-items: center;
+  }
+
+  %toastr-button-base {
+    border: none;
+    background-color: transparent;
+    display: flex;
+    cursor: pointer;
+    padding: 0;
+    color: inherit;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+
+    &:focus {
+      outline: 2px solid var(--color-border-focus);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+  }
+
+  .toastr-close-button,
+  .toastr-next-button {
+    @extend %toastr-button-base;
+
+    img {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .toastr-clear-queue-button {
+    @extend %toastr-button-base;
+
+    img {
+      width: 12px;
+      height: 12px;
+    }
+  }
+
+  .toastr-queue-counter {
+    background-color: rgba(15, 23, 42, 0.6);
+    color: var(--color-text-inverse);
+    border-radius: var(--radius-md);
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    z-index: 2;
+    text-align: center;
+  }
+
+  .toastr-progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    animation-name: progress-animation;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+  }
+
+  @keyframes progress-animation {
+    from {
+      width: 100%;
+    }
+    to {
+      width: 0%;
+    }
+  }
+
+  &.success-toastr .toastr-progress-bar {
+    background-color: $toastr-success-progress;
+  }
+
+  &.error-toastr .toastr-progress-bar {
+    background-color: $toastr-error-progress;
+  }
+
+  &.warning-toastr .toastr-progress-bar {
+    background-color: $toastr-warning-progress;
+  }
+
+  &.info-toastr .toastr-progress-bar {
+    background-color: $toastr-info-progress;
+  }
+}
+
+@media (max-width: 1440px) {
+  .toastr-wrapper {
+    max-width: 350px;
+    min-width: 220px;
+    gap: 0.75rem;
+    padding: 0.75rem;
+
+    .toastr-icon-wrapper {
+      gap: 0.2rem;
+
+      img {
+        width: 28px;
+        height: 28px;
+      }
+    }
+
+    .toastr-content-wrapper {
+      font-size: 0.875rem;
+    }
+
+    .toastr-close-button,
+    .toastr-next-button {
+      img {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    .toastr-clear-queue-button {
+      img {
+        width: 10px;
+        height: 10px;
+      }
+    }
+
+    .toastr-queue-counter {
+      padding: 1px 5px;
+      font-size: var(--font-size-hint);
+    }
+
+    .toastr-progress-bar {
+      height: 2px;
+    }
+  }
+}
+
+@media (max-width: 960px) {
+  .toastr-wrapper {
+    max-width: 100% !important;
+    min-width: 100% !important;
+    width: 100% !important;
+    border-radius: 0 !important;
+  }
+}

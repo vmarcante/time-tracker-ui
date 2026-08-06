@@ -1,0 +1,29 @@
+{
+  "header": {
+    "logoAriaLabel": "Time Tracker",
+    "navAriaLabel": "Navegação principal",
+    "logoutAriaLabel": "Sair",
+    "logoutDialog": {
+      "title": "Sair",
+      "message": "Tem certeza que deseja sair?"
+    },
+    "navigation": {
+      "resources": "Recursos",
+      "dashboard": "Dashboard"
+    },
+    "mobileMenu": {
+      "ariaLabel": "Menu de navegação mobile",
+      "openAriaLabel": "Abrir menu de navegação",
+      "closeAriaLabel": "Fechar menu de navegação",
+      "login": "Entrar"
+    },
+    "user": {
+      "defaultName": "Usuário"
+    }
+  },
+  "health": {
+    "status": {
+      "down": "Serviço indisponível"
+    }
+  }
+}

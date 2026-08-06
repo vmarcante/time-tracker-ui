@@ -1,0 +1,63 @@
+<button
+  #buttonRef
+  [type]="type"
+  [ngClass]="buttonClasses"
+  [disabled]="disabled || loading"
+  [attr.title]="disabled ? hoverTitleDisabled : hoverTitle"
+  (click)="onClick($event)"
+>
+  @if (loading && loadingStyle === 'border-flow') {
+    <svg
+      class="btn__loading-border"
+      [attr.viewBox]="'0 0 ' + (loadingAnimationProps.buttonWidth + 8) + ' ' + (loadingAnimationProps.buttonHeight + 8)"
+      preserveAspectRatio="none"
+    >
+      <rect
+        #loadingRect
+        class="btn__loading-border__rect"
+        [attr.x]="1"
+        [attr.y]="1"
+        [attr.width]="loadingAnimationProps.buttonWidth + 6"
+        [attr.height]="loadingAnimationProps.buttonHeight + 6"
+        [attr.rx]="loadingAnimationProps.buttonRadius + 2"
+        [attr.ry]="loadingAnimationProps.buttonRadius + 2"
+        [attr.stroke-dasharray]="loadingAnimationProps.glowLength + ' ' + (loadingAnimationProps.buttonPerimeter - loadingAnimationProps.glowLength)"
+        [attr.stroke-dashoffset]="loadingAnimationProps.buttonPerimeter"
+      />
+    </svg>
+  }
+
+  @if (loading && loadingStyle === 'gradient') {
+    <span class="btn__loading-gradient"></span>
+  }
+
+  @if (!loading && icon?.iconName && (icon.position === 'left' || icon.iconOnly)) {
+    <app-icon
+      [class]="iconClasses"
+      [name]="icon.iconName"
+      [color]="icon.color"
+    />
+  }
+
+  @if (text && !icon?.iconOnly) {
+    <span class="btn__text">{{ text }}</span>
+  }
+
+  @if (loading && loadingStyle === 'spinner') {
+    <app-loading [spinnerWidth]="2" [diameter]="15"></app-loading>
+  }
+
+  @if (!loading && icon?.iconName && icon.position === 'right' && !icon.iconOnly) {
+    <app-icon
+      [class]="iconClasses"
+      [name]="icon.iconName"
+      [color]="icon.color"
+    />
+  }
+
+  @if (!loading && !icon?.iconOnly) {
+    <span class="btn__text">
+      <ng-content></ng-content>
+    </span>
+  }
+</button>

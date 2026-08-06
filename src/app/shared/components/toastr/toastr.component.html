@@ -1,0 +1,80 @@
+@if (alertData) {
+  <div
+    class="toastr-wrapper"
+    [ngClass]="alertData.type + '-toastr'"
+    role="alert"
+    [attr.aria-live]="alertData.type === 'error' ? 'assertive' : 'polite'"
+  >
+    <div class="toastr-icon-wrapper" aria-hidden="true">
+      <img [src]="iconConfig.path" [alt]="iconConfig.altMessage | translate" loading="eager" />
+
+      @if (alertData.queueInfo && alertData.queueInfo.total > 1) {
+        <div class="toastr-queue-counter">
+          {{ alertData.queueInfo.current }}/{{ alertData.queueInfo.total }}
+        </div>
+      }
+    </div>
+
+    <div class="toastr-content-wrapper">
+      <p
+        class="toastr-text-content"
+        [innerHTML]="alertData.messageContent"
+        [attr.aria-label]="ariaLabel"
+      ></p>
+
+      @if (alertData.button) {
+        <button
+          type="button"
+          class="toastr-custom-button"
+          (click)="buttonClickAction()"
+          [attr.aria-label]="alertData.button.label || ('common.toastr.actions.buttonAction' | translate)"
+        >
+          {{ alertData.button.label }}
+        </button>
+      }
+    </div>
+
+    <div class="toastr-actions">
+      @if (hasQueue) {
+        <button
+          type="button"
+          class="toastr-clear-queue-button"
+          (click)="dismissAlert(true)"
+          [attr.aria-label]="'common.toastr.actions.clearQueue' | translate"
+        >
+          <img src="/assets/icons/clear-queue.svg" alt="" aria-hidden="true" />
+        </button>
+      }
+
+      @if (!hasQueue) {
+        <button
+          type="button"
+          class="toastr-close-button"
+          (click)="dismissAlert()"
+          [attr.aria-label]="closeButtonAriaLabel"
+        >
+          <img src="/assets/icons/close-cross.svg" alt="" aria-hidden="true" />
+        </button>
+      }
+
+      @if (hasQueue) {
+        <button
+          type="button"
+          class="toastr-next-button"
+          (click)="dismissAlert()"
+          [attr.aria-label]="'common.toastr.actions.next' | translate"
+        >
+          <img src="/assets/icons/next-arrow.svg" alt="" aria-hidden="true" />
+        </button>
+      }
+    </div>
+
+    @if (autoDismissEnabled) {
+      <div
+        class="toastr-progress-bar"
+        [ngClass]="alertData.type + '-progress'"
+        [style.animation-duration.ms]="alertData.autoClose?.duration"
+      ></div>
+    }
+  </div>
+}

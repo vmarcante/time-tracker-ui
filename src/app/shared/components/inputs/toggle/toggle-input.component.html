@@ -1,0 +1,27 @@
+<div class="input-wrapper">
+  <label [class]="wrapperClasses" [for]="generatedInputId">
+    <input
+      type="checkbox"
+      class="toggle-input"
+      [id]="generatedInputId"
+      [name]="generatedInputId"
+      [formControl]="effectiveControl!"
+      [disabled]="readonly || effectiveControl!.disabled"
+      [attr.aria-describedby]="ariaDescribedBy"
+      [attr.aria-invalid]="ariaInvalid"
+      [attr.aria-required]="ariaRequired"
+      (change)="onChange($event)"
+    />
+    <span class="toggle-slider"></span>
+    @if (label) {
+      <span class="toggle-label" [innerHTML]="label"></span>
+    }
+  </label>
+
+  @if (hint && !hideHint) {
+    <span [id]="hintId" class="input-wrapper__hint">{{ hint }}</span>
+  }
+  @if (hasError && !hideError) {
+    <span [id]="errorId" class="input-wrapper__error">{{ errorMessage }}</span>
+  }
+</div>

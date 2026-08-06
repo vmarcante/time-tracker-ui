@@ -1,0 +1,70 @@
+<app-dialog-shell>
+  <div class="login-dialog">
+    <div class="login-dialog__header">
+      <h1 class="login-dialog__title">{{ 'auth.login.title' | translate }}</h1>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-dialog__form">
+      <div class="login-dialog__inputs">
+        <app-text-input
+          [inputType]="'text'"
+          [formGroup]="loginForm"
+          [controlName]="'username'"
+          [label]="'auth.login.form.username.label' | translate"
+          [labelIcon]="'objects/person'"
+          [placeholder]="'auth.login.form.username.placeholder' | translate"
+          [required]="true"
+        />
+
+        <app-text-input
+          [inputType]="'password'"
+          [formGroup]="loginForm"
+          [controlName]="'password'"
+          [label]="'auth.login.form.password.label' | translate"
+          [labelIcon]="'objects/lock'"
+          [placeholder]="'auth.login.form.password.placeholder' | translate"
+          [required]="true"
+          [hideError]="true"
+          [minLength]="8"
+        />
+      </div>
+
+      @if (errorMessage()) {
+        <div class="login-dialog__error">
+          {{ errorMessage() | translate }}
+        </div>
+      }
+
+      <div class="login-dialog__post-inputs">
+        <div class="login-dialog__forgot-password">
+          <a
+            href="#"
+            (click)="$event.preventDefault(); openForgotPasswordDialog()"
+          >{{ forgotPasswordText }}</a>
+        </div>
+        <div class="login-dialog__submit">
+          <app-button
+            type="submit"
+            [text]="'auth.login.form.submit' | translate"
+            [color]="'primary'"
+            [rounded]="true"
+            [size]="{ fullWidth: true, large: true }"
+            [disabled]="loginForm.invalid || isLoading()"
+            [loading]="isLoading()"
+          ></app-button>
+        </div>
+      </div>
+    </form>
+
+    <div class="login-dialog__footer">
+      <span class="login-dialog__footer-text">{{ 'auth.login.form.newHere' | translate }}</span>
+      <button
+        type="button"
+        class="login-dialog__link login-dialog__link--button"
+        (click)="openRegister()"
+      >
+        {{ 'auth.login.form.createAccount' | translate }}
+      </button>
+    </div>
+  </div>
+</app-dialog-shell>

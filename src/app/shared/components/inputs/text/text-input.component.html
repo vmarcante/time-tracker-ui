@@ -1,0 +1,91 @@
+@if (control) {
+  @if (showLabel && label) {
+    <label class="text-input-label" [for]="generatedInputId">
+      @if (labelIcon) {
+        <app-icon
+          class="text-input-label__icon"
+          [name]="labelIcon"
+          [size]="14"
+        />
+      }
+      <span class="text-input-label__text">
+        {{ label }}
+        @if (required) {
+          <span class="text-input-required">*</span>
+        }
+      </span>
+      @if (labelHint) {
+        <span
+          class="text-input-label-hint"
+          [id]="labelHintId"
+          [matTooltip]="labelHint"
+          matTooltipPosition="above"
+          role="img"
+          [attr.aria-label]="labelHint"
+          tabindex="0"
+        >
+          <svg class="text-input-label-hint__icon">
+            <use xlink:href="/assets/icons/actions/help.svg#icon"></use>
+          </svg>
+        </span>
+      }
+    </label>
+  }
+
+  <mat-form-field
+    [class]="fieldClasses"
+    appearance="outline"
+  >
+    @if (appliedMask) {
+      <input
+        matInput
+        [type]="inputType"
+        [id]="generatedInputId"
+        [name]="generatedInputId"
+        [formControl]="control"
+        [placeholder]="placeholder"
+        [attr.maxlength]="maxLength"
+        [attr.minlength]="minLength"
+        [readonly]="readonly"
+        [attr.pattern]="pattern"
+        [mask]="appliedMask"
+        [dropSpecialCharacters]="dropSpecialCharacters"
+        [attr.autocomplete]="autocomplete"
+        [attr.aria-describedby]="ariaDescribedBy"
+        [attr.aria-invalid]="ariaInvalid"
+        [attr.aria-required]="ariaRequired"
+        (input)="onInput($event)"
+        (focus)="focus($event)"
+        (blur)="blur($event)"
+        (focusout)="focusOut($event)"
+      />
+    } @else {
+      <input
+        matInput
+        [type]="inputType"
+        [id]="generatedInputId"
+        [name]="generatedInputId"
+        [formControl]="control"
+        [placeholder]="placeholder"
+        [attr.maxlength]="maxLength"
+        [attr.minlength]="minLength"
+        [readonly]="readonly"
+        [attr.pattern]="pattern"
+        [attr.autocomplete]="autocomplete"
+        [attr.aria-describedby]="ariaDescribedBy"
+        [attr.aria-invalid]="ariaInvalid"
+        [attr.aria-required]="ariaRequired"
+        (input)="onInput($event)"
+        (focus)="focus($event)"
+        (blur)="blur($event)"
+        (focusout)="focusOut($event)"
+      />
+    }
+    @if (hint && !hideHint) {
+      <mat-hint [id]="hintId">{{ hint }}</mat-hint>
+    }
+    @if (hasError && !hideError) {
+      <mat-error [id]="errorId">{{ errorMessage }}</mat-error>
+    }
+  </mat-form-field>
+}

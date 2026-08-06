@@ -1,0 +1,11 @@
+<div class="language-switcher">
+  <button
+    type="button"
+    class="language-switcher__button"
+    (click)="toggleLanguage()"
+    [attr.aria-label]="ariaLabel()"
+  >
+    <img src="/assets/icons/language-globe.svg" alt="" class="language-switcher__icon" />
+    <span class="language-switcher__text">{{ displayText() }}</span>
+  </button>
+</div>

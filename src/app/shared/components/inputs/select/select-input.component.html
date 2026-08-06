@@ -1,0 +1,29 @@
+<mat-form-field appearance="outline">
+  @if (showLabel && label) {
+    <mat-label>{{ label }}</mat-label>
+  }
+  <mat-select
+    [id]="generatedInputId"
+    [formControl]="formControl!"
+    [multiple]="multiple"
+    [disabled]="readonly || formControl!.disabled"
+    [attr.aria-describedby]="ariaDescribedBy"
+    [attr.aria-invalid]="ariaInvalid"
+    [attr.aria-required]="ariaRequired"
+    [placeholder]="placeholder"
+    (selectionChange)="onChange($event)"
+  >
+    @for (option of options; track option[optionValue]) {
+      <mat-option [value]="option[optionValue]" [disabled]="option.disabled">
+        {{ option[optionLabel] }}
+      </mat-option>
+    }
+  </mat-select>
+
+  @if (hint) {
+    <mat-hint [id]="hintId">{{ hint }}</mat-hint>
+  }
+  @if (hasError) {
+    <mat-error [id]="errorId">{{ errorMessage }}</mat-error>
+  }
+</mat-form-field>

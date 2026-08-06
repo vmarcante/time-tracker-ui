@@ -1,0 +1,16 @@
+<div class="user-menu">
+  <div class="user-menu__header">
+    <!-- <div class="user-menu__avatar">{{ getInitials() }}</div> -->
+    <div class="user-menu__info">
+      <span class="user-menu__name">{{ user().name }}</span>
+      <span class="user-menu__email">{{ user().email }}</span>
+    </div>
+  </div>
+
+  <div class="user-menu__actions">
+    <button type="button" class="user-menu__action user-menu__action--logout" (click)="logout.emit()">
+      <img src="assets/icons/actions/logout.svg" alt="" />
+      <span>{{ 'header.logoutAriaLabel' | translate }}</span>
+    </button>
+  </div>
+</div>

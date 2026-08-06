@@ -1,0 +1,12 @@
+<header [class]="headerClasses">
+  <div class="dialog-header__logo">
+    <div class="dialog-header__logo-text-group">
+      <span class="dialog-header__logo-text">Time Tracker</span>
+    </div>
+  </div>
+  @if (showCloseButton) {
+    <button type="button" class="dialog-header__close" (click)="closeDialog()" aria-label="Fechar">
+      <app-icon [name]="'actions/close'" [size]="24" />
+    </button>
+  }
+</header>

@@ -1,0 +1,51 @@
+<div class="confirm-container">
+  <div class="confirm-card">
+    @if (status === 'loading') {
+      <div class="status-content status-content--loading">
+        <app-loading
+          [diameter]="52"
+          [spinnerWidth]="4"
+          [label]="'auth.confirmRegistration.loading.title'"
+        ></app-loading>
+        <p class="status-content__message">
+          {{ 'auth.confirmRegistration.loading.message' | translate }}
+        </p>
+      </div>
+    }
+
+    @if (status === 'success') {
+      <div class="status-content status-content--success">
+        <div class="status-content__icon">
+          <img src="/assets/icons/status/check-circle.svg" alt="" />
+        </div>
+        <h1 class="status-content__title">
+          {{ 'auth.confirmRegistration.success.title' | translate }}
+        </h1>
+        <p class="status-content__message">
+          {{ 'auth.confirmRegistration.success.message' | translate }}
+        </p>
+        <p class="status-content__message status-content__redirect">
+          {{ 'auth.confirmRegistration.success.redirect' | translate: { seconds: countdown } }}
+        </p>
+        <app-button
+          [text]="'auth.confirmRegistration.success.button' | translate"
+          [color]="'primary'"
+          [rounded]="true"
+          (buttonClick)="goToLogin()"
+        ></app-button>
+      </div>
+    }
+
+    @if (status === 'error') {
+      <div class="status-content status-content--error">
+        <div class="status-content__icon">
+          <img src="/assets/icons/status/alert.svg" alt="" />
+        </div>
+        <h1 class="status-content__title">
+          {{ 'auth.confirmRegistration.error.title' | translate }}
+        </h1>
+        <p class="status-content__message">{{ errorMessage | translate }}</p>
+      </div>
+    }
+  </div>
+</div>

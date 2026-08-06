@@ -1,0 +1,37 @@
+<div
+  [class]="containerClasses"
+  role="tablist"
+  [attr.aria-label]="ariaLabel"
+>
+  <app-progress-bar
+    class="step-progress__bar"
+    [progress]="progress"
+    [color]="progressBarColor"
+    [height]="progressBarHeight"
+    [width]="progressBarWidth"
+    [orientation]="orientation"
+    [flat]="true"
+  ></app-progress-bar>
+
+  @for (step of config.steps; track $index) {
+    <div class="step-progress__item">
+      <app-button
+        type="button"
+        [text]="$index + 1"
+        [color]="step.buttonColor ?? buttonColor"
+        [circle]="true"
+        [fill]="true"
+        [hoverTitle]="step.label"
+        [hoverTitleDisabled]="step.label"
+        [disabled]="isStepDisabled($index)"
+        [attr.aria-current]="currentStep === $index + 1 ? 'step' : null"
+        [attr.aria-label]="step.ariaLabel || step.label"
+        (buttonClick)="onStepClick($index)"
+      >
+      </app-button>
+      @if (orientation === 'vertical' && step.label && step.showLabel) {
+        <span class="step-progress__label">{{ step.label }}</span>
+      }
+    </div>
+  }
+</div>

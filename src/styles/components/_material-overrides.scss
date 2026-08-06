@@ -1,0 +1,290 @@
+// ============================================
+// ANGULAR MATERIAL FORM FIELD OVERRIDES
+// ============================================
+// Estilos globais para sobrescrever o comportamento padrão
+// do Angular Material Form Field em toda a aplicação
+
+// Precisa estar fora de qualquer seletor para ser global
+.mat-mdc-text-field-wrapper {
+  padding: 0 !important;
+}
+
+.mdc-text-field {
+  padding: 0 !important;
+}
+
+.mdc-text-field--outlined {
+  padding: 0 !important;
+}
+
+.mdc-text-field--no-label {
+  padding: 0 !important;
+}
+
+.mat-mdc-form-field {
+  padding: 0 !important;
+}
+
+.mat-mdc-form-field-flex {
+  align-items: center !important;
+  min-height: var(--input-height) !important;
+  padding: 0 !important;
+}
+
+.mat-mdc-form-field-infix {
+  padding: 0 !important;
+  min-height: var(--input-height) !important;
+  border-top: none !important;
+  width: auto !important;
+}
+
+.mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.mat-mdc-floating-label {
+  display: none !important;
+}
+
+.mat-mdc-form-field-subscript-wrapper {
+  margin-top: 0 !important;
+  padding-top: 2px !important;
+  font-size: var(--font-size-hint) !important;
+  min-height: 14px !important;
+}
+
+.mat-text-input-field--no-subscript .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+.mat-mdc-form-field-hint-wrapper,
+.mat-mdc-form-field-error-wrapper {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.mat-mdc-form-field-hint,
+.mat-mdc-form-field-error {
+  font-size: var(--font-size-hint) !important;
+  line-height: 1.2 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+input.mat-mdc-input-element {
+  font-size: var(--font-size-input) !important;
+  padding: 0 var(--input-padding-horizontal) !important;
+  height: var(--input-height) !important;
+  line-height: var(--input-height) !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  background-color: var(--color-background-input) !important;
+  display: flex !important;
+  align-items: center !important;
+  
+  &:focus {
+    background-color: var(--color-background-input-focus) !important;
+  }
+  
+  &:disabled,
+  &[readonly] {
+    background-color: var(--color-background-input-disabled) !important;
+    cursor: not-allowed !important;
+  }
+}
+
+.mat-mdc-notched-outline {
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-width: 1px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  .mdc-notched-outline__leading {
+    width: 0 !important;
+    min-width: 0 !important;
+    border: none !important;
+  }
+  
+  .mdc-notched-outline__notch {
+    border-left: 1px solid !important;
+    border-right: none !important;
+    border-top: 1px solid !important;
+    border-bottom: 1px solid !important;
+    padding: 0 !important;
+    max-width: 0 !important;
+  }
+  
+  .mdc-notched-outline__trailing {
+    border-left: none !important;
+  }
+}
+
+.mat-mdc-form-field-focus-overlay {
+  background-color: transparent !important;
+}
+
+// ============================================
+// ANGULAR MATERIAL TOOLTIP OVERRIDES
+// ============================================
+.mat-mdc-tooltip {
+  .mat-mdc-tooltip-surface {
+    background-color: var(--color-tooltip-background) !important;
+    color: var(--color-tooltip-text) !important;
+    font-size: var(--font-size-hint) !important;
+    line-height: 1.3 !important;
+    padding: 4px 6px !important;
+    border-radius: var(--radius-sm) !important;
+    box-shadow: var(--shadow-sm) !important;
+    max-width: 230px !important;
+  }
+}
+
+// ============================================
+// FULLSCREEN MOBILE DIALOG
+// ============================================
+.fullscreen-mobile-dialog {
+  width: 100vw !important;
+  height: 100dvh !important;
+  max-width: 100vw !important;
+  max-height: 100dvh !important;
+  margin: 0 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  overflow: hidden !important;
+  touch-action: none !important;
+
+  .mat-mdc-dialog-panel {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  .mat-mdc-dialog-container {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .mdc-dialog__surface {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    border-radius: 0;
+    overflow: hidden;
+  }
+
+  .mat-mdc-dialog-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+
+    > app-dialog-shell {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      min-height: 100%;
+
+      > .dialog-shell {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    > *:not(app-dialog-shell) {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      min-height: 100%;
+    }
+  }
+}
+
+// Previne scroll no body quando dialogs fullscreen estão abertas
+.cdk-global-scrollblock {
+  position: fixed !important;
+  overflow: hidden !important;
+  width: 100% !important;
+}
+
+// Previne scroll no overlay container
+.cdk-overlay-container {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+
+  &:has(.fullscreen-mobile-dialog) {
+    overflow: hidden !important;
+  }
+}
+
+// Garante que o backdrop não permita scroll
+.cdk-overlay-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
+  opacity: 0;
+  touch-action: none;
+  overflow: hidden;
+
+  &.cdk-overlay-backdrop-showing {
+    opacity: 1;
+  }
+}
+
+// Garante que dialogs fullscreen mobile bloqueiem scroll
+.cdk-global-overlay-wrapper:has(.fullscreen-mobile-dialog) {
+  overflow: hidden !important;
+  touch-action: none !important;
+}
+
+// Bloqueia scroll no pane do overlay quando fullscreen
+.cdk-overlay-pane:has(.fullscreen-mobile-dialog) {
+  overflow: hidden !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  max-width: 100vw !important;
+  max-height: 100dvh !important;
+}
+
+// Força overflow hidden em todos os wrappers quando há dialog fullscreen
+html:has(.fullscreen-mobile-dialog),
+body:has(.fullscreen-mobile-dialog) {
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+  height: 100% !important;
+  touch-action: none !important;
+  overscroll-behavior: none !important;
+  -webkit-overflow-scrolling: auto !important;
+}

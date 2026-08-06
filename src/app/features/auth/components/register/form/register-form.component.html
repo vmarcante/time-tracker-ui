@@ -1,0 +1,212 @@
+<app-dialog-shell [closeConfirmation]="true">
+  <div class="register-layout">
+    <div class="register-image">
+      <div class="register-image__placeholder">
+        <span class="register-image__text">{{ 'auth.register.imagePlaceholder' | translate }}</span>
+      </div>
+    </div>
+
+    @if (!isCompleted()) {
+      <div class="register-progress">
+        <app-step-progress
+          class="register-step-progress"
+          [config]="stepProgressConfig"
+          [currentStep]="currentStep"
+          [orientation]="stepProgressOrientation()"
+          [buttonColor]="'primary'"
+          [progressBarColor]="'var(--color-primary)'"
+          [ariaLabel]="'auth.register.steps.label' | translate"
+          (stepClick)="goToStep($event)"
+        ></app-step-progress>
+      </div>
+    }
+
+    <div class="register-card">
+      @if (isCompleted()) {
+        <div class="register-conclusion">
+          <h1 class="register-header__title">{{ 'auth.register.conclusion.title' | translate }}</h1>
+          <p class="register-conclusion__message">{{ successMessage }}</p>
+          <app-button
+            type="button"
+            color="success-dark"
+            [rounded]="true"
+            [text]="'auth.register.conclusion.button' | translate"
+            (buttonClick)="onComplete()"
+          ></app-button>
+        </div>
+      } @else {
+        <div class="register-header">
+          <h1 class="register-header__title">{{ 'auth.register.title' | translate }}</h1>
+          <p class="register-header__subtitle">{{ 'auth.register.subtitle' | translate }}</p>
+        </div>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+          <div class="register-inputs">
+            @if (currentStep === 1 || currentStep === 2) {
+              <section class="form-step" aria-label="{{ 'auth.register.steps.1' | translate }}">
+                <app-text-input
+                  [inputType]="'email'"
+                  [formGroup]="registerForm"
+                  [controlName]="'email'"
+                  [labelIcon]="'objects/envelope'"
+                  [label]="'auth.register.form.email.label' | translate"
+                  [placeholder]="'auth.register.form.email.placeholder' | translate"
+                  [labelHint]="'auth.register.form.email.labelHint' | translate"
+                  [required]="true"
+                  [readonly]="currentStep === 2"
+                  [errorMessages]="{
+                    availability: 'auth.register.validation.unavailable' | translate,
+                  }"
+                />
+              </section>
+            }
+
+            @if (currentStep === 2) {
+              <section class="form-step" aria-label="{{ 'auth.register.steps.2' | translate }}">
+                <app-text-input
+                  [inputType]="'text'"
+                  [formGroup]="registerForm"
+                  [controlName]="'username'"
+                  [labelIcon]="'objects/person'"
+                  [label]="'auth.register.form.username.label' | translate"
+                  [placeholder]="'auth.register.form.username.placeholder' | translate"
+                  [labelHint]="'auth.register.form.username.labelHint' | translate"
+                  [errorMessages]="{
+                    availability: 'auth.register.validation.unavailable' | translate,
+                  }"
+                  [required]="true"
+                  [minLength]="3"
+                  [maxLength]="30"
+                  [pattern]="'^[a-zA-Z0-9._]+$'"
+                />
+
+                <app-text-input
+                  [inputType]="'text'"
+                  [formGroup]="registerForm"
+                  [controlName]="'name'"
+                  [label]="'auth.register.form.name.label' | translate"
+                  [placeholder]="'auth.register.form.name.placeholder' | translate"
+                  [required]="true"
+                  [minLength]="3"
+                />
+
+                <div class="form-row">
+                  <app-text-input
+                    class="form-row__field--phone"
+                    [inputType]="'tel'"
+                    [formGroup]="registerForm"
+                    [controlName]="'phone'"
+                    [labelIcon]="'objects/phone'"
+                    [label]="'auth.register.form.phone.label' | translate"
+                    [placeholder]="'auth.register.form.phone.placeholder' | translate"
+                  />
+
+                  <app-integer-input
+                    class="form-row__field--age"
+                    [formGroup]="registerForm"
+                    [controlName]="'age'"
+                    [labelIcon]="'objects/calendar'"
+                    [label]="'auth.register.form.age.label' | translate"
+                    [placeholder]="'00'"
+                    [required]="true"
+                    [min]="18"
+                    [max]="120"
+                    [showStepButtons]="true"
+                  />
+                </div>
+              </section>
+            }
+
+            @if (currentStep === 3) {
+              <section
+                class="form-step form-step--password"
+                aria-label="{{ 'auth.register.steps.3' | translate }}"
+              >
+                <app-text-input
+                  [inputType]="'password'"
+                  [formGroup]="registerForm"
+                  [controlName]="'password'"
+                  [label]="'auth.register.form.password.label' | translate"
+                  [placeholder]="'auth.register.form.password.placeholder' | translate"
+                  [required]="true"
+                  [hideError]="true"
+                  [hideHint]="true"
+                  [minLength]="8"
+                />
+
+                <div class="form-group">
+                  <app-text-input
+                    [inputType]="'password'"
+                    [formGroup]="registerForm"
+                    [controlName]="'confirmPassword'"
+                    [label]="'auth.register.form.confirmPassword.label' | translate"
+                    [placeholder]="'auth.register.form.confirmPassword.placeholder' | translate"
+                    [required]="true"
+                    [hideError]="true"
+                    [hideHint]="true"
+                  />
+                </div>
+
+                <div class="password-strength">
+                  <span class="password-strength__label">{{
+                    'auth.register.form.passwordStrength' | translate
+                  }}</span>
+                  <app-progress-bar
+                    [progress]="passwordStrength"
+                    [multiColor]="true"
+                    [orientation]="'horizontal'"
+                    [height]="'4px'"
+                  />
+                  <ul class="password-requirements">
+                    @for (req of passwordRequirements; track req.label) {
+                      <li [class]="req.classes">
+                        {{ req.label }}
+                      </li>
+                    }
+                  </ul>
+                </div>
+
+                <app-toggle-input
+                  [formGroup]="registerForm"
+                  [controlName]="'consent'"
+                  [label]="'auth.register.form.consent.label' | translate"
+                  [required]="true"
+                  [compact]="true"
+                  [hideError]="true"
+                  [hideHint]="true"
+                />
+              </section>
+            }
+          </div>
+
+          <div class="wizard-actions" [class.wizard-actions--mobile]="isMobileOrTablet()">
+            @if (currentStep > 1) {
+              <app-button
+                class="previous"
+                type="button"
+                color="secondary"
+                [rounded]="true"
+                [size]="{ fullWidth: isMobileOrTablet(), medium: isMobileOrTablet() }"
+                [icon]="{ iconName: 'arrows/back', svgIcon: true, iconOnly: isMobileOrTablet(), position: 'left' }"
+                [text]="'auth.register.form.previous' | translate"
+                (buttonClick)="previousStep()"
+              />
+            }
+
+            <app-button
+              class="next"
+              type="submit"
+              color="primary"
+              [rounded]="true"
+              [disabled]="isSubmitDisabled"
+              [loading]="isRegistering()"
+              [size]="{ fullWidth: isMobileOrTablet(), medium: isMobileOrTablet() }"
+              [icon]="{ iconName: 'arrows/next', svgIcon: true, color: '#FFF', position: 'right' }"
+              [text]="submitButtonText"
+            />
+          </div>
+        </form>
+      }
+    </div>
+  </div>
+</app-dialog-shell>

@@ -1,0 +1,59 @@
+// ============================================
+// INPUT COMPONENTS - GLOBAL STYLES
+// ============================================
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+// Label externo para inputs
+.input-label {
+  display: block;
+  font-size: var(--font-size-label);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+  line-height: 1.2;
+
+  &__required {
+    color: var(--color-error);
+    margin-left: 2px;
+  }
+}
+
+// Wrapper genérico para inputs
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  width: 100%;
+
+  &__label {
+    font-size: var(--font-size-label);
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  &__required {
+    color: var(--color-error);
+    margin-left: var(--spacing-xs);
+  }
+
+  &__error {
+    font-size: var(--font-size-hint);
+    color: var(--color-error);
+    margin-top: var(--spacing-xs);
+  }
+
+  &__hint {
+    font-size: var(--font-size-hint);
+    color: var(--color-text-secondary);
+    margin-top: var(--spacing-xs);
+  }
+}
+
+.mat-text-input-field {
+  width: 100%;
+}

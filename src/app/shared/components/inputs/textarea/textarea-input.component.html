@@ -1,0 +1,38 @@
+<mat-form-field appearance="outline">
+  @if (showLabel && label) {
+    <mat-label>{{ label }}</mat-label>
+  }
+  <textarea
+    matInput
+    [id]="generatedInputId"
+    [name]="generatedInputId"
+    [formControl]="formControl!"
+    [placeholder]="placeholder"
+    [rows]="rows"
+    [attr.maxlength]="maxLength"
+    [disabled]="readonly || formControl!.disabled"
+    [attr.aria-describedby]="ariaDescribedBy"
+    [attr.aria-invalid]="ariaInvalid"
+    [attr.aria-required]="ariaRequired"
+    [style.resize]="resize"
+    (input)="onInput($event)"
+    (focus)="focus($event)"
+    (blur)="blur($event)"
+    (focusout)="focusOut($event)"
+  ></textarea>
+
+  @if (showCounter && maxLength) {
+    <div matSuffix class="character-counter">
+      <span class="current">{{ currentLength }}</span>
+      <span class="separator">/</span>
+      <span class="max">{{ maxLength }}</span>
+    </div>
+  }
+
+  @if (hint) {
+    <mat-hint [id]="hintId">{{ hint }}</mat-hint>
+  }
+  @if (hasError) {
+    <mat-error [id]="errorId">{{ errorMessage }}</mat-error>
+  }
+</mat-form-field>

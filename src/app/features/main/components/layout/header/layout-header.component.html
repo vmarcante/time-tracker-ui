@@ -1,0 +1,122 @@
+<header
+  class="layout-wrapper__header"
+  [class]="headerClasses"
+  (mouseenter)="onMouseEnter()"
+  (mouseleave)="onMouseLeave()"
+>
+  <div class="layout-wrapper__header__content">
+    <a
+      [class]="logoClasses"
+      routerLink="/"
+      [attr.aria-label]="'header.logoAriaLabel' | translate"
+    >
+      <div class="header-logo__text-group">
+        <span class="header-logo__text">Time Tracker</span>
+      </div>
+    </a>
+
+    @if (isHealthDown()) {
+      <div class="header-health-alert" role="status" aria-live="polite">
+        <img
+          src="/assets/icons/status/alert.svg"
+          [alt]="'health.status.down' | translate"
+          class="header-health-alert__icon"
+          [attr.title]="'health.status.down' | translate"
+        />
+      </div>
+    }
+
+  </div>
+  <div class="layout-wrapper__header__auth">
+    <div class="header-auth-container">
+      @if (userLoading()) {
+        <div class="header-skeleton header-auth-item">
+          <div class="header-skeleton__button"></div>
+        </div>
+      }
+
+      @if (!isAuthenticated() && !userLoading()) {
+        <div class="header-auth-item">
+          <app-login-modal #loginModal></app-login-modal>
+        </div>
+      }
+
+      @if (isAuthenticated() && !userLoading()) {
+        <div class="header-user header-auth-item">
+          <app-popover
+            #userPopover
+            [options]="{
+              position: 'bottom',
+              width: '240px',
+              closeOnClickOutside: true,
+              closeOnEscape: true,
+              showArrow: true,
+            }"
+            [triggerTemplate]="userMenuTrigger"
+            [contentTemplate]="userMenuContent"
+          ></app-popover>
+
+          <div class="header-user__trigger-group">
+            <ng-template #userMenuTrigger>
+              <app-button
+                [text]="getInitials()"
+                [color]="'secondary'"
+                [circle]="true"
+                [fill]="true"
+                [size]="{ large: true }"
+                [customClass]="'header-user__avatar'"
+                [hoverTitle]="currentUser()?.name ?? 'header.user.defaultName' | translate"
+                (buttonClick)="userPopover.toggle()"
+              ></app-button>
+            </ng-template>
+
+            <app-button
+              [icon]="{
+                iconName: 'actions/logout-white',
+                iconOnly: true,
+              }"
+              [color]="'transparent'"
+              [circle]="true"
+              [size]="{ large: true }"
+              [customClass]="'header-user__logout'"
+              [hoverTitle]="'header.logoutAriaLabel' | translate"
+              (buttonClick)="logout()"
+            ></app-button>
+          </div>
+
+          <ng-template #userMenuContent>
+            @if (currentUser(); as user) {
+              <app-user-menu [user]="user" (logout)="logout()"></app-user-menu>
+            }
+          </ng-template>
+        </div>
+      }
+    </div>
+
+    @if (isMobileOrTablet() && mobileMenuLinks.length > 0) {
+      <app-menu-toggle
+        class="header-menu-toggle"
+        [isOpen]="mobileMenuOpen"
+        [ariaLabel]="
+          (mobileMenuOpen ? 'header.mobileMenu.closeAriaLabel' : 'header.mobileMenu.openAriaLabel')
+            | translate
+        "
+        (toggle)="mobileMenuOpen ? closeMobileMenu() : openMobileMenu()"
+      ></app-menu-toggle>
+    }
+  </div>
+
+  @if (isMobileOrTablet() && mobileMenuLinks.length > 0) {
+    <app-mobile-menu
+      class="header-mobile-menu"
+      [isOpen]="mobileMenuOpen"
+      [isAuthenticated]="isAuthenticated()"
+      [links]="mobileMenuLinks"
+      [theme]="mobileMenuTheme"
+      [showRootTitle]="isAuthenticated()"
+      (close)="closeMobileMenu()"
+      (login)="openLoginModal()"
+      (logout)="logout()"
+    ></app-mobile-menu>
+  }
+</header>

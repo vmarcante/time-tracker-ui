@@ -1,0 +1,101 @@
+@if (responsiveService.isMobileOrTablet()) {
+  <app-button
+    type="button"
+    [text]="'Login'"
+    [color]="'primary'"
+    [rounded]="true"
+    [size]="{ medium: true }"
+    (buttonClick)="open()"
+  ></app-button>
+}
+
+@if (responsiveService.isDesktopOrWide()) {
+  <app-popover
+    #popover
+    [options]="{ position: 'auto', width: '200px', showArrow: true }"
+    [triggerTemplate]="triggerTemplate"
+    [contentTemplate]="contentTemplate"
+  >
+  </app-popover>
+
+  <ng-template #triggerTemplate>
+    <app-button
+      type="button"
+      [text]="'Login'"
+      [color]="'primary'"
+      [rounded]="true"
+      (buttonClick)="popover.toggle()"
+    ></app-button>
+  </ng-template>
+}
+
+<ng-template #contentTemplate>
+  <div class="login-modal__content">
+    <!-- <div class="login-modal__header">
+      <h2 class="login-modal__title">{{ 'auth.login.title' | translate }}</h2>
+    </div> -->
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-modal__form">
+      <div class="login-modal__inputs">
+        <app-text-input
+          [inputType]="'text'"
+          [formGroup]="loginForm"
+          [controlName]="'username'"
+          [labelIcon]="'objects/person'"
+          [label]="'auth.login.form.username.label' | translate"
+          [placeholder]="'auth.login.form.username.placeholder' | translate"
+          [required]="true"
+        />
+
+        <app-text-input
+          [inputType]="'password'"
+          [formGroup]="loginForm"
+          [controlName]="'password'"
+          [labelIcon]="'objects/lock'"
+          [label]="'auth.login.form.password.label' | translate"
+          [placeholder]="'auth.login.form.password.placeholder' | translate"
+          [required]="true"
+          [minLength]="8"
+        />
+      </div>
+
+      @if (errorMessage()) {
+        <div class="login-modal__error">
+          {{ errorMessage() | translate }}
+        </div>
+      }
+
+      <div class="login-modal__post-inputs">
+        <div class="login-modal__forgot-password">
+          <a
+            href="#"
+            [innerHTML]="'auth.login.form.forgotPassword' | translate"
+            (click)="$event.preventDefault(); openForgotPasswordDialog()"
+          ></a>
+        </div>
+        <div class="login-modal__submit">
+          <app-button
+            type="submit"
+            [text]="'auth.login.form.submit' | translate"
+            [color]="'primary'"
+            [rounded]="true"
+            [size]="{ small: true }"
+            [disabled]="loginForm.invalid || isLoading()"
+            [loading]="isLoading()"
+          ></app-button>
+        </div>
+      </div>
+    </form>
+
+    <div class="login-modal__footer">
+      <span class="login-modal__footer-text">{{ 'auth.login.form.newHere' | translate }}</span>
+      <button
+        type="button"
+        class="login-modal__link login-modal__link--button"
+        (click)="openRegister()"
+      >
+        {{ 'auth.login.form.createAccount' | translate }}
+      </button>
+    </div>
+  </div>
+</ng-template>

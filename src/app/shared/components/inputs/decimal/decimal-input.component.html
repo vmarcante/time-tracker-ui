@@ -1,0 +1,31 @@
+<mat-form-field appearance="outline">
+  @if (showLabel && label) {
+    <mat-label>{{ label }}</mat-label>
+  }
+  <input
+    matInput
+    type="number"
+    [id]="generatedInputId"
+    [name]="generatedInputId"
+    [formControl]="formControl!"
+    [placeholder]="placeholder"
+    [attr.min]="min"
+    [attr.max]="max"
+    [attr.step]="step"
+    [readonly]="readonly"
+    [attr.aria-describedby]="ariaDescribedBy"
+    [attr.aria-invalid]="ariaInvalid"
+    [attr.aria-required]="ariaRequired"
+    (input)="onInput($event)"
+    (focus)="focus($event)"
+    (blur)="blur($event)"
+    (focusout)="focusOut($event)"
+  />
+
+  @if (hint) {
+    <mat-hint [id]="hintId">{{ hint }}</mat-hint>
+  }
+  @if (hasError) {
+    <mat-error [id]="errorId">{{ errorMessage }}</mat-error>
+  }
+</mat-form-field>

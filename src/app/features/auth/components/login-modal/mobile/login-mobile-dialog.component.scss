@@ -1,0 +1,109 @@
+.login-dialog {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+
+  &__header {
+    text-align: center;
+    padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-lg);
+  }
+
+  &__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 0 var(--spacing-lg);
+  }
+
+  &__inputs {
+    display: flex;
+    flex-direction: column;
+    // gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  &__error {
+    padding: var(--spacing-md);
+    background-color: var(--color-error-light);
+    color: var(--color-error);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    text-align: center;
+    margin-bottom: var(--spacing-md);
+  }
+
+  &__post-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  &__forgot-password {
+    text-align: center;
+    order: 1;
+
+    a {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      white-space: nowrap;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &__submit {
+    order: 2;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+
+    app-button {
+      width: 100%;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xl) var(--spacing-lg);
+    border-top: 1px solid var(--color-border);
+    margin-top: auto;
+  }
+
+  &__footer-text {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+  }
+
+  &__link {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &--button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+  }
+}

@@ -1,0 +1,168 @@
+// ============================================
+// INTEGER INPUT COMPONENT
+// ============================================
+// Estilos específicos do componente integer-input
+// Estilos globais do Angular Material estão em:
+// src/styles/components/_material-overrides.scss
+
+:host {
+  display: block;
+  width: 100%;
+  margin-bottom: 0;
+}
+
+// Label externo (fora do mat-form-field)
+.integer-input-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-label);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+  line-height: 1.2;
+
+  &__icon {
+    flex-shrink: 0;
+    color: var(--color-text-secondary);
+    opacity: 0.8;
+  }
+
+  &__text {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .integer-input-required {
+    color: var(--color-error);
+    margin-left: 2px;
+  }
+}
+
+// Container do mat-form-field
+.mat-integer-input-field {
+  width: 100%;
+  font-size: var(--font-size-input);
+
+  &--with-step-buttons {
+    width: calc(100% - 28px);
+  }
+}
+
+::ng-deep .mat-integer-input-field--with-step-buttons {
+  .mdc-text-field--outlined,
+  .mat-mdc-text-field-wrapper.mdc-text-field--outlined {
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm) !important;
+  }
+
+  .mdc-notched-outline__trailing {
+    border-radius: 0 !important;
+  }
+
+  .mdc-notched-outline__leading {
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm) !important;
+  }
+}
+
+.integer-input-wrapper {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+
+  &--with-step-buttons {
+    .mat-integer-input-field.mat-focused + .integer-input-step-buttons {
+      border-color: var(--color-border-focus);
+    }
+  }
+}
+
+.integer-input-step-buttons {
+  display: flex;
+  flex-direction: column;
+  width: 28px;
+  height: var(--input-height);
+  border: 0;
+  border-left: none;
+  border-radius: 0 var(--input-border-radius) var(--input-border-radius) 0;
+  overflow: hidden;
+}
+
+.integer-input-step-button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background-color: var(--color-primary-dark);
+  color: var(--color-text-inverse);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-primary-light);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &__icon {
+    width: 12px;
+    height: 12px;
+    fill: currentColor;
+  }
+}
+
+input[type='number'] {
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+  appearance: textfield;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+  }
+}
+
+.integer-input {
+  width: 100%;
+  padding: var(--input-padding-vertical) var(--input-padding-horizontal);
+  font-size: var(--font-size-input);
+  font-family: inherit;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  background-color: var(--color-background-input);
+  border: 1px solid var(--color-border);
+  border-radius: var(--input-border-radius);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &::placeholder {
+    color: var(--color-text-secondary);
+    opacity: 0.7;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-light);
+  }
+
+  &:disabled {
+    background-color: var(--color-background-input-disabled);
+    color: var(--color-text-disabled);
+    cursor: not-allowed;
+  }
+
+  &[readonly] {
+    background-color: var(--color-background-input-disabled);
+    cursor: default;
+  }
+
+  &:invalid {
+    border-color: var(--color-error);
+  }
+}

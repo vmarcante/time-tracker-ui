@@ -1,0 +1,135 @@
+// Wrapper para posicionamento do popover em desktop
+.login-modal-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.login-modal__popover-header {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.login-modal__popover-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.login-modal__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  width: 100%;
+}
+
+.login-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.login-modal__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.login-modal__form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-modal__inputs {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  
+  app-text-input {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+.login-modal__post-inputs {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.login-modal__error {
+  font-size: 0.625rem;
+  color: var(--color-error);
+  text-align: center;
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+.login-modal__forgot-password {
+  align-self: flex-start;
+  line-height: 1;
+  margin-top: -5px;
+
+  a {
+    font-size: 0.6rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: text-decoration var(--transition-base);
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:focus {
+      outline: 2px solid var(--color-border-focus);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+  }
+}
+
+.login-modal__submit {
+  display: flex;
+}
+
+.login-modal__footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.login-modal__footer-text {
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+}
+
+.login-modal__link {
+  font-size: 0.7rem;
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: text-decoration var(--transition-base);
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  &--button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+  }
+}

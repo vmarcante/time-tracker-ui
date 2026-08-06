@@ -1,0 +1,18 @@
+<div class="loading__overlay">
+  <div class="loading__container">
+    <mat-progress-spinner
+      class="loading__spinner"
+      [diameter]="effectiveDiameter"
+      [strokeWidth]="effectiveSpinnerWidth"
+      mode="indeterminate"
+    ></mat-progress-spinner>
+
+    @if (showLabel) {
+      <div class="loading__label-container">
+        <span class="loading__label">
+          {{ effectiveLabel }}<span class="loading__dots"></span>
+        </span>
+      </div>
+    }
+  </div>
+</div>

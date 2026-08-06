@@ -1,0 +1,83 @@
+<div class="mobile-menu" [class]="mobileMenuClasses">
+  <aside
+    class="mobile-menu__drawer"
+    [class]="drawerClasses"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="'header.mobileMenu.ariaLabel' | translate"
+  >
+    <header
+      class="mobile-menu__header"
+      [class.mobile-menu__header--empty]="currentIndex() === 0 && !showRootTitle()"
+    >
+      @if (canGoBack) {
+        <button
+          type="button"
+          class="mobile-menu__back"
+          [attr.aria-label]="'common.back' | translate"
+          (click)="goBack()"
+        >
+          <img class="mobile-menu__back-icon" src="assets/icons/arrows/chevron-left.svg" alt="" />
+        </button>
+      }
+      @if (currentIndex() > 0 || showRootTitle()) {
+        <span class="mobile-menu__title">{{ currentLevel.title }}</span>
+      }
+    </header>
+
+    <div class="mobile-menu__nav-wrapper">
+      <div
+        class="mobile-menu__nav-track"
+        [class.mobile-menu__nav-track--no-transition]="!transitionEnabled()"
+        [style.transform]="trackTransform()"
+        (transitionend)="onTrackTransitionEnd($event)"
+      >
+        @for (level of renderedStack(); track $index; let idx = $index) {
+          <nav
+            class="mobile-menu__nav"
+            [attr.aria-label]="level.title"
+            [attr.aria-hidden]="idx !== currentIndex() ? 'true' : null"
+            [attr.inert]="idx !== currentIndex() ? '' : null"
+          >
+            @if (level.component) {
+              <ng-container
+                *ngComponentOutlet="level.component; inputs: level.componentInputs"
+              ></ng-container>
+            } @else {
+              @for (link of level.links; track link.label) {
+                <button type="button" class="mobile-menu__link" (click)="onLinkClick(link)">
+                  {{ link.label }}
+                  @if (link.component || (link.children && link.children.length > 0)) {
+                    <img
+                      class="mobile-menu__chevron"
+                      src="assets/icons/arrows/chevron-right.svg"
+                      alt=""
+                    />
+                  }
+                </button>
+              }
+            }
+          </nav>
+        }
+      </div>
+    </div>
+
+    <!-- <div class="mobile-menu__footer">
+      @if (isAuthenticated()) {
+        <app-button
+          [text]="'header.logoutAriaLabel' | translate"
+          [color]="'error'"
+          [size]="{ fullWidth: true }"
+          (buttonClick)="logout.emit()"
+        ></app-button>
+      } @else {
+        <app-button
+          [text]="'header.mobileMenu.login' | translate"
+          [color]="'primary'"
+          [size]="{ fullWidth: true }"
+          (buttonClick)="login.emit()"
+        ></app-button>
+      }
+    </div> -->
+  </aside>
+</div>

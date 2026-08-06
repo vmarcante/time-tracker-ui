@@ -1,0 +1,13 @@
+
+@use "styles/utilities/variables" as variables;
+@use "styles/base" as base;
+@use "styles/utilities/reset" as reset;
+
+@use "styles/components/input" as input;
+@use "styles/components/material-overrides" as material-overrides;
+@use "styles/themes/base-themes" as base-themes;
+
+html.mobile-menu-open,
+body.mobile-menu-open {
+  overflow: hidden;
+}

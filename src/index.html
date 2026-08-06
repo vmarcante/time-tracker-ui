@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Time Tracker</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="assets/logos/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="assets/logos/favicon.ico" />
+  </head>
+  <body class="theme-light">
+    <app-root></app-root>
+    <script>
+      // Define o idioma do documento baseado no navegador ou localStorage
+      const userLang = localStorage.getItem('app-language') || 
+                       navigator.language.split('-')[0] || 
+                       'pt';
+      document.documentElement.lang = userLang;
+    </script>
+  </body>
+</html>
