@@ -2,7 +2,7 @@
 
 > Organize suas horas de trabalho
 
-Interface web do **Time Tracker**, construída com **Angular** e um design system baseado na cor **turquesa**.
+Interface web do **Time Tracker**, construída com **Angular**.
 
 ![Design System](./docs/DESIGN_SYSTEM.png)
 
@@ -11,9 +11,7 @@ Interface web do **Time Tracker**, construída com **Angular** e um design syste
 - [Angular 22](https://angular.dev/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [Angular Material](https://material.angular.io/)
-- [Tailwind CSS](https://tailwindcss.com/)
 - [SCSS](https://sass-lang.com/)
-- [Vitest](https://vitest.dev/)
 
 ## Como Rodar
 
