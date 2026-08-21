@@ -24,7 +24,15 @@ export const routes: Routes = [
           import('./features/main/pages/home-page/home-page.component').then(
             (m) => m.HomePageComponent,
           ),
-        canActivate: [authGuard],
+        canActivate: [authGuard, translationContextGuard('home')],
+      },
+      {
+        path: 'entries/:id',
+        loadComponent: () =>
+          import('./features/main/pages/time-entrie/time-entrie-detail-page.component').then(
+            (m) => m.TimeEntrieDetailPageComponent,
+          ),
+        canActivate: [authGuard, translationContextGuard('timeEntry')],
       },
     ],
   },

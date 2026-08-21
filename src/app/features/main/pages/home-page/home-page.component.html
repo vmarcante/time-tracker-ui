@@ -1,6 +1,26 @@
 <div class="home-page">
-  <section class="hero">
-    <h1>Bem-vindo ao Time Tracker</h1>
-    <p>Organize suas horas de trabalho</p>
-  </section>
+  <div class="home-page__grid">
+    <section class="home-page__panel home-page__panel--actions">
+      <div class="quick-actions">
+        @for (action of quickActions(); track action.id) {
+          <button type="button" class="quick-actions__item">
+            <span class="quick-actions__label">{{ action.label | translate }}</span>
+          </button>
+        }
+      </div>
+    </section>
+
+    <div class="home-page__divider" aria-hidden="true"></div>
+
+    <section
+      class="home-page__panel home-page__panel--entries"
+      aria-labelledby="latest-entries-heading"
+    >
+      <h2 id="latest-entries-heading" class="home-page__panel-title">
+        {{ 'home.latestEntries.title' | translate }}
+      </h2>
+
+      <app-recent-time-entries />
+    </section>
+  </div>
 </div>

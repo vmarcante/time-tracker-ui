@@ -1,0 +1,14 @@
+{
+  "home": {
+    "quickActions": {
+      "title": "Ações Rápidas",
+      "newTimeEntry": "Nova Marcação",
+      "viewReports": "Ver Relatórios",
+      "manageProjects": "Gerenciar Projetos",
+      "exportData": "Exportar Dados"
+    },
+    "latestEntries": {
+      "title": "Últimas Marcações"
+    }
+  }
+}

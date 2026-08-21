@@ -1,0 +1,23 @@
+<div class="recent-entries">
+  @for (group of groupedEntries(); track group.date) {
+    <div
+      class="recent-entries__group"
+      [class.recent-entries__group--single]="group.entries.length === 1"
+    >
+      @if (group.entries.length > 1) {
+        <h3 class="recent-entries__date">{{ group.date | date: 'mediumDate' }}</h3>
+      }
+      <ul class="recent-entries__list">
+        @for (entry of group.entries; track entry.id) {
+          <li class="recent-entries__item">
+            <app-card-time-entrie
+              [entry]="entry"
+              [compact]="true"
+              [showDate]="group.entries.length === 1"
+            />
+          </li>
+        }
+      </ul>
+    </div>
+  }
+</div>

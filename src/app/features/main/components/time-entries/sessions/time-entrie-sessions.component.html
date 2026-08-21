@@ -1,0 +1,160 @@
+<div class="time-entrie-sessions">
+  <div class="time-entrie-sessions__header">
+    <h2 class="time-entrie-sessions__title">Sessões do dia</h2>
+    <span class="time-entrie-sessions__total">{{ formatDuration(totalDuration()) }}</span>
+  </div>
+
+  <div class="time-entrie-sessions__day-selector">
+    <div class="time-entrie-sessions__nav-row">
+      <div class="time-entrie-sessions__nav-group">
+        <button
+          class="time-entrie-sessions__nav-btn"
+          type="button"
+          [disabled]="isFirstYear()"
+          (click)="prevYear()"
+          aria-label="Ano anterior"
+        >
+          <img src="assets/icons/arrows/chevron-left.svg" alt="" aria-hidden="true" />
+        </button>
+        <span class="time-entrie-sessions__nav-label">{{ selectedYear() }}</span>
+        <button
+          class="time-entrie-sessions__nav-btn"
+          type="button"
+          [disabled]="isLastYear()"
+          (click)="nextYear()"
+          aria-label="Próximo ano"
+        >
+          <img src="assets/icons/arrows/chevron-right.svg" alt="" aria-hidden="true" />
+        </button>
+      </div>
+
+      <div class="time-entrie-sessions__nav-group">
+        <button
+          class="time-entrie-sessions__nav-btn"
+          type="button"
+          [disabled]="isFirstMonth()"
+          (click)="prevMonth()"
+          aria-label="Mês anterior"
+        >
+          <img src="assets/icons/arrows/chevron-left.svg" alt="" aria-hidden="true" />
+        </button>
+        <span class="time-entrie-sessions__nav-label time-entrie-sessions__nav-label--month">
+          {{ selectedMonthLabel() | date: 'MMMM' }}
+        </span>
+        <button
+          class="time-entrie-sessions__nav-btn"
+          type="button"
+          [disabled]="isLastMonth()"
+          (click)="nextMonth()"
+          aria-label="Próximo mês"
+        >
+          <img src="assets/icons/arrows/chevron-right.svg" alt="" aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+    <div
+      #daySelectorScrollRef
+      class="time-entrie-sessions__day-scroll"
+      role="tablist"
+      aria-label="Selecionar dia"
+    >
+      @for (day of daysInSelectedMonth(); track $index) {
+        <button
+          class="time-entrie-sessions__day-btn"
+          [class.time-entrie-sessions__day-btn--active]="isDateSelected(day)"
+          role="tab"
+          [attr.aria-selected]="isDateSelected(day)"
+          type="button"
+          (click)="selectDay(day)"
+        >
+          <span class="time-entrie-sessions__day-num">{{ day | date: 'dd' }}</span>
+          <span class="time-entrie-sessions__day-name">{{ day | date: 'EEE' }}</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <div
+    #timelineRef
+    class="time-entrie-sessions__timeline"
+    (keydown.enter)="onEnterKey()"
+    tabindex="0"
+    aria-label="Timeline de 24 horas. Clique para adicionar uma sessão no horário desejado."
+    role="button"
+  >
+    <div class="time-entrie-sessions__track" #trackEl (click)="onTrackClick($event)">
+      @for (tick of timeTicks(); track $index) {
+        <div
+          class="time-entrie-sessions__tick"
+          [class.time-entrie-sessions__tick--hour]="tick.label"
+          [style.top.%]="tick.top"
+        >
+          @if (tick.label) {
+            <span class="time-entrie-sessions__tick-label">{{ tick.label }}</span>
+          }
+        </div>
+      }
+
+      @for (segment of displaySegments(); track $index) {
+        <div
+          class="time-entrie-sessions__segment"
+          [style.top.%]="segment.top"
+          [style.height.%]="segment.height"
+          (click)="onSessionClick(segment.session, $event)"
+        >
+          <div
+            class="time-entrie-sessions__segment-handle time-entrie-sessions__segment-handle--top"
+            (mousedown)="onHandleMouseDown($event, $index, 'top', trackEl)"
+          ></div>
+          <span class="time-entrie-sessions__segment-description">{{
+            segment.session.description ?? ''
+          }}</span>
+          <span class="time-entrie-sessions__segment-duration">{{ segment.duration }}</span>
+          <time
+            class="time-entrie-sessions__segment-start"
+            [attr.datetime]="segment.start | date: 'yyyy-MM-ddTHH:mm'"
+          >
+            {{ segment.start | date: 'h:mm a' }}
+          </time>
+          <div
+            class="time-entrie-sessions__segment-handle time-entrie-sessions__segment-handle--bottom"
+            (mousedown)="onHandleMouseDown($event, $index, 'bottom', trackEl)"
+          ></div>
+        </div>
+      }
+
+      @if (isToday()) {
+        <div
+          class="time-entrie-sessions__cursor"
+          [style.top.%]="cursorPosition()"
+          aria-hidden="true"
+        >
+          <span class="time-entrie-sessions__cursor-label">{{ currentTimeLabel() }}</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <ul class="time-entrie-sessions__list" role="list" aria-label="Lista de sessões">
+    @for (session of sessions(); track $index) {
+      <li class="time-entrie-sessions__session">
+        <time
+          class="time-entrie-sessions__time"
+          [attr.datetime]="session.start | date: 'yyyy-MM-ddTHH:mm'"
+        >
+          {{ session.start | date: 'HH:mm' }}
+        </time>
+        <span class="time-entrie-sessions__separator" aria-hidden="true">-</span>
+        <time
+          class="time-entrie-sessions__time"
+          [attr.datetime]="session.end | date: 'yyyy-MM-ddTHH:mm'"
+        >
+          {{ session.end | date: 'HH:mm' }}
+        </time>
+        <span class="time-entrie-sessions__duration">{{
+          formatDuration(duration(session.start, session.end))
+        }}</span>
+      </li>
+    }
+  </ul>
+</div>

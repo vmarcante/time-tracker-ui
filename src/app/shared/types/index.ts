@@ -7,3 +7,7 @@ export * from './dialog.types';
 export * from './button.types';
 export * from './popover.types';
 export * from './mobile-menu.types';
+export * from './client.type';
+export * from './tag.type';
+export * from './project.type';
+export * from './time-entry.type';
