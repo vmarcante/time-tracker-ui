@@ -1,0 +1,19 @@
+{
+  "timeEntry": {
+    "notFound": "Time entry not found",
+    "project": "Project",
+    "client": "Client",
+    "description": "Description",
+    "start": "Start",
+    "end": "End",
+    "timeRange": "Time",
+    "tags": "Tags",
+    "duration": "Duration",
+    "selectedSession": "Selected session",
+    "sessionDescription": "Session description",
+    "addDescription": "Add description",
+    "editDescription": "Edit description",
+    "describeSession": "Describe this session...",
+    "noDescription": "No description"
+  }
+}

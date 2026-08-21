@@ -58,17 +58,21 @@
       role="tablist"
       aria-label="Selecionar dia"
     >
-      @for (day of daysInSelectedMonth(); track $index) {
+      @for (entry of daysInSelectedMonth(); track $index) {
         <button
           class="time-entrie-sessions__day-btn"
-          [class.time-entrie-sessions__day-btn--active]="isDateSelected(day)"
+          [class.time-entrie-sessions__day-btn--active]="isDateSelected(entry.day)"
+          [class.time-entrie-sessions__day-btn--has-session]="entry.hasSession"
           role="tab"
-          [attr.aria-selected]="isDateSelected(day)"
+          [attr.aria-selected]="isDateSelected(entry.day)"
           type="button"
-          (click)="selectDay(day)"
+          (click)="selectDay(entry.day)"
         >
-          <span class="time-entrie-sessions__day-num">{{ day | date: 'dd' }}</span>
-          <span class="time-entrie-sessions__day-name">{{ day | date: 'EEE' }}</span>
+          <span class="time-entrie-sessions__day-num">{{ entry.day | date: 'dd' }}</span>
+          <span class="time-entrie-sessions__day-name">{{ entry.day | date: 'EEE' }}</span>
+          @if (entry.hasSession) {
+            <span class="time-entrie-sessions__day-bullet" aria-hidden="true"></span>
+          }
         </button>
       }
     </div>
@@ -98,8 +102,12 @@
       @for (segment of displaySegments(); track $index) {
         <div
           class="time-entrie-sessions__segment"
+          [class.time-entrie-sessions__segment--has-description]="segment.session.description"
+          [class.time-entrie-sessions__segment--selected]="isSelectedSession(segment.session)"
           [style.top.%]="segment.top"
           [style.height.%]="segment.height"
+          [style.left]="getSegmentLeft(segment)"
+          [style.right]="getSegmentRight(segment)"
           (click)="onSessionClick(segment.session, $event)"
         >
           <div

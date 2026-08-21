@@ -3,21 +3,24 @@ import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { TextFieldModule } from '@angular/cdk/text-field';
 import { InputValue } from '../../../types/input.types';
 import { TranslationService } from '../../../../shared/services/translation.service';
+import { IconComponent } from '../../icon/icon.component';
 
 @Component({
   selector: 'app-textarea-input',
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, TextFieldModule, IconComponent],
   templateUrl: './textarea-input.component.html',
   styleUrl: './textarea-input.component.scss',
 })
 export class TextareaInputComponent {
   // Form control
-  @Input() formControl?: FormControl;
+  @Input() control?: FormControl;
 
   // UI properties
   @Input() label: string = '';
+  @Input() labelIcon: string | null = null;
   @Input() placeholder: string = '';
   @Input() hint: string | null = '';
   @Input() showLabel: boolean = true;
@@ -28,7 +31,6 @@ export class TextareaInputComponent {
   @Input() maxLength: number | null = null;
   @Input() readonly: boolean = false;
   @Input() showCounter: boolean = true;
-  @Input() resize: 'none' | 'vertical' | 'horizontal' | 'both' = 'vertical';
 
   // Accessibility
   @Input() inputId: string = '';
@@ -36,7 +38,7 @@ export class TextareaInputComponent {
   // Custom error messages
   @Input() errorMessages: Record<string, string> = {};
 
-  private translationService: TranslationService = inject(TranslationService);
+  private readonly translationService: TranslationService = inject(TranslationService);
 
   @Output() onValueChange = new EventEmitter<InputValue>();
   @Output() onFocus = new EventEmitter<FocusEvent>();
@@ -49,7 +51,7 @@ export class TextareaInputComponent {
   }
 
   protected get hasError(): boolean {
-    const ctrl = this.formControl;
+    const ctrl = this.control;
     return ctrl ? ctrl.invalid && ctrl.touched : false;
   }
 
@@ -81,7 +83,7 @@ export class TextareaInputComponent {
   }
 
   protected get errorMessage(): string {
-    const ctrl = this.formControl;
+    const ctrl = this.control;
     if (!ctrl || !ctrl.errors || !ctrl.touched) {
       return '';
     }
@@ -109,7 +111,7 @@ export class TextareaInputComponent {
   }
 
   protected get currentLength(): number {
-    return this.formControl?.value?.length || 0;
+    return this.control?.value?.length || 0;
   }
 
   protected onInput(event: Event): void {
@@ -130,7 +132,8 @@ export class TextareaInputComponent {
   }
 
   protected reset(): void {
-    this.formControl?.reset();
+    this.control?.reset();
     this.onReset.emit();
   }
+
 }

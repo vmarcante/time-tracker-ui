@@ -1,0 +1,19 @@
+{
+  "timeEntry": {
+    "notFound": "Marcação não encontrada",
+    "project": "Projeto",
+    "client": "Cliente",
+    "description": "Descrição",
+    "start": "Início",
+    "end": "Fim",
+    "timeRange": "Horário",
+    "tags": "Tags",
+    "duration": "Duração",
+    "selectedSession": "Sessão selecionada",
+    "sessionDescription": "Descrição da sessão",
+    "addDescription": "Adicionar descrição",
+    "editDescription": "Editar descrição",
+    "describeSession": "Descreva esta sessão...",
+    "noDescription": "Sem descrição"
+  }
+}

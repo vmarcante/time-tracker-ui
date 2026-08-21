@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   computed,
+  inject,
   input,
   output,
   OnInit,
@@ -12,6 +13,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TimeEntrySession } from '../../../../../shared/types';
+import { AvailableMonth, AvailableYear, DateUtil } from '../../../../../shared/utils/date-util';
 
 interface TimelineSegment {
   top: number;
@@ -20,12 +22,19 @@ interface TimelineSegment {
   end: string;
   duration: string;
   session: TimeEntrySession;
+  col: number;
+  totalCols: number;
 }
 
 interface HourTick {
   hour: number;
   top: number;
   label: string;
+}
+
+interface DayOption {
+  day: Date;
+  hasSession: boolean;
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -37,13 +46,17 @@ const DAY_MS = 24 * 60 * 60 * 1000;
   styleUrl: './time-entrie-sessions.component.scss',
 })
 export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDestroy {
+  // --- Inputs / Outputs ---
   readonly sessions = input.required<TimeEntrySession[]>();
   readonly entryStart = input.required<string>();
   readonly entryEnd = input.required<string>();
+  readonly selectedSession = input<TimeEntrySession | null>(null);
   readonly hourClick = output<string>();
   readonly sessionClick = output<TimeEntrySession>();
   readonly sessionResize = output<{ original: TimeEntrySession; updated: TimeEntrySession }>();
+  readonly dayChange = output<Date>();
 
+  // --- Component state ---
   readonly selectedDate = signal<Date>(new Date());
   readonly selectedYear = signal(0);
   readonly selectedMonth = signal('');
@@ -55,6 +68,7 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
   private readonly daySelectorScrollRef =
     viewChild<ElementRef<HTMLElement>>('daySelectorScrollRef');
   private readonly TRACK_HEIGHT_PX = 3600;
+  private readonly dateUtil = inject(DateUtil);
 
   private dragHandle: 'top' | 'bottom' | null = null;
   private dragSegmentIndex = -1;
@@ -66,47 +80,52 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
   private readonly boundOnDragMove = (e: MouseEvent) => this.onDragMove(e);
   private readonly boundOnDragEnd = (e: MouseEvent) => this.onDragEnd(e);
 
-  readonly availableYears = computed<number[]>(() => {
-    const today = new Date(this.now());
-    const years: number[] = [];
-    for (let y = 2020; y <= today.getFullYear(); y++) {
-      years.push(y);
-    }
-    return years;
-  });
+  // --- Date selection state ---
+  readonly availableYearsAndMonths = computed<AvailableYear[]>(() =>
+    this.dateUtil.getAvailableYearsAndMonths(this.now()),
+  );
 
-  readonly availableMonths = computed<{ key: string; date: Date }[]>(() => {
+  readonly availableYears = computed<number[]>(() =>
+    this.availableYearsAndMonths().map((entry) => entry.year),
+  );
+
+  readonly availableMonths = computed<AvailableMonth[]>(() => {
     const year = this.selectedYear();
-    if (!year) {
-      return [];
-    }
-    const today = new Date(this.now());
-    const maxMonth = year === today.getFullYear() ? today.getMonth() : 11;
-    const months: { key: string; date: Date }[] = [];
-    for (let m = 0; m <= maxMonth; m++) {
-      const date = new Date(year, m, 1);
-      months.push({ key: this.getMonthKey(date), date });
-    }
-    return months;
+    const entry = this.availableYearsAndMonths().find((item) => item.year === year);
+    return entry?.months ?? [];
   });
 
-  readonly daysInSelectedMonth = computed<Date[]>(() => {
+  readonly daysInSelectedMonth = computed<DayOption[]>(() => {
     const key = this.selectedMonth();
     if (!key) {
       return [];
     }
+
     const [yearStr, monthStr] = key.split('-');
     const year = Number(yearStr);
     const month = Number(monthStr) - 1;
     const today = new Date(this.now());
     today.setHours(0, 0, 0, 0);
-    const days: Date[] = [];
-    const current = new Date(year, month, 1);
-    while (current.getMonth() === month && current <= today) {
-      days.push(new Date(current));
-      current.setDate(current.getDate() + 1);
-    }
-    return days;
+
+    const startOfMonth = new Date(year, month, 1);
+    const daysCount = Math.max(
+      0,
+      Math.floor((today.getTime() - startOfMonth.getTime()) / DAY_MS) + 1,
+    );
+
+    const sessionKeys = new Set(
+      this.sessions()
+        .map((session) => new Date(session.start))
+        .map((date) => {
+          date.setHours(0, 0, 0, 0);
+          return this.getDayKey(date);
+        }),
+    );
+
+    return Array.from({ length: daysCount }, (_, index) => {
+      const day = new Date(year, month, index + 1);
+      return { day, hasSession: sessionKeys.has(this.getDayKey(day)) };
+    });
   });
 
   readonly dayStart = computed<number>(() => {
@@ -125,16 +144,15 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
     });
   });
 
-  readonly totalDuration = computed(() =>
+  readonly totalDuration = computed<number>(() =>
     this.filteredSessions().reduce((total, session) => {
       const start = new Date(session.start).getTime();
       const end = new Date(session.end).getTime();
-      return (
-        total +
-        (Number.isNaN(start) || Number.isNaN(end) || end <= start
+      const seconds =
+        Number.isNaN(start) || Number.isNaN(end) || end <= start
           ? 0
-          : Math.floor((end - start) / 1000))
-      );
+          : Math.floor((end - start) / 1000);
+      return total + seconds;
     }, 0),
   );
 
@@ -148,22 +166,20 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
     );
   });
 
-  readonly timeTicks = computed<HourTick[]>(() => {
-    const ticks: HourTick[] = [];
-    for (let hour = 0; hour < 24; hour++) {
-      for (const minute of [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]) {
-        const isHour = minute === 0;
-        const date = new Date(this.dayStart());
-        date.setHours(hour, minute, 0, 0);
-        ticks.push({
-          hour,
-          top: ((hour * 60 + minute) / 1440) * 100,
-          label: isHour ? this.timeLabel(date) : '',
-        });
-      }
-    }
-    return ticks;
-  });
+  // --- Timeline rendering ---
+  readonly timeTicks = computed<HourTick[]>(() =>
+    Array.from({ length: 24 * 12 }, (_, index) => {
+      const hour = Math.floor(index / 12);
+      const minute = (index % 12) * 5;
+      const date = new Date(this.dayStart());
+      date.setHours(hour, minute, 0, 0);
+      return {
+        hour,
+        top: ((hour * 60 + minute) / 1440) * 100,
+        label: minute === 0 ? this.timeLabel(date) : '',
+      };
+    }),
+  );
 
   readonly segments = computed<TimelineSegment[]>(() => {
     const dayStart = this.dayStart();
@@ -188,8 +204,10 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
           height,
           start: session.start,
           end: session.end,
-          duration: this.formatDuration(totalSeconds),
+          duration: this.dateUtil.formatDuration(totalSeconds),
           session,
+          col: 0,
+          totalCols: 1,
         };
       });
   });
@@ -197,24 +215,26 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
   readonly displaySegments = computed<TimelineSegment[]>(() => {
     const segs = this.segments();
     const override = this.draggedOverride();
-    if (!override) {
-      return segs;
-    }
     const dayStart = this.dayStart();
-    return segs.map((seg, i) => {
-      if (i !== override.index) {
-        return seg;
-      }
-      const newStartMs = dayStart + (override.top / 100) * DAY_MS;
-      const newEndMs = dayStart + ((override.top + override.height) / 100) * DAY_MS;
-      const totalSeconds = Math.floor((newEndMs - newStartMs) / 1000);
-      return {
-        ...seg,
-        top: override.top,
-        height: override.height,
-        duration: this.formatDuration(totalSeconds),
-      };
-    });
+
+    const withOverride = override
+      ? segs.map((seg, i) => {
+          if (i !== override.index) {
+            return seg;
+          }
+          const newStartMs = dayStart + (override.top / 100) * DAY_MS;
+          const newEndMs = dayStart + ((override.top + override.height) / 100) * DAY_MS;
+          const totalSeconds = Math.floor((newEndMs - newStartMs) / 1000);
+          return {
+            ...seg,
+            top: override.top,
+            height: override.height,
+            duration: this.dateUtil.formatDuration(totalSeconds),
+          };
+        })
+      : segs;
+
+    return this.applyColumnLayout(withOverride);
   });
 
   readonly cursorPosition = computed<number>(() => {
@@ -263,25 +283,22 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
     return this.selectedMonth() === months[months.length - 1]?.key;
   });
 
+  // --- Lifecycle ---
   ngAfterViewInit(): void {
     this.scrollToCursor();
     this.scrollActiveDay();
   }
 
   ngOnInit(): void {
-    const sessions = this.sessions();
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    let initialDate = new Date(today);
 
-    let latestSessionTime = 0;
-    for (const s of sessions) {
-      const start = new Date(s.start).getTime();
-      if (!Number.isNaN(start) && start > latestSessionTime) {
-        latestSessionTime = start;
-      }
-    }
+    const latestSessionTime = this.sessions()
+      .map((session) => new Date(session.start).getTime())
+      .filter((time) => !Number.isNaN(time))
+      .reduce((max, time) => Math.max(max, time), 0);
 
+    let initialDate = today;
     if (latestSessionTime > 0) {
       const candidate = new Date(latestSessionTime);
       candidate.setHours(0, 0, 0, 0);
@@ -315,6 +332,7 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
     document.removeEventListener('mouseup', this.boundOnDragEnd);
   }
 
+  // --- Navigation handlers ---
   protected isDateSelected(date: Date): boolean {
     const sel = this.selectedDate();
     return (
@@ -326,6 +344,7 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
 
   protected selectDay(date: Date): void {
     this.selectedDate.set(date);
+    this.dayChange.emit(date);
     requestAnimationFrame(() => {
       this.scrollToCursor();
       this.scrollActiveDay();
@@ -400,61 +419,59 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
     if (!months.length) {
       return;
     }
-    const sessions = this.sessions();
-    let bestMonth = months[months.length - 1];
-    for (let i = months.length - 1; i >= 0; i--) {
-      const m = months[i];
-      if (!m) {
-        continue;
-      }
-      const [yearStr, monthStr] = m.key.split('-');
-      const y = Number(yearStr);
-      const mo = Number(monthStr) - 1;
-      const monthStart = new Date(y, mo, 1).getTime();
-      const monthEnd = new Date(y, mo + 1, 0, 23, 59, 59, 999).getTime();
-      const hasSession = sessions.some((s) => {
-        const start = new Date(s.start).getTime();
-        return !Number.isNaN(start) && start >= monthStart && start <= monthEnd;
-      });
-      if (hasSession) {
-        bestMonth = m;
-        break;
-      }
-    }
-    if (!bestMonth) {
+
+    const selectedMonth = [...months].reverse().find((month) => this.hasSessionInMonth(month));
+    const monthToSelect = selectedMonth ?? months[months.length - 1];
+    if (!monthToSelect) {
       return;
     }
-    this.selectMonth(bestMonth.key);
+
+    this.selectMonth(monthToSelect.key);
+    this.dayChange.emit(this.selectedDate());
+  }
+
+  private hasSessionInMonth(month: AvailableMonth): boolean {
+    const monthStart = new Date(month.date.getFullYear(), month.date.getMonth(), 1).getTime();
+    const monthEnd = new Date(
+      month.date.getFullYear(),
+      month.date.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+      999,
+    ).getTime();
+    return this.sessions().some((session) => {
+      const start = new Date(session.start).getTime();
+      return !Number.isNaN(start) && start >= monthStart && start <= monthEnd;
+    });
   }
 
   protected selectMonth(key: string): void {
     this.selectedMonth.set(key);
     const days = this.daysInSelectedMonth();
     const sessions = this.sessions();
-    let bestDay = days[days.length - 1] ?? new Date();
 
-    for (let i = days.length - 1; i >= 0; i--) {
-      const day = days[i];
-      if (!day) {
-        continue;
-      }
-      const dayMs = day.getTime();
-      const dayEnd = dayMs + DAY_MS;
-      const hasSession = sessions.some((s) => {
-        const start = new Date(s.start).getTime();
-        const end = new Date(s.end).getTime();
-        return start < dayEnd && end > dayMs;
-      });
-      if (hasSession) {
-        bestDay = day;
-        break;
-      }
-    }
+    const selectedDay =
+      [...days].reverse().find((day) => this.hasSessionInDay(day, sessions))?.day ??
+      days[days.length - 1]?.day ??
+      new Date();
 
-    this.selectedDate.set(bestDay);
+    this.selectedDate.set(selectedDay);
+    this.dayChange.emit(selectedDay);
     requestAnimationFrame(() => {
       this.scrollToCursor();
       this.scrollActiveDay();
+    });
+  }
+
+  private hasSessionInDay(day: DayOption, sessions: TimeEntrySession[]): boolean {
+    const dayStart = day.day.getTime();
+    const dayEnd = dayStart + DAY_MS;
+    return sessions.some((session) => {
+      const start = new Date(session.start).getTime();
+      const end = new Date(session.end).getTime();
+      return start < dayEnd && end > dayStart;
     });
   }
 
@@ -469,8 +486,13 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
     activeBtn?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
   }
 
+  // --- Date helpers ---
   private getMonthKey(date: Date): string {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  private getDayKey(date: Date): string {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
   }
 
   private scrollToCursor(): void {
@@ -483,11 +505,7 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
   }
 
   protected formatDuration(totalSeconds: number): string {
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    const pad = (value: number): string => value.toString().padStart(2, '0');
-    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    return this.dateUtil.formatDuration(totalSeconds);
   }
 
   protected timeLabel(date: Date): string {
@@ -528,6 +546,17 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
     this.sessionClick.emit(session);
   }
 
+  protected isSelectedSession(session: TimeEntrySession): boolean {
+    const selected = this.selectedSession();
+    return (
+      selected !== null &&
+      selected !== undefined &&
+      selected.start === session.start &&
+      selected.end === session.end
+    );
+  }
+
+  // --- Drag & Resize ---
   protected onHandleMouseDown(
     event: MouseEvent,
     segmentIndex: number,
@@ -591,6 +620,131 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
     this.dragSegmentIndex = -1;
     this.dragTrackEl = null;
     this.draggedOverride.set(null);
+  }
+
+  // --- Layout helpers ---
+  /**
+   * Applies column layout to timeline segments.
+   */
+  private applyColumnLayout(segs: TimelineSegment[]): TimelineSegment[] {
+    if (segs.length === 0) {
+      return segs;
+    }
+
+    interface IndexedSegment {
+      seg: TimelineSegment;
+      origIndex: number;
+    }
+
+    const indexed: IndexedSegment[] = segs
+      .map((seg, origIndex) => ({ seg, origIndex }))
+      .sort((a, b) => a.seg.top - b.seg.top);
+
+    const count = indexed.length;
+    const parent = Array.from({ length: count }, (_, i) => i);
+
+    const find = (i: number): number => {
+      let root = i;
+      while (parent[root] !== root) {
+        root = parent[root] ?? root;
+      }
+      while (parent[i] !== root) {
+        const next = parent[i] ?? i;
+        parent[i] = root;
+        i = next;
+      }
+      return root;
+    };
+
+    const union = (i: number, j: number): void => {
+      parent[find(j)] = find(i);
+    };
+
+    for (let i = 0; i < count; i++) {
+      const a = indexed[i];
+      if (!a) {
+        continue;
+      }
+      for (let j = i + 1; j < count; j++) {
+        const b = indexed[j];
+        if (b && this.segmentsOverlap(a.seg, b.seg)) {
+          union(i, j);
+        }
+      }
+    }
+
+    const clusters = new Map<number, number[]>();
+    for (let i = 0; i < count; i++) {
+      const root = find(i);
+      const members = clusters.get(root);
+      if (members) {
+        members.push(i);
+      } else {
+        clusters.set(root, [i]);
+      }
+    }
+
+    const cols = new Array<number>(count).fill(0);
+    const result = segs.map((seg) => ({ ...seg }));
+
+    for (const members of clusters.values()) {
+      const colEnds: number[] = [];
+      let maxCol = 0;
+
+      for (const i of members) {
+        const current = indexed[i];
+        if (!current) {
+          continue;
+        }
+        const index = colEnds.findIndex((end) => end <= current.seg.top);
+        const assigned = index !== -1 ? index : colEnds.length;
+        colEnds[assigned] = current.seg.top + current.seg.height;
+        cols[i] = assigned;
+        maxCol = Math.max(maxCol, assigned);
+      }
+
+      const totalCols = maxCol + 1;
+      for (const i of members) {
+        const current = indexed[i];
+        if (!current) {
+          continue;
+        }
+        const target = result[current.origIndex];
+        if (target) {
+          target.col = cols[i] ?? 0;
+          target.totalCols = totalCols;
+        }
+      }
+    }
+
+    return result;
+  }
+
+  private segmentsOverlap(a: TimelineSegment, b: TimelineSegment): boolean {
+    return a.top < b.top + b.height && a.top + a.height > b.top;
+  }
+
+  protected getSegmentLeft(seg: TimelineSegment): string {
+    const LABEL_PX = 76;
+    const RIGHT_PX = 8;
+    if (seg.totalCols === 1) {
+      return `${LABEL_PX}px`;
+    }
+    const usable = `(100% - ${LABEL_PX}px - ${RIGHT_PX}px)`;
+    const gap = seg.col > 0 ? 2 : 0;
+    return `calc(${LABEL_PX}px + ${seg.col} * ${usable} / ${seg.totalCols} + ${gap}px)`;
+  }
+
+  protected getSegmentRight(seg: TimelineSegment): string {
+    const LABEL_PX = 76;
+    const RIGHT_PX = 8;
+    if (seg.totalCols === 1) {
+      return `${RIGHT_PX}px`;
+    }
+    const usable = `(100% - ${LABEL_PX}px - ${RIGHT_PX}px)`;
+    const remaining = seg.totalCols - seg.col - 1;
+    const gap = remaining > 0 ? 2 : 0;
+    return `calc(${remaining} * ${usable} / ${seg.totalCols} + ${RIGHT_PX}px + ${gap}px)`;
   }
 
   protected duration(start: string, end: string): number {
