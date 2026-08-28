@@ -28,8 +28,8 @@ export class RecentTimeEntriesComponent {
         { id: '2', name: 'Design' },
       ],
       sessions: [
-        { start: this.buildDate(8, 0, -3), end: this.buildDate(9, 30, -3) },
-        { start: this.buildDate(9, 45, -3), end: this.buildDate(11, 0, -3) },
+        { id: '1', start: this.buildDate(8, 0, -3), end: this.buildDate(9, 30, -3) },
+        { id: '2', start: this.buildDate(9, 45, -3), end: this.buildDate(11, 0, -3) },
       ],
     },
     {
@@ -41,8 +41,8 @@ export class RecentTimeEntriesComponent {
       end: this.buildDate(15, 30, -3),
       tags: [{ id: '3', name: 'Refactor' }],
       sessions: [
-        { start: this.buildDate(13, 0, -3), end: this.buildDate(14, 0, -3) },
-        { start: this.buildDate(14, 15, -3), end: this.buildDate(15, 30, -3) },
+        { id: '3', start: this.buildDate(13, 0, -3), end: this.buildDate(14, 0, -3) },
+        { id: '4', start: this.buildDate(14, 15, -3), end: this.buildDate(15, 30, -3) },
       ],
     },
     {
@@ -53,8 +53,8 @@ export class RecentTimeEntriesComponent {
       start: this.buildDate(16, 0, -3),
       end: this.buildDate(17, 0, -3),
       sessions: [
-        { start: this.buildDate(16, 0, -3), end: this.buildDate(16, 30, -3) },
-        { start: this.buildDate(16, 30, -3), end: this.buildDate(17, 0, -3) },
+        { id: '5', start: this.buildDate(16, 0, -3), end: this.buildDate(16, 30, -3) },
+        { id: '6', start: this.buildDate(16, 30, -3), end: this.buildDate(17, 0, -3) },
       ],
     },
     {
@@ -69,8 +69,8 @@ export class RecentTimeEntriesComponent {
         { id: '5', name: 'API' },
       ],
       sessions: [
-        { start: this.buildDate(9, 0, -2), end: this.buildDate(10, 30, -2) },
-        { start: this.buildDate(10, 45, -2), end: this.buildDate(12, 0, -2) },
+        { id: '7', start: this.buildDate(9, 0, -2), end: this.buildDate(10, 30, -2) },
+        { id: '8', start: this.buildDate(10, 45, -2), end: this.buildDate(12, 0, -2) },
       ],
     },
     {
@@ -81,8 +81,8 @@ export class RecentTimeEntriesComponent {
       start: this.buildDate(14, 0, -2),
       end: this.buildDate(16, 0, -2),
       sessions: [
-        { start: this.buildDate(14, 0, -2), end: this.buildDate(15, 0, -2) },
-        { start: this.buildDate(15, 15, -2), end: this.buildDate(16, 0, -2) },
+        { id: '9', start: this.buildDate(14, 0, -2), end: this.buildDate(15, 0, -2) },
+        { id: '10', start: this.buildDate(15, 15, -2), end: this.buildDate(16, 0, -2) },
       ],
     },
     {
@@ -94,8 +94,8 @@ export class RecentTimeEntriesComponent {
       end: this.buildDate(10, 45, -1),
       tags: [{ id: '6', name: 'PR' }],
       sessions: [
-        { start: this.buildDate(10, 0, -1), end: this.buildDate(10, 20, -1) },
-        { start: this.buildDate(10, 25, -1), end: this.buildDate(10, 45, -1) },
+        { id: '11', start: this.buildDate(10, 0, -1), end: this.buildDate(10, 20, -1) },
+        { id: '12', start: this.buildDate(10, 25, -1), end: this.buildDate(10, 45, -1) },
       ],
     },
     {
@@ -107,8 +107,8 @@ export class RecentTimeEntriesComponent {
       end: this.buildDate(12, 0),
       tags: [{ id: '7', name: 'Meeting' }],
       sessions: [
-        { start: this.buildDate(11, 0), end: this.buildDate(11, 30) },
-        { start: this.buildDate(11, 30), end: this.buildDate(12, 0) },
+        { id: '13', start: this.buildDate(11, 0), end: this.buildDate(11, 30) },
+        { id: '14', start: this.buildDate(11, 30), end: this.buildDate(12, 0) },
       ],
     },
   ]);

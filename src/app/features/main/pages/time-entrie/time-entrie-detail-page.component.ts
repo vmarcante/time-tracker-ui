@@ -123,7 +123,7 @@ export class TimeEntrieDetailPageComponent implements OnInit {
         ...current,
         sessions: [
           ...(current.sessions ?? []),
-          { start: isoTime, end },
+          { id: current.id, start: isoTime, end },
         ],
       };
     });
@@ -178,8 +178,8 @@ export class TimeEntrieDetailPageComponent implements OnInit {
         { id: '2', name: 'Design' },
       ],
       sessions: [
-        { start: this.dateUtil.buildDate(8, 0, -3), end: this.dateUtil.buildDate(9, 30, -3) },
-        { start: this.dateUtil.buildDate(9, 45, -3), end: this.dateUtil.buildDate(11, 0, -3) },
+        { id: '1', start: this.dateUtil.buildDate(8, 0, -3), end: this.dateUtil.buildDate(9, 30, -3) },
+        { id: '2', start: this.dateUtil.buildDate(9, 45, -3), end: this.dateUtil.buildDate(11, 0, -3) },
       ],
     },
     {
@@ -191,8 +191,8 @@ export class TimeEntrieDetailPageComponent implements OnInit {
       end: this.dateUtil.buildDate(15, 30, -3),
       tags: [{ id: '3', name: 'Refactor' }],
       sessions: [
-        { start: this.dateUtil.buildDate(13, 0, -3), end: this.dateUtil.buildDate(14, 0, -3) },
-        { start: this.dateUtil.buildDate(14, 15, -3), end: this.dateUtil.buildDate(15, 30, -3) },
+        { id: '3', start: this.dateUtil.buildDate(13, 0, -3), end: this.dateUtil.buildDate(14, 0, -3) },
+        { id: '4', start: this.dateUtil.buildDate(14, 15, -3), end: this.dateUtil.buildDate(15, 30, -3) },
       ],
     },
     {
@@ -203,8 +203,8 @@ export class TimeEntrieDetailPageComponent implements OnInit {
       start: this.dateUtil.buildDate(16, 0, -3),
       end: this.dateUtil.buildDate(17, 0, -3),
       sessions: [
-        { start: this.dateUtil.buildDate(16, 0, -3), end: this.dateUtil.buildDate(16, 30, -3) },
-        { start: this.dateUtil.buildDate(16, 30, -3), end: this.dateUtil.buildDate(17, 0, -3) },
+        { id: '5', start: this.dateUtil.buildDate(16, 0, -3), end: this.dateUtil.buildDate(16, 30, -3) },
+        { id: '6', start: this.dateUtil.buildDate(16, 30, -3), end: this.dateUtil.buildDate(17, 0, -3) },
       ],
     },
     {
@@ -219,8 +219,8 @@ export class TimeEntrieDetailPageComponent implements OnInit {
         { id: '5', name: 'API' },
       ],
       sessions: [
-        { start: this.dateUtil.buildDate(9, 0, -2), end: this.dateUtil.buildDate(10, 30, -2) },
-        { start: this.dateUtil.buildDate(10, 45, -2), end: this.dateUtil.buildDate(12, 0, -2) },
+        { id: '7', start: this.dateUtil.buildDate(9, 0, -2), end: this.dateUtil.buildDate(10, 30, -2) },
+        { id: '8', start: this.dateUtil.buildDate(10, 45, -2), end: this.dateUtil.buildDate(12, 0, -2) },
       ],
     },
     {
@@ -231,8 +231,8 @@ export class TimeEntrieDetailPageComponent implements OnInit {
       start: this.dateUtil.buildDate(14, 0, -2),
       end: this.dateUtil.buildDate(16, 0, -2),
       sessions: [
-        { start: this.dateUtil.buildDate(14, 0, -2), end: this.dateUtil.buildDate(15, 0, -2) },
-        { start: this.dateUtil.buildDate(15, 15, -2), end: this.dateUtil.buildDate(16, 0, -2) },
+        { id: '9', start: this.dateUtil.buildDate(14, 0, -2), end: this.dateUtil.buildDate(15, 0, -2) },
+        { id: '10', start: this.dateUtil.buildDate(15, 15, -2), end: this.dateUtil.buildDate(16, 0, -2) },
       ],
     },
     {
@@ -244,8 +244,8 @@ export class TimeEntrieDetailPageComponent implements OnInit {
       end: this.dateUtil.buildDate(10, 45, -1),
       tags: [{ id: '6', name: 'PR' }],
       sessions: [
-        { start: this.dateUtil.buildDate(10, 0, -1), end: this.dateUtil.buildDate(10, 20, -1) },
-        { start: this.dateUtil.buildDate(10, 25, -1), end: this.dateUtil.buildDate(10, 45, -1) },
+        { id: '11', start: this.dateUtil.buildDate(10, 0, -1), end: this.dateUtil.buildDate(10, 20, -1) },
+        { id: '12', start: this.dateUtil.buildDate(10, 25, -1), end: this.dateUtil.buildDate(10, 45, -1) },
       ],
     },
     {
@@ -257,8 +257,8 @@ export class TimeEntrieDetailPageComponent implements OnInit {
       end: this.dateUtil.buildDate(12, 0),
       tags: [{ id: '7', name: 'Meeting' }],
       sessions: [
-        { start: new Date().toISOString(), end: new Date().toISOString() },
-        { start: new Date().toISOString(), end: new Date().toISOString() },
+        { id: '13', start: new Date().toISOString(), end: new Date().toISOString() },
+        { id: '14', start: new Date().toISOString(), end: new Date().toISOString() },
       ],
     },
   ];
