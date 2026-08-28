@@ -1,8 +1,18 @@
 <app-dialog-shell [closeConfirmation]="true">
   <div class="register-layout">
     <div class="register-image">
-      <div class="register-image__placeholder">
-        <span class="register-image__text">{{ 'auth.register.imagePlaceholder' | translate }}</span>
+      <div class="register-image__steps">
+        <p class="register-image__steps-text">
+          @if (currentStep === 1) {
+            {{ 'auth.register.steps.1Description' | translate }}
+          }
+          @if (currentStep === 2) {
+            {{ 'auth.register.steps.2Description' | translate }}
+          }
+          @if (currentStep === 3) {
+            {{ 'auth.register.steps.3Description' | translate }}
+          }
+        </p>
       </div>
     </div>
 
