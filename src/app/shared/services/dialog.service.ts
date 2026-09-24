@@ -60,7 +60,7 @@ export class DialogService {
     };
   }
 
-  openDialog<T, R>(
+  openDialog<T, R = void>(
     component: ComponentType<T>,
     options?: BaseDialogOptions<R>,
     backdropConfirmation?: boolean,
@@ -71,10 +71,13 @@ export class DialogService {
       confirmationMessage = this.translationService.translate('common.dialog.closeConfirmation');
     }
 
+    const baseConfig = this.getBaseDialogConfiguration(options);
+
     const dialogConfig = {
-      ...this.getBaseDialogConfiguration(options),
+      ...baseConfig,
       data: options?.data,
-      disableClose: backdropConfirmation ?? false,
+      disableClose: options?.disableClose ?? backdropConfirmation ?? false,
+      panelClass: [...(baseConfig.panelClass ?? []), ...(options?.panelClass ?? [])],
       scrollStrategy: this.matDialog['_scrollStrategy']?.(),
       hasBackdrop: true,
     };

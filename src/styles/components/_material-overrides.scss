@@ -221,6 +221,25 @@ input.mat-mdc-input-element {
   }
 }
 
+// ============================================
+// ONBOARDING MODAL (gate global)
+// ============================================
+.onboarding-modal-panel {
+  .mat-mdc-dialog-container {
+    padding: 0;
+  }
+
+  .mdc-dialog__surface {
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+  }
+
+  .mat-mdc-dialog-content {
+    padding: 0;
+    margin: 0;
+  }
+}
+
 // Previne scroll no body quando dialogs fullscreen estão abertas
 .cdk-global-scrollblock {
   position: fixed !important;

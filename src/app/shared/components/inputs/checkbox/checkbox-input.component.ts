@@ -1,14 +1,12 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 import { InputValue } from '../../../types/input.types';
 import { TranslationService } from '../../../../shared/services/translation.service';
 
 @Component({
   selector: 'app-checkbox-input',
-  imports: [CommonModule, ReactiveFormsModule, MatCheckboxModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './checkbox-input.component.html',
   styleUrl: './checkbox-input.component.scss',
 })
@@ -87,8 +85,8 @@ export class CheckboxInputComponent {
     return '';
   }
 
-  protected onChange(event: MatCheckboxChange): void {
-    const value = event.checked;
+  protected onChange(event: Event): void {
+    const value = (event.target as HTMLInputElement).checked;
     this.formControl?.setValue(value);
     this.onValueChange.emit(value);
   }

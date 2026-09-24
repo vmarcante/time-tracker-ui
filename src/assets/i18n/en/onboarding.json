@@ -1,0 +1,100 @@
+{
+  "onboarding": {
+    "title": "How do you want to use Time Tracker?",
+    "subtitle": "Before we start, we need to know if you work for a company.",
+    "divider": "or",
+    "logout": "Sign out",
+    "modeToggle": "Usage type",
+    "options": {
+      "company": {
+        "title": "Employee",
+        "desc": "I work at a company and need to link my account to it"
+      },
+      "independent": {
+        "title": "Freelancer",
+        "desc": "I work on my own, with my projects and clients"
+      },
+      "owner": {
+        "title": "Business owner",
+        "desc": "I have a company and want to register it"
+      }
+    },
+    "company": {
+      "title": "I'm part of a company",
+      "description": "Enter the CNPJ of the company you work for to request membership. The company administration will need to approve your request.",
+      "document": {
+        "label": "Company CNPJ",
+        "placeholder": "00.000.000/0000-00",
+        "required": "The company CNPJ is required",
+        "invalid": "Invalid CNPJ. Check the digits entered."
+      },
+      "reason": {
+        "label": "Reason (optional)",
+        "placeholder": "E.g.: I'm part of the sales team",
+        "hint": "Tell the company administration why you should be linked"
+      },
+      "preview": {
+        "legalName": "Legal name",
+        "tradeName": "Trade name"
+      },
+      "notFound": "No company found for this CNPJ",
+      "submit": "Request membership"
+    },
+    "owner": {
+      "title": "I have a company",
+      "description": "Register your company to invite your team, create projects and track everyone's time.",
+      "legalName": {
+        "label": "Legal name",
+        "placeholder": "Company's legal name",
+        "required": "The legal name is required"
+      },
+      "tradeName": {
+        "label": "Trade name",
+        "placeholder": "Optional"
+      },
+      "document": {
+        "label": "Company CNPJ"
+      },
+      "existsDialog": {
+        "title": "Company already registered",
+        "message": "A company is already registered with this CNPJ. Do you want to request membership to it as an employee?",
+        "cancel": "Cancel",
+        "confirm": "Link me to the company"
+      },
+      "submit": "Register company"
+    },
+    "independent": {
+      "title": "I don't belong to a company",
+      "description": "Use Time Tracker independently, with your own projects and clients. You can join a company later.",
+      "checkbox": "I confirm that I don't belong to a company",
+      "required": "Confirmation is required to continue",
+      "submit": "Continue as a freelancer"
+    },
+    "invitations": {
+      "title": "Pending invitations",
+      "accept": "Accept",
+      "decline": "Decline",
+      "accepted": "Invitation from {{company}} accepted! Welcome.",
+      "role": {
+        "OWNER": "Owner",
+        "ADMIN": "Administrator",
+        "MANAGER": "Manager",
+        "MEMBER": "Member"
+      }
+    },
+    "pending": {
+      "title": "Request sent!",
+      "message": "Your membership request to {{company}} was sent and is awaiting approval from the company administration.",
+      "hint": "You'll be notified by email when the request is answered. Access to the platform will be granted after approval."
+    },
+    "errors": {
+      "company": "Could not send the request. Check the CNPJ and try again.",
+      "independent": "Could not complete onboarding. Please try again.",
+      "invitation": "Could not process the invitation. Please try again.",
+      "owner": "Could not register the company. Please try again.",
+      "company.not.found": "No company found for the CNPJ provided.",
+      "onboarding.already.completed": "Onboarding has already been completed for this account.",
+      "onboarding.invalid.choice": "Choose only one option: company or freelancer."
+    }
+  }
+}

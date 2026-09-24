@@ -1,4 +1,5 @@
 export * from './api.types';
+export * from './page-wrapper.types';
 export * from './supported-languages.type';
 export * from './input.types';
 export * from './input-error.types';

@@ -18,9 +18,9 @@ export class RecentTimeEntriesComponent {
   readonly latestEntries = signal<TimeEntry[]>([
     {
       id: '1',
-      name: 'Landing hero',
-      description: 'Hero section redesign',
-      project: { id: '1', name: 'Website redesign', client: { id: '1', name: 'Acme Corp' } },
+      name: 'Desenvolvimento de Artigo',
+      description: 'Tarefa destinada ao desenvolvimento do artigo de aplicação Time Tracker',
+      project: { id: '1', name: 'Time Tracker', client: { id: '1', name: 'UNINTER' } },
       start: this.buildDate(8, 0, -3),
       end: this.buildDate(11, 0, -3),
       tags: [

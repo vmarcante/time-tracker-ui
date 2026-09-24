@@ -1,0 +1,100 @@
+{
+  "onboarding": {
+    "title": "Como você quer usar o Time Tracker?",
+    "subtitle": "Antes de começar, precisamos saber se você trabalha em uma empresa.",
+    "divider": "ou",
+    "logout": "Sair da conta",
+    "modeToggle": "Tipo de uso",
+    "options": {
+      "company": {
+        "title": "Funcionário",
+        "desc": "Trabalho em uma empresa e preciso me vincular a ela"
+      },
+      "independent": {
+        "title": "Autônomo",
+        "desc": "Trabalho por conta própria, com meus projetos e clientes"
+      },
+      "owner": {
+        "title": "Empresário",
+        "desc": "Tenho uma empresa e quero cadastrá-la"
+      }
+    },
+    "company": {
+      "title": "Faço parte de uma empresa",
+      "description": "Informe o CNPJ da empresa em que você trabalha para solicitar o vínculo. A administração da empresa precisará aprovar a sua solicitação.",
+      "document": {
+        "label": "CNPJ da empresa",
+        "placeholder": "00.000.000/0000-00",
+        "required": "O CNPJ da empresa é obrigatório",
+        "invalid": "CNPJ inválido. Confira os dígitos informados."
+      },
+      "reason": {
+        "label": "Justificativa (opcional)",
+        "placeholder": "Ex.: faço parte do time de vendas",
+        "hint": "Conte à administração por que você deve ser vinculado"
+      },
+      "preview": {
+        "legalName": "Razão social",
+        "tradeName": "Nome fantasia"
+      },
+      "notFound": "Nenhuma empresa encontrada para este CNPJ",
+      "submit": "Solicitar vínculo"
+    },
+    "owner": {
+      "title": "Tenho uma empresa",
+      "description": "Cadastre a sua empresa para convidar a equipe, criar projetos e acompanhar o tempo de todos.",
+      "legalName": {
+        "label": "Razão social",
+        "placeholder": "Nome jurídico da empresa",
+        "required": "A razão social é obrigatória"
+      },
+      "tradeName": {
+        "label": "Nome fantasia",
+        "placeholder": "Opcional"
+      },
+      "document": {
+        "label": "CNPJ da empresa"
+      },
+      "existsDialog": {
+        "title": "Empresa já cadastrada",
+        "message": "Já existe uma empresa cadastrada com este CNPJ. Deseja solicitar vínculo a ela como funcionário?",
+        "cancel": "Cancelar",
+        "confirm": "Vincular-me à empresa"
+      },
+      "submit": "Cadastrar empresa"
+    },
+    "independent": {
+      "title": "Não tenho vínculo com empresa",
+      "description": "Use o Time Tracker de forma independente, com seus próprios projetos e clientes. Você pode se vincular a uma empresa depois.",
+      "checkbox": "Confirmo que não possuo vínculo com uma empresa",
+      "required": "É preciso confirmar para continuar",
+      "submit": "Continuar como autônomo"
+    },
+    "invitations": {
+      "title": "Convites pendentes",
+      "accept": "Aceitar",
+      "decline": "Recusar",
+      "accepted": "Convite de {{company}} aceito! Bem-vindo(a).",
+      "role": {
+        "OWNER": "Proprietário",
+        "ADMIN": "Administrador",
+        "MANAGER": "Gerente",
+        "MEMBER": "Membro"
+      }
+    },
+    "pending": {
+      "title": "Solicitação enviada!",
+      "message": "Seu pedido de vínculo com {{company}} foi enviado e aguarda aprovação da administração da empresa.",
+      "hint": "Você será notificado por e-mail quando a solicitação for respondida. O acesso à plataforma será liberado após a aprovação."
+    },
+    "errors": {
+      "company": "Não foi possível enviar a solicitação. Verifique o CNPJ e tente novamente.",
+      "independent": "Não foi possível concluir o onboarding. Tente novamente.",
+      "invitation": "Não foi possível processar o convite. Tente novamente.",
+      "owner": "Não foi possível cadastrar a empresa. Tente novamente.",
+      "company.not.found": "Empresa não encontrada para o CNPJ informado.",
+      "onboarding.already.completed": "O onboarding já foi concluído para esta conta.",
+      "onboarding.invalid.choice": "Escolha apenas uma opção: empresa ou autônomo."
+    }
+  }
+}

@@ -168,11 +168,11 @@ export class TimeEntrieDetailPageComponent implements OnInit {
   private readonly mocks: TimeEntry[] = [
     {
       id: '1',
-      name: 'Landing hero',
-      description: 'Hero section redesign',
-      project: { id: '1', name: 'Website redesign', client: { id: '1', name: 'Acme Corp' } },
+      name: 'Desenvolvimento de Artigo',
+      description: 'Tarefa destinada ao desenvolvimento do artigo de aplicação Time Tracker',
+      project: { id: '1', name: 'Time Tracker', client: { id: '1', name: 'UNINTER' } },
       start: this.dateUtil.buildDate(8, 0, -3),
-      end: this.dateUtil.buildDate(11, 0, -3),
+      end: this.dateUtil.buildDate(23, 0, -3),
       tags: [
         { id: '1', name: 'Frontend' },
         { id: '2', name: 'Design' },

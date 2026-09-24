@@ -1,16 +1,20 @@
 <div class="input-wrapper">
-  <mat-checkbox
-    [id]="generatedInputId"
-    [formControl]="formControl!"
-    [disabled]="readonly || formControl!.disabled"
-    [indeterminate]="indeterminate"
-    [attr.aria-describedby]="ariaDescribedBy"
-    [attr.aria-invalid]="ariaInvalid"
-    [attr.aria-required]="ariaRequired"
-    (change)="onChange($event)"
-  >
-    {{ label }}
-  </mat-checkbox>
+  <label class="checkbox-wrapper" [for]="generatedInputId">
+    <input
+      type="checkbox"
+      class="checkbox-input"
+      [id]="generatedInputId"
+      [checked]="formControl?.value"
+      [disabled]="readonly || formControl!.disabled"
+      [indeterminate]="indeterminate"
+      [attr.aria-describedby]="ariaDescribedBy"
+      [attr.aria-invalid]="ariaInvalid"
+      [attr.aria-required]="ariaRequired"
+      (change)="onChange($event)"
+    />
+    <span class="checkbox-mark" [class.indeterminate]="indeterminate"></span>
+    <span class="checkbox-label">{{ label }}</span>
+  </label>
 
   @if (hint) {
     <span [id]="hintId" class="input-wrapper__hint">{{ hint }}</span>

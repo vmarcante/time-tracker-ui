@@ -78,6 +78,48 @@ export class DocumentsValidators {
   }
 
   /**
+   * Validates a Brazilian CNPJ including its check digits.
+   * Accepts formatted (XX.XXX.XXX/XXXX-XX) or digit-only input.
+   */
+  static cnpj(control: AbstractControl): ValidationErrors | null {
+    const value = control.value as string;
+    if (!value) {
+      return null;
+    }
+
+    const digits = value.replace(/[^\d]/g, '');
+
+    if (digits.length !== 14) {
+      return { cnpj: true };
+    }
+
+    if (/^(\d)\1{13}$/.test(digits)) {
+      return { cnpj: true };
+    }
+
+    const calculateDigit = (weights: number[]): number => {
+      let sum = 0;
+      for (let i = 0; i < weights.length; i++) {
+        sum += Number(digits.charAt(i)) * (weights[i] ?? 0);
+      }
+      const remainder = sum % 11;
+      return remainder < 2 ? 0 : 11 - remainder;
+    };
+
+    const firstDigit = calculateDigit([5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+    if (Number(digits.charAt(12)) !== firstDigit) {
+      return { cnpj: true };
+    }
+
+    const secondDigit = calculateDigit([6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+    if (Number(digits.charAt(13)) !== secondDigit) {
+      return { cnpj: true };
+    }
+
+    return null;
+  }
+
+  /**
    * Validates a Brazilian phone number
    * @param phoneNumber The phone number to validate
    * @returns True if the phone number is valid, false otherwise

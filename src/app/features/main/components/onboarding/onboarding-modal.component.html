@@ -1,0 +1,277 @@
+<div class="onboarding-modal">
+  <header class="onboarding-header">
+    <span class="onboarding-header__brand">Time Tracker</span>
+
+    <button type="button" class="onboarding-header__logout" (click)="logout()">
+      <app-icon name="actions/logout-white" [size]="16" />
+      <span>{{ 'onboarding.logout' | translate }}</span>
+    </button>
+  </header>
+
+  <main class="onboarding-main" [class.onboarding-main--centered]="view() === 'pending'">
+    @if (view() === 'choice') {
+    <div class="onboarding-panel">
+        <header class="onboarding-panel__header">
+          <h1 class="onboarding-panel__title">{{ 'onboarding.title' | translate }}</h1>
+          <p class="onboarding-panel__subtitle">{{ 'onboarding.subtitle' | translate }}</p>
+        </header>
+
+        @if (invitationsLoading()) {
+          <p class="onboarding-panel__loading">{{ 'common.loading' | translate }}</p>
+        } @else if (invitations().length > 0) {
+          <section class="invitations" aria-label="{{ 'onboarding.invitations.title' | translate }}">
+            <h2 class="invitations__title">{{ 'onboarding.invitations.title' | translate }}</h2>
+
+            @for (invitation of invitations(); track invitation.membershipId) {
+              <div class="invitation-item">
+                <div class="invitation-item__info">
+                  <strong class="invitation-item__company">{{ invitation.companyName }}</strong>
+                  <span class="invitation-item__role">
+                    {{ 'onboarding.invitations.role.' + invitation.role | translate }}
+                  </span>
+                </div>
+
+                <div class="invitation-item__actions">
+                  <app-button
+                    [text]="'onboarding.invitations.accept' | translate"
+                    color="primary"
+                    [loading]="processingCompanyId() === invitation.companyId"
+                    [disabled]="processingCompanyId() !== null"
+                    (buttonClick)="acceptInvitation(invitation)"
+                  />
+                  <app-button
+                    [text]="'onboarding.invitations.decline' | translate"
+                    color="secondary"
+                    [disabled]="processingCompanyId() !== null"
+                    (buttonClick)="declineInvitation(invitation)"
+                  />
+                </div>
+              </div>
+            }
+          </section>
+        }
+
+        <div class="mode-select" role="radiogroup" aria-label="{{ 'onboarding.modeToggle' | translate }}">
+          <button
+            type="button"
+            role="radio"
+            class="mode-card"
+            [class.mode-card--selected]="mode() === 'company'"
+            [attr.aria-checked]="mode() === 'company'"
+            (click)="mode.set('company')"
+          >
+            <span class="mode-card__radio" aria-hidden="true"></span>
+            <span class="mode-card__icon" aria-hidden="true">
+              <app-icon name="objects/new-person" [size]="20" />
+            </span>
+            <span class="mode-card__text">
+              <span class="mode-card__title">{{ 'onboarding.options.company.title' | translate }}</span>
+              <span class="mode-card__desc">{{ 'onboarding.options.company.desc' | translate }}</span>
+            </span>
+          </button>
+
+          <button
+            type="button"
+            role="radio"
+            class="mode-card"
+            [class.mode-card--selected]="mode() === 'independent'"
+            [attr.aria-checked]="mode() === 'independent'"
+            (click)="mode.set('independent')"
+          >
+            <span class="mode-card__radio" aria-hidden="true"></span>
+            <span class="mode-card__icon" aria-hidden="true">
+              <app-icon name="objects/person" [size]="20" />
+            </span>
+            <span class="mode-card__text">
+              <span class="mode-card__title">{{ 'onboarding.options.independent.title' | translate }}</span>
+              <span class="mode-card__desc">{{ 'onboarding.options.independent.desc' | translate }}</span>
+            </span>
+          </button>
+
+          <button
+            type="button"
+            role="radio"
+            class="mode-card"
+            [class.mode-card--selected]="mode() === 'owner'"
+            [attr.aria-checked]="mode() === 'owner'"
+            (click)="mode.set('owner')"
+          >
+            <span class="mode-card__radio" aria-hidden="true"></span>
+            <span class="mode-card__icon" aria-hidden="true">
+              <app-icon name="objects/building" [size]="20" />
+            </span>
+            <span class="mode-card__text">
+              <span class="mode-card__title">{{ 'onboarding.options.owner.title' | translate }}</span>
+              <span class="mode-card__desc">{{ 'onboarding.options.owner.desc' | translate }}</span>
+            </span>
+          </button>
+        </div>
+
+        @if (mode() === 'company') {
+          <form [formGroup]="companyForm" (ngSubmit)="submitCompany()" class="onboarding-option">
+            <p class="onboarding-option__description">
+              {{ 'onboarding.company.description' | translate }}
+            </p>
+
+            <app-text-input
+              [inputType]="'text'"
+              [formGroup]="companyForm"
+              [controlName]="'document'"
+              [label]="'onboarding.company.document.label' | translate"
+              [placeholder]="'onboarding.company.document.placeholder' | translate"
+              [mask]="'00.000.000/0000-00'"
+              [required]="true"
+              [errorMessages]="{
+                required: 'onboarding.company.document.required' | translate,
+                cnpj: 'onboarding.company.document.invalid' | translate
+              }"
+            />
+
+            <app-textarea-input
+              [control]="companyForm.controls.requestReason"
+              [label]="'onboarding.company.reason.label' | translate"
+              [placeholder]="'onboarding.company.reason.placeholder' | translate"
+              [hint]="'onboarding.company.reason.hint' | translate"
+              [rows]="3"
+              [maxLength]="500"
+            />
+
+            @if (companyPreview(); as company) {
+              <div class="company-preview">
+                <div class="company-preview__row">
+                  <span class="company-preview__label">
+                    {{ 'onboarding.company.preview.legalName' | translate }}
+                  </span>
+                  <input
+                    class="company-preview__field"
+                    type="text"
+                    [value]="company.legalName"
+                    disabled
+                    aria-disabled="true"
+                  />
+                </div>
+
+                @if (company.tradeName) {
+                  <div class="company-preview__row">
+                    <span class="company-preview__label">
+                      {{ 'onboarding.company.preview.tradeName' | translate }}
+                    </span>
+                    <input
+                      class="company-preview__field"
+                      type="text"
+                      [value]="company.tradeName"
+                      disabled
+                      aria-disabled="true"
+                    />
+                  </div>
+                }
+              </div>
+            } @else if (companyLookupStatus() === 'not-found') {
+              <p class="company-preview__not-found">
+                {{ 'onboarding.company.notFound' | translate }}
+              </p>
+            }
+
+            <div class="onboarding-option__actions">
+              <app-button
+                [text]="'onboarding.company.submit' | translate"
+                type="submit"
+                color="primary"
+                [loading]="isSubmitting()"
+                [disabled]="isSubmitting()"
+              />
+            </div>
+          </form>
+        } @else if (mode() === 'owner') {
+          <form [formGroup]="ownerForm" (ngSubmit)="submitOwner()" class="onboarding-option">
+            <p class="onboarding-option__description">
+              {{ 'onboarding.owner.description' | translate }}
+            </p>
+
+            <app-text-input
+              [inputType]="'text'"
+              [formGroup]="ownerForm"
+              [controlName]="'legalName'"
+              [label]="'onboarding.owner.legalName.label' | translate"
+              [placeholder]="'onboarding.owner.legalName.placeholder' | translate"
+              [required]="true"
+              [errorMessages]="{
+                required: 'onboarding.owner.legalName.required' | translate
+              }"
+            />
+
+            <app-text-input
+              [inputType]="'text'"
+              [formGroup]="ownerForm"
+              [controlName]="'tradeName'"
+              [label]="'onboarding.owner.tradeName.label' | translate"
+              [placeholder]="'onboarding.owner.tradeName.placeholder' | translate"
+            />
+
+            <app-text-input
+              [inputType]="'text'"
+              [formGroup]="ownerForm"
+              [controlName]="'document'"
+              [label]="'onboarding.owner.document.label' | translate"
+              [placeholder]="'onboarding.company.document.placeholder' | translate"
+              [mask]="'00.000.000/0000-00'"
+              [required]="true"
+              [errorMessages]="{
+                required: 'onboarding.company.document.required' | translate,
+                cnpj: 'onboarding.company.document.invalid' | translate
+              }"
+            />
+
+            <div class="onboarding-option__actions">
+              <app-button
+                [text]="'onboarding.owner.submit' | translate"
+                type="submit"
+                color="primary"
+                [loading]="isSubmitting()"
+                [disabled]="isSubmitting()"
+              />
+            </div>
+          </form>
+        } @else {
+          <section class="onboarding-option" aria-label="{{ 'onboarding.independent.title' | translate }}">
+            <p class="onboarding-option__description">
+              {{ 'onboarding.independent.description' | translate }}
+            </p>
+
+            <app-checkbox-input
+              [formControl]="independentControl"
+              [label]="'onboarding.independent.checkbox' | translate"
+              [errorMessages]="{
+                required: 'onboarding.independent.required' | translate
+              }"
+            />
+
+            <div class="onboarding-option__actions">
+              <app-button
+                [text]="'onboarding.independent.submit' | translate"
+                color="primary"
+                [disabled]="!independentControl.value || isSubmitting()"
+                (buttonClick)="submitIndependent()"
+              />
+            </div>
+          </section>
+        }
+
+    </div>
+    } @else {
+      <div class="onboarding-pending">
+        <div class="onboarding-pending__icon" aria-hidden="true">
+          <img src="/assets/icons/status/check-circle.svg" alt="" />
+        </div>
+
+        <h1 class="onboarding-pending__title">{{ 'onboarding.pending.title' | translate }}</h1>
+
+        <p class="onboarding-pending__message">
+          {{ 'onboarding.pending.message' | translate: { company: pendingCompanyName() } }}
+        </p>
+
+        <p class="onboarding-pending__hint">{{ 'onboarding.pending.hint' | translate }}</p>
+      </div>
+    }
+  </main>
+</div>
