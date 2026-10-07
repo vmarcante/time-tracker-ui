@@ -1,0 +1,52 @@
+@if (visible()) {
+  <nav class="pagination" role="navigation" [attr.aria-label]="'common.pagination.ariaLabel' | translate">
+
+    <button
+      type="button"
+      class="pagination__btn pagination__btn--nav"
+      [disabled]="isFirst() || loading()"
+      (click)="prev()"
+      [attr.aria-label]="'common.pagination.previous' | translate"
+    >
+      <app-icon name="arrows/back" size="0.875rem" />
+    </button>
+
+    <ul class="pagination__pages">
+      @for (item of pageItems(); track trackItem($index, item)) {
+        <li>
+          @if (item === '…') {
+            <span class="pagination__ellipsis" aria-hidden="true">…</span>
+          } @else {
+            <button
+              type="button"
+              class="pagination__btn pagination__btn--page"
+              [class.pagination__btn--active]="item === page()"
+              [disabled]="loading()"
+              (click)="goTo(item)"
+              [attr.aria-current]="item === page() ? 'page' : null"
+              [attr.aria-label]="('common.pagination.page' | translate) + ' ' + item"
+            >
+              {{ item }}
+            </button>
+          }
+        </li>
+      }
+    </ul>
+
+    <button
+      type="button"
+      class="pagination__btn pagination__btn--nav"
+      [disabled]="isLast() || loading()"
+      (click)="next()"
+      [attr.aria-label]="'common.pagination.next' | translate"
+    >
+      <app-icon name="arrows/next" size="0.875rem" />
+    </button>
+
+    @if (totalElements() !== null) {
+      <span class="pagination__total">
+        {{ 'common.pagination.total' | translate:{ count: totalElements()! } }}
+      </span>
+    }
+  </nav>
+}

@@ -12,4 +12,12 @@ export class PersonApiService {
   getCurrentUser(): ApiResponse<CurrentUserOutput> {
     return this.httpService.get('/person/me');
   }
+
+  updateLocale(locale: string): ApiResponse<void> {
+    return this.httpService.patch('/person/me/locale', { locale });
+  }
+
+  updateProfile(body: { name: string; phone?: string; age?: number }): ApiResponse<void> {
+    return this.httpService.patch('/person/me/profile', body);
+  }
 }

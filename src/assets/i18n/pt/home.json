@@ -9,6 +9,125 @@
     },
     "latestEntries": {
       "title": "Últimas Marcações"
+    },
+    "myEntries": {
+      "title": "Minhas marcações"
+    },
+    "overview": {
+      "company": "Empresa",
+      "requests": {
+        "label": "Solicitações",
+        "pendingBadge": "Pendentes: {{count}}",
+        "hint": {
+          "waiting": "Aguardando aprovação",
+          "empty": "Nenhuma solicitação"
+        },
+        "aria": "Ver solicitações"
+      },
+      "members": {
+        "label": "Membros",
+        "hint": "Colaboradores ativos",
+        "aria": "Ver membros da empresa"
+      },
+      "teams": {
+        "label": "Times",
+        "hint": "Equipes cadastradas",
+        "aria": "Ver times"
+      },
+      "projects": {
+        "label": "Projetos",
+        "hint": "Projetos ativos",
+        "aria": "Ver projetos"
+      },
+      "timeEntries": {
+        "label": "Lançamentos da equipe",
+        "hint": "Ver todos os lançamentos",
+        "aria": "Ver lançamentos da equipe"
+      }
+    },
+    "section": {
+      "back": "Visão geral",
+      "prev": "Anterior",
+      "next": "Próximo"
+    },
+    "members": {
+      "title": "Membros",
+      "invite": "Convidar",
+      "empty": "Nenhum membro encontrado",
+      "role": {
+        "OWNER": "Proprietário",
+        "ADMIN": "Administrador",
+        "MANAGER": "Gerente",
+        "MEMBER": "Membro"
+      }
+    },
+    "requests": {
+      "title": "Solicitações",
+      "pendingTitle": "Pendentes",
+      "empty": "Nenhuma solicitação encontrada",
+      "approve": "Aprovar",
+      "reject": "Reprovar",
+      "since": "Solicitado em",
+      "toggleDetails": "Ver detalhes",
+      "detail": {
+        "email": "E-mail",
+        "requestedAt": "Data da solicitação",
+        "age": "Idade",
+        "ageYears": "{{count}} anos",
+        "reason": "Motivo"
+      },
+      "history": {
+        "title": "Histórico",
+        "empty": "Nenhuma solicitação resolvida",
+        "member": "Nome",
+        "type": "Tipo",
+        "role": "Papel",
+        "status": "Status",
+        "requestedAt": "Solicitado em",
+        "resolved": "Resolução"
+      },
+      "origin": {
+        "REQUEST": "Solicitação",
+        "INVITE": "Convite"
+      },
+      "status": {
+        "APPROVED": "Aprovada",
+        "REJECTED": "Reprovada",
+        "DECLINED": "Recusada"
+      },
+      "rejectDialog": {
+        "title": "Reprovar solicitação",
+        "subtitle": "Você está prestes a reprovar a solicitação de {{name}}. Deseja informar o motivo?",
+        "reason": {
+          "label": "Motivo da reprovação",
+          "placeholder": "Ex.: Perfil não se encaixa nas necessidades atuais da equipe...",
+          "hint": "Opcional. Se informado, será enviado no e-mail de notificação."
+        },
+        "cancel": "Cancelar",
+        "confirm": "Confirmar reprovação"
+      }
+    },
+    "teams": {
+      "title": "Times",
+      "create": "Novo Time",
+      "empty": "Nenhum time cadastrado",
+      "members": "membros"
+    },
+    "projects": {
+      "title": "Projetos",
+      "create": "Novo Projeto",
+      "empty": "Nenhum projeto cadastrado",
+      "status": {
+        "ACTIVE": "Ativo",
+        "PAUSED": "Pausado",
+        "COMPLETED": "Concluído",
+        "ARCHIVED": "Arquivado"
+      }
+    },
+    "timeEntries": {
+      "title": "Lançamentos da Equipe",
+      "empty": "Nenhum lançamento encontrado",
+      "running": "Em andamento"
     }
   }
 }

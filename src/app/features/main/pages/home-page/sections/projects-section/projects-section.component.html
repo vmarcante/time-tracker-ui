@@ -1,0 +1,57 @@
+<div class="section">
+  <div class="section__header">
+    <button type="button" class="section__back" (click)="back.emit()" [attr.aria-label]="'home.section.back' | translate">
+      <app-icon name="arrows/back" size="1rem" />
+      <span>{{ 'home.section.back' | translate }}</span>
+    </button>
+    <h2 class="section__title">{{ 'home.projects.title' | translate }}</h2>
+    <div class="section__actions">
+      <app-button [text]="'home.projects.create' | translate" color="primary" [icon]="{ iconName: 'actions/add', position: 'left' }" />
+    </div>
+  </div>
+
+  <div class="section__body">
+    @if (loading()) {
+      <div class="section__loading">
+        @for (s of [1, 2, 3]; track s) {
+          <div class="project-row project-row--skeleton" aria-hidden="true">
+            <div class="project-row__name-skeleton"></div>
+            <div class="project-row__meta-skeleton"></div>
+          </div>
+        }
+      </div>
+    } @else if (projects().length === 0) {
+      <div class="section__empty">
+        <app-icon name="objects/folder" size="2rem" />
+        <p>{{ 'home.projects.empty' | translate }}</p>
+      </div>
+    } @else {
+      <div class="project-list">
+        @for (project of projects(); track project.id) {
+          <div class="project-row">
+            <div class="project-row__icon">
+              <app-icon name="objects/folder" size="1.125rem" />
+            </div>
+            <div class="project-row__info">
+              <span class="project-row__name">{{ project.name }}</span>
+              @if (project.clientName) {
+                <span class="project-row__meta">{{ project.clientName }}</span>
+              }
+            </div>
+            <span class="project-row__status project-row__status--{{ project.status | lowercase }}">
+              {{ 'home.projects.status.' + project.status | translate }}
+            </span>
+          </div>
+        }
+      </div>
+
+      <app-pagination
+        [page]="currentPage()"
+        [totalPages]="page()?.totalPages ?? 0"
+        [totalElements]="page()?.totalElements ?? null"
+        [loading]="loading()"
+        (pageChange)="loadPage($event)"
+      />
+    }
+  </div>
+</div>

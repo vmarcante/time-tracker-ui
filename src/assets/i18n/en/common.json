@@ -27,6 +27,13 @@
       "cancel": "Cancel",
       "confirm": "Yes, close"
     },
+    "pagination": {
+      "ariaLabel": "Pagination",
+      "previous": "Previous page",
+      "next": "Next page",
+      "page": "Page",
+      "total": "{{count}} items"
+    },
     "toastr": {
       "types": {
         "success": "Success",

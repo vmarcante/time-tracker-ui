@@ -1,0 +1,52 @@
+{
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "Manage your personal information",
+    "avatar": {
+      "ariaLabel": "User avatar"
+    },
+    "section": {
+      "personal": "Personal information",
+      "account": "Account"
+    },
+    "field": {
+      "name": "Full name",
+      "email": "E-mail",
+      "phone": "Phone",
+      "age": "Age",
+      "locale": "Language",
+      "username": "Username",
+      "role": "Access profile",
+      "affiliation": "Affiliation type",
+      "companyRole": "Company role"
+    },
+    "role": {
+      "ADMINISTRATOR": "Administrator",
+      "MODERATOR": "Moderator",
+      "USER": "User"
+    },
+    "affiliation": {
+      "INDEPENDENT": "Independent",
+      "COMPANY": "Company",
+      "PENDING": "Pending"
+    },
+    "companyRole": {
+      "OWNER": "Owner",
+      "ADMIN": "Admin",
+      "MANAGER": "Manager",
+      "MEMBER": "Member"
+    },
+    "locale": {
+      "pt-BR": "Portuguese (Brazil)",
+      "en-US": "English (US)"
+    },
+    "action": {
+      "save": "Save changes",
+      "saving": "Saving...",
+      "back": "Back"
+    },
+    "toast": {
+      "success": "Profile updated successfully!"
+    }
+  }
+}

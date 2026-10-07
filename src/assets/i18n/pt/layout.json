@@ -19,6 +19,10 @@
     },
     "user": {
       "defaultName": "Usuário"
+    },
+    "userMenu": {
+      "profile": "Meu perfil",
+      "language": "Idioma"
     }
   },
   "health": {

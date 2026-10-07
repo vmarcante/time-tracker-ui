@@ -1,16 +1,17 @@
 <div class="onboarding-modal">
-  <header class="onboarding-header">
-    <span class="onboarding-header__brand">Time Tracker</span>
-
-    <button type="button" class="onboarding-header__logout" (click)="logout()">
-      <app-icon name="actions/logout-white" [size]="16" />
-      <span>{{ 'onboarding.logout' | translate }}</span>
-    </button>
-  </header>
+  <button
+    type="button"
+    class="onboarding-modal__logout"
+    (click)="logout()"
+    [attr.aria-label]="'onboarding.logout' | translate"
+    [title]="'onboarding.logout' | translate"
+  >
+    <app-icon name="actions/logout" [size]="18" />
+  </button>
 
   <main class="onboarding-main" [class.onboarding-main--centered]="view() === 'pending'">
     @if (view() === 'choice') {
-    <div class="onboarding-panel">
+      <div class="onboarding-panel">
         <header class="onboarding-panel__header">
           <h1 class="onboarding-panel__title">{{ 'onboarding.title' | translate }}</h1>
           <p class="onboarding-panel__subtitle">{{ 'onboarding.subtitle' | translate }}</p>
@@ -19,7 +20,10 @@
         @if (invitationsLoading()) {
           <p class="onboarding-panel__loading">{{ 'common.loading' | translate }}</p>
         } @else if (invitations().length > 0) {
-          <section class="invitations" aria-label="{{ 'onboarding.invitations.title' | translate }}">
+          <section
+            class="invitations"
+            aria-label="{{ 'onboarding.invitations.title' | translate }}"
+          >
             <h2 class="invitations__title">{{ 'onboarding.invitations.title' | translate }}</h2>
 
             @for (invitation of invitations(); track invitation.membershipId) {
@@ -51,7 +55,11 @@
           </section>
         }
 
-        <div class="mode-select" role="radiogroup" aria-label="{{ 'onboarding.modeToggle' | translate }}">
+        <div
+          class="mode-select"
+          role="radiogroup"
+          aria-label="{{ 'onboarding.modeToggle' | translate }}"
+        >
           <button
             type="button"
             role="radio"
@@ -65,8 +73,12 @@
               <app-icon name="objects/new-person" [size]="20" />
             </span>
             <span class="mode-card__text">
-              <span class="mode-card__title">{{ 'onboarding.options.company.title' | translate }}</span>
-              <span class="mode-card__desc">{{ 'onboarding.options.company.desc' | translate }}</span>
+              <span class="mode-card__title">{{
+                'onboarding.options.company.title' | translate
+              }}</span>
+              <span class="mode-card__desc">{{
+                'onboarding.options.company.desc' | translate
+              }}</span>
             </span>
           </button>
 
@@ -83,8 +95,12 @@
               <app-icon name="objects/person" [size]="20" />
             </span>
             <span class="mode-card__text">
-              <span class="mode-card__title">{{ 'onboarding.options.independent.title' | translate }}</span>
-              <span class="mode-card__desc">{{ 'onboarding.options.independent.desc' | translate }}</span>
+              <span class="mode-card__title">{{
+                'onboarding.options.independent.title' | translate
+              }}</span>
+              <span class="mode-card__desc">{{
+                'onboarding.options.independent.desc' | translate
+              }}</span>
             </span>
           </button>
 
@@ -101,7 +117,9 @@
               <app-icon name="objects/building" [size]="20" />
             </span>
             <span class="mode-card__text">
-              <span class="mode-card__title">{{ 'onboarding.options.owner.title' | translate }}</span>
+              <span class="mode-card__title">{{
+                'onboarding.options.owner.title' | translate
+              }}</span>
               <span class="mode-card__desc">{{ 'onboarding.options.owner.desc' | translate }}</span>
             </span>
           </button>
@@ -123,7 +141,7 @@
               [required]="true"
               [errorMessages]="{
                 required: 'onboarding.company.document.required' | translate,
-                cnpj: 'onboarding.company.document.invalid' | translate
+                cnpj: 'onboarding.company.document.invalid' | translate,
               }"
             />
 
@@ -191,26 +209,6 @@
             <app-text-input
               [inputType]="'text'"
               [formGroup]="ownerForm"
-              [controlName]="'legalName'"
-              [label]="'onboarding.owner.legalName.label' | translate"
-              [placeholder]="'onboarding.owner.legalName.placeholder' | translate"
-              [required]="true"
-              [errorMessages]="{
-                required: 'onboarding.owner.legalName.required' | translate
-              }"
-            />
-
-            <app-text-input
-              [inputType]="'text'"
-              [formGroup]="ownerForm"
-              [controlName]="'tradeName'"
-              [label]="'onboarding.owner.tradeName.label' | translate"
-              [placeholder]="'onboarding.owner.tradeName.placeholder' | translate"
-            />
-
-            <app-text-input
-              [inputType]="'text'"
-              [formGroup]="ownerForm"
               [controlName]="'document'"
               [label]="'onboarding.owner.document.label' | translate"
               [placeholder]="'onboarding.company.document.placeholder' | translate"
@@ -218,9 +216,43 @@
               [required]="true"
               [errorMessages]="{
                 required: 'onboarding.company.document.required' | translate,
-                cnpj: 'onboarding.company.document.invalid' | translate
+                cnpj: 'onboarding.company.document.invalid' | translate,
               }"
             />
+
+            @if (ownerCompanyExists(); as existingCompany) {
+              <div class="owner-exists" role="alert">
+                <app-icon name="status/alert" [size]="18" />
+                <span class="owner-exists__text">
+                  {{ 'onboarding.owner.existsInline.message' | translate: { company: existingCompany.legalName } }}
+                </span>
+                <button type="button" class="owner-exists__link" (click)="applyCompanyLink()">
+                  {{ 'onboarding.owner.existsInline.action' | translate }}
+                </button>
+              </div>
+            }
+
+            <div class="owner-form__grid">
+              <app-text-input
+                [inputType]="'text'"
+                [formGroup]="ownerForm"
+                [controlName]="'legalName'"
+                [label]="'onboarding.owner.legalName.label' | translate"
+                [placeholder]="'onboarding.owner.legalName.placeholder' | translate"
+                [required]="true"
+                [errorMessages]="{
+                  required: 'onboarding.owner.legalName.required' | translate,
+                }"
+              />
+
+              <app-text-input
+                [inputType]="'text'"
+                [formGroup]="ownerForm"
+                [controlName]="'tradeName'"
+                [label]="'onboarding.owner.tradeName.label' | translate"
+                [placeholder]="'onboarding.owner.tradeName.placeholder' | translate"
+              />
+            </div>
 
             <div class="onboarding-option__actions">
               <app-button
@@ -228,12 +260,15 @@
                 type="submit"
                 color="primary"
                 [loading]="isSubmitting()"
-                [disabled]="isSubmitting()"
+                [disabled]="isSubmitting() || !!ownerCompanyExists()"
               />
             </div>
           </form>
         } @else {
-          <section class="onboarding-option" aria-label="{{ 'onboarding.independent.title' | translate }}">
+          <section
+            class="onboarding-option"
+            aria-label="{{ 'onboarding.independent.title' | translate }}"
+          >
             <p class="onboarding-option__description">
               {{ 'onboarding.independent.description' | translate }}
             </p>
@@ -242,7 +277,7 @@
               [formControl]="independentControl"
               [label]="'onboarding.independent.checkbox' | translate"
               [errorMessages]="{
-                required: 'onboarding.independent.required' | translate
+                required: 'onboarding.independent.required' | translate,
               }"
             />
 
@@ -256,8 +291,7 @@
             </div>
           </section>
         }
-
-    </div>
+      </div>
     } @else {
       <div class="onboarding-pending">
         <div class="onboarding-pending__icon" aria-hidden="true">

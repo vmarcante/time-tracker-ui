@@ -3,45 +3,29 @@
   flex-direction: column;
   max-height: 90dvh;
   background-color: var(--color-background);
-}
-
-// =============================
-// Header (design system)
-// =============================
-
-.onboarding-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem var(--spacing-3xl);
-  background-color: var(--color-primary);
-
-  &__brand {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--color-text-inverse);
-    letter-spacing: 0.01em;
-  }
+  position: relative;
 
   &__logout {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    z-index: 1;
     display: inline-flex;
     align-items: center;
-    gap: var(--spacing-xs);
+    justify-content: center;
+    width: 36px;
+    height: 36px;
     background: none;
     border: none;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--color-text-inverse);
-    opacity: 0.85;
-    cursor: pointer;
     border-radius: var(--radius-md);
+    color: var(--color-text-tertiary);
+    cursor: pointer;
     transition:
-      opacity 0.2s ease,
+      color 0.2s ease,
       background-color 0.2s ease;
 
     &:hover {
-      opacity: 1;
+      color: var(--color-text-primary);
       background-color: var(--color-black-10);
     }
   }
@@ -56,22 +40,18 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: var(--spacing-2xl) var(--spacing-md);
+  padding: var(--spacing-2xl) var(--spacing-xl);
   overflow-y: auto;
 
   &--centered {
     align-items: center;
-    background-color: var(--color-primary-light);
   }
 }
 
 .onboarding-panel {
   width: 100%;
   max-width: 560px;
-  background-color: var(--color-background-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-xl);
+  padding: var(--spacing-md) 0;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
@@ -222,7 +202,7 @@
 .onboarding-option {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  // gap: var(--spacing-md);
   padding-top: var(--spacing-lg);
   border-top: 1px solid var(--color-border);
   animation: onboardingPanelIn 0.3s ease;
@@ -232,6 +212,7 @@
     color: var(--color-text-tertiary);
     margin: 0;
     line-height: 1.5;
+    margin-bottom: var(--spacing-lg);
   }
 
   &__actions {
@@ -343,6 +324,55 @@
 }
 
 // =============================
+// Owner form
+// =============================
+
+.owner-form__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+.owner-exists {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-md);
+  background-color: var(--color-warning-light);
+  color: var(--color-warning-dark);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  animation: onboardingPanelIn 0.3s ease;
+
+  app-icon {
+    flex-shrink: 0;
+  }
+
+  &__text {
+    flex: 1;
+  }
+
+  &__link {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:hover {
+      color: var(--color-primary-dark);
+    }
+  }
+}
+
+// =============================
 // Pending state
 // =============================
 
@@ -354,10 +384,7 @@
   gap: var(--spacing-md);
   width: 100%;
   max-width: 420px;
-  background-color: var(--color-background-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-2xl);
+  padding: var(--spacing-xl) 0;
   animation: onboardingPanelIn 0.3s ease;
 
   &__icon {
@@ -442,27 +469,13 @@
   }
 }
 
-@media (max-width: 1024px) {
-  .onboarding-header {
-    padding: 1rem var(--spacing-2xl);
-  }
-}
-
 @media (max-width: 640px) {
-  .onboarding-header {
-    padding: 0.875rem var(--spacing-md);
-
-    &__brand {
-      font-size: 1.25rem;
-    }
-  }
-
   .onboarding-main {
-    padding: var(--spacing-md);
+    padding: var(--spacing-lg) var(--spacing-md);
   }
 
-  .onboarding-panel {
-    padding: var(--spacing-lg);
+  .owner-form__grid {
+    grid-template-columns: 1fr;
   }
 
   .invitation-item {

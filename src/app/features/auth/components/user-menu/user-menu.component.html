@@ -1,16 +1,64 @@
 <div class="user-menu">
+
+  <!-- Cabeçalho: nome + email -->
   <div class="user-menu__header">
-    <!-- <div class="user-menu__avatar">{{ getInitials() }}</div> -->
     <div class="user-menu__info">
       <span class="user-menu__name">{{ user().name }}</span>
       <span class="user-menu__email">{{ user().email }}</span>
     </div>
   </div>
 
+  <!-- Ações -->
   <div class="user-menu__actions">
-    <button type="button" class="user-menu__action user-menu__action--logout" (click)="logout.emit()">
-      <img src="assets/icons/actions/logout.svg" alt="" />
+
+    <!-- Meu perfil -->
+    <button
+      type="button"
+      class="user-menu__action"
+      (click)="profileClick.emit()"
+    >
+      <app-icon name="objects/person" size="1.125rem" />
+      <span>{{ 'header.userMenu.profile' | translate }}</span>
+    </button>
+
+    <!-- Idioma -->
+    <div class="user-menu__action user-menu__action--language">
+      <app-icon name="objects/globe" size="1.125rem" />
+      <span class="user-menu__action-label">{{ 'header.userMenu.language' | translate }}</span>
+      <div class="user-menu__lang-toggle" role="group" [attr.aria-label]="'header.userMenu.language' | translate">
+        @for (lang of languages; track lang.code) {
+          <button
+            type="button"
+            class="user-menu__lang-btn"
+            [class.user-menu__lang-btn--active]="currentLanguage() === lang.code"
+            [disabled]="localeLoading()"
+            (click)="selectLanguage(lang, $event)"
+            [attr.aria-pressed]="currentLanguage() === lang.code"
+          >
+            @if (localeLoading() && currentLanguage() !== lang.code) {
+              <span class="user-menu__lang-spinner"></span>
+            } @else {
+              {{ lang.label }}
+            }
+          </button>
+        }
+      </div>
+    </div>
+
+  </div>
+
+  <div class="user-menu__divider" role="separator"></div>
+
+  <!-- Sair -->
+  <div class="user-menu__actions">
+    <button
+      type="button"
+      class="user-menu__action user-menu__action--danger"
+      (click)="logout.emit()"
+    >
+      <app-icon name="actions/logout" size="1.125rem" />
       <span>{{ 'header.logoutAriaLabel' | translate }}</span>
     </button>
   </div>
+
 </div>

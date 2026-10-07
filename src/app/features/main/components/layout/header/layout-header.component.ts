@@ -222,6 +222,10 @@ export class LayoutHeaderComponent implements OnInit, OnDestroy {
     });
   }
 
+  protected openProfile(): void {
+    this.router.navigate(['/settings']);
+  }
+
   private executeLogout(): void {
     const request = this.authService.logout();
     this.apiAdapterService.executeRequest(request, {

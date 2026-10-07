@@ -4,6 +4,10 @@
     "subtitle": "Antes de começar, precisamos saber se você trabalha em uma empresa.",
     "divider": "ou",
     "logout": "Sair da conta",
+    "logoutDialog": {
+      "title": "Sair da conta",
+      "message": "Deseja realmente sair? Seu onboarding ainda não foi concluído."
+    },
     "modeToggle": "Tipo de uso",
     "options": {
       "company": {
@@ -60,6 +64,10 @@
         "message": "Já existe uma empresa cadastrada com este CNPJ. Deseja solicitar vínculo a ela como funcionário?",
         "cancel": "Cancelar",
         "confirm": "Vincular-me à empresa"
+      },
+      "existsInline": {
+        "message": "Este CNPJ já está cadastrado: {{company}}",
+        "action": "Solicitar vínculo como funcionário"
       },
       "submit": "Cadastrar empresa"
     },

@@ -78,6 +78,7 @@ export class DialogService {
       data: options?.data,
       disableClose: options?.disableClose ?? backdropConfirmation ?? false,
       panelClass: [...(baseConfig.panelClass ?? []), ...(options?.panelClass ?? [])],
+      backdropClass: options?.backdropClass,
       scrollStrategy: this.matDialog['_scrollStrategy']?.(),
       hasBackdrop: true,
     };

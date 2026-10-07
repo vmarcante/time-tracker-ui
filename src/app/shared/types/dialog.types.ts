@@ -7,6 +7,7 @@ export interface BaseDialogOptions<R> {
   data?: unknown;
   disableClose?: boolean;
   panelClass?: string[];
+  backdropClass?: string;
   closeCallback: (result?: R) => void;
 }
 

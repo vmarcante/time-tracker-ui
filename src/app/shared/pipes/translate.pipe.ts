@@ -1,7 +1,5 @@
-import { Pipe, PipeTransform, inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Pipe, PipeTransform, inject, ChangeDetectorRef, OnDestroy, effect } from '@angular/core';
 import { TranslationService } from '../services/translation.service';
-import { LanguageService } from '../services/language.service';
-import { effect } from '@angular/core';
 
 @Pipe({
   name: 'translate',
@@ -10,21 +8,16 @@ import { effect } from '@angular/core';
 })
 export class TranslatePipe implements PipeTransform, OnDestroy {
   private translationService = inject(TranslationService);
-  private languageService = inject(LanguageService);
   private cdr = inject(ChangeDetectorRef);
   private lastKey = '';
   private lastValue = '';
 
   constructor() {
-    // Atualiza o pipe quando o idioma muda ou quando as traduções são carregadas
     effect(() => {
-      const lang = this.languageService.language();
-      const isLoaded = this.translationService.isLoadedSignal();
+      this.translationService.currentTranslations();
 
-      // Limpa o cache sempre que isLoaded muda ou o idioma muda
       this.lastKey = '';
       this.lastValue = '';
-
       this.cdr.markForCheck();
     });
   }

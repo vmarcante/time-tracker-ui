@@ -9,6 +9,125 @@
     },
     "latestEntries": {
       "title": "Latest time entries"
+    },
+    "myEntries": {
+      "title": "My time entries"
+    },
+    "overview": {
+      "company": "Company",
+      "requests": {
+        "label": "Requests",
+        "pendingBadge": "Pending: {{count}}",
+        "hint": {
+          "waiting": "Awaiting approval",
+          "empty": "No requests"
+        },
+        "aria": "View requests"
+      },
+      "members": {
+        "label": "Members",
+        "hint": "Active collaborators",
+        "aria": "View company members"
+      },
+      "teams": {
+        "label": "Teams",
+        "hint": "Registered teams",
+        "aria": "View teams"
+      },
+      "projects": {
+        "label": "Projects",
+        "hint": "Active projects",
+        "aria": "View projects"
+      },
+      "timeEntries": {
+        "label": "Team time entries",
+        "hint": "View all time entries",
+        "aria": "View team time entries"
+      }
+    },
+    "section": {
+      "back": "Overview",
+      "prev": "Previous",
+      "next": "Next"
+    },
+    "members": {
+      "title": "Members",
+      "invite": "Invite",
+      "empty": "No members found",
+      "role": {
+        "OWNER": "Owner",
+        "ADMIN": "Administrator",
+        "MANAGER": "Manager",
+        "MEMBER": "Member"
+      }
+    },
+    "requests": {
+      "title": "Requests",
+      "pendingTitle": "Pending",
+      "empty": "No requests found",
+      "approve": "Approve",
+      "reject": "Reject",
+      "since": "Requested on",
+      "toggleDetails": "View details",
+      "detail": {
+        "email": "E-mail",
+        "requestedAt": "Requested at",
+        "age": "Age",
+        "ageYears": "{{count}} years old",
+        "reason": "Reason"
+      },
+      "history": {
+        "title": "History",
+        "empty": "No resolved requests",
+        "member": "Name",
+        "type": "Type",
+        "role": "Role",
+        "status": "Status",
+        "requestedAt": "Requested at",
+        "resolved": "Resolution"
+      },
+      "origin": {
+        "REQUEST": "Request",
+        "INVITE": "Invitation"
+      },
+      "status": {
+        "APPROVED": "Approved",
+        "REJECTED": "Rejected",
+        "DECLINED": "Declined"
+      },
+      "rejectDialog": {
+        "title": "Reject request",
+        "subtitle": "You are about to reject {{name}}'s request. Would you like to provide a reason?",
+        "reason": {
+          "label": "Rejection reason",
+          "placeholder": "e.g. Profile does not match the team's current needs...",
+          "hint": "Optional. If provided, it will be included in the notification e-mail."
+        },
+        "cancel": "Cancel",
+        "confirm": "Confirm rejection"
+      }
+    },
+    "teams": {
+      "title": "Teams",
+      "create": "New Team",
+      "empty": "No teams registered",
+      "members": "members"
+    },
+    "projects": {
+      "title": "Projects",
+      "create": "New Project",
+      "empty": "No projects registered",
+      "status": {
+        "ACTIVE": "Active",
+        "PAUSED": "Paused",
+        "COMPLETED": "Completed",
+        "ARCHIVED": "Archived"
+      }
+    },
+    "timeEntries": {
+      "title": "Team Time Entries",
+      "empty": "No time entries found",
+      "running": "Running"
     }
   }
 }

@@ -1,6 +1,6 @@
-import { AffiliationStatus } from '../../auth/models';
+import { AffiliationStatus, CompanyRole } from '../../auth/models';
 
-export type CompanyRole = 'OWNER' | 'ADMIN' | 'MANAGER' | 'MEMBER';
+export type { CompanyRole };
 
 export interface OnboardingInput {
   document?: string;

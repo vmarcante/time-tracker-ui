@@ -25,6 +25,8 @@ export class TranslationService {
 
   private loadingPromises = new Map<string, Promise<void>>();
 
+  private requestedContexts = new Set<string>();
+
   private isLoaded = signal(false);
   readonly isLoadedSignal = this.isLoaded.asReadonly();
 
@@ -34,10 +36,13 @@ export class TranslationService {
   });
 
   constructor() {
-    // effect(() => {
-    //   const lang = this.languageService.language();
-    //   this.loadTranslations(lang);
-    // });
+    effect(() => {
+      const lang = this.languageService.language();
+      // Ao trocar idioma, recarrega todos os contextos já usados
+      this.requestedContexts.forEach((context) => {
+        this.loadContext(lang, context);
+      });
+    });
   }
 
   private isTranslationLoaded(lang: SupportedLanguages): boolean {
@@ -82,7 +87,10 @@ export class TranslationService {
   }
 
   public loadContext(lang: SupportedLanguages, context: string): Promise<void> {
-    // Se já carregou este contexto, não carrega novamente
+    // Registra globalmente para recarregar ao trocar idioma
+    this.requestedContexts.add(context);
+
+    // Se já carregou este contexto para este idioma, não carrega novamente
     const loaded = this.loadedContexts()[lang];
     if (loaded.has(context)) {
       return Promise.resolve();

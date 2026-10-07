@@ -240,6 +240,12 @@ input.mat-mdc-input-element {
   }
 }
 
+.onboarding-modal-backdrop {
+  background-color: rgba(30, 41, 59, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
 // Previne scroll no body quando dialogs fullscreen estão abertas
 .cdk-global-scrollblock {
   position: fixed !important;

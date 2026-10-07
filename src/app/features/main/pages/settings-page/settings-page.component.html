@@ -1,0 +1,131 @@
+<div class="settings-page">
+  <div class="settings-page__container">
+
+    <!-- Cabeçalho da página -->
+    <div class="settings-page__header">
+      <app-button
+        [icon]="{ iconName: 'arrow-left', iconOnly: true }"
+        [color]="'secondary'"
+        [size]="{ small: true }"
+        [hoverTitle]="'profile.action.back' | translate"
+        (buttonClick)="goBack()"
+      ></app-button>
+      <div>
+        <h1 class="settings-page__title">{{ 'profile.title' | translate }}</h1>
+        <p class="settings-page__subtitle">{{ 'profile.subtitle' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="settings-page__body">
+
+      <!-- Coluna esquerda: avatar + informações da conta -->
+      <aside class="settings-page__aside">
+        <div class="settings-page__avatar-card">
+          <div class="settings-page__avatar">{{ initials() }}</div>
+          <div class="settings-page__user-info">
+            <span class="settings-page__user-name">{{ currentUser()?.name }}</span>
+            <span class="settings-page__user-email">{{ currentUser()?.email }}</span>
+          </div>
+        </div>
+
+        <div class="settings-page__card">
+          <h2 class="settings-page__card-title">{{ 'profile.section.account' | translate }}</h2>
+
+          <div class="settings-page__info-row">
+            <span class="settings-page__info-label">{{ 'profile.field.role' | translate }}</span>
+            @if (currentUser()?.role) {
+              <span class="settings-page__badge settings-page__badge--role">
+                {{ 'profile.role.' + currentUser()!.role | translate }}
+              </span>
+            }
+          </div>
+
+          <div class="settings-page__info-row">
+            <span class="settings-page__info-label">{{ 'profile.field.affiliation' | translate }}</span>
+            @if (currentUser()?.affiliation) {
+              <span class="settings-page__badge settings-page__badge--affiliation">
+                {{ 'profile.affiliation.' + currentUser()!.affiliation | translate }}
+              </span>
+            }
+          </div>
+
+          @if (currentUser()?.companyRole) {
+            <div class="settings-page__info-row">
+              <span class="settings-page__info-label">{{ 'profile.field.companyRole' | translate }}</span>
+              <span class="settings-page__badge settings-page__badge--company">
+                {{ 'profile.companyRole.' + currentUser()!.companyRole | translate }}
+              </span>
+            </div>
+          }
+        </div>
+      </aside>
+
+      <!-- Coluna direita: formulário -->
+      <section class="settings-page__card settings-page__card--form">
+        <h2 class="settings-page__card-title">{{ 'profile.section.personal' | translate }}</h2>
+
+        <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+          <div class="settings-page__form-grid">
+
+            <div class="settings-page__field settings-page__field--full">
+              <app-text-input
+                [label]="'profile.field.name' | translate"
+                [formControl]="nameControl"
+                [required]="true"
+              ></app-text-input>
+            </div>
+
+            <div class="settings-page__field">
+              <app-text-input
+                [label]="'profile.field.phone' | translate"
+                [formControl]="phoneControl"
+                [mask]="'(00) 00000-0000'"
+              ></app-text-input>
+            </div>
+
+            <div class="settings-page__field">
+              <app-integer-input
+                [label]="'profile.field.age' | translate"
+                [formControl]="ageControl"
+              ></app-integer-input>
+            </div>
+
+            <div class="settings-page__field settings-page__field--full">
+              <app-select-input
+                [label]="'profile.field.locale' | translate"
+                [formControl]="localeControl"
+                [options]="localeOptions()"
+              ></app-select-input>
+            </div>
+
+            <div class="settings-page__field settings-page__field--full">
+              <app-text-input
+                [label]="'profile.field.email' | translate"
+                [formControl]="emailControl"
+                [readonly]="true"
+              ></app-text-input>
+            </div>
+
+          </div>
+
+          @if (saveSuccess()) {
+            <div class="settings-page__success" role="status">
+              {{ 'profile.toast.success' | translate }}
+            </div>
+          }
+
+          <div class="settings-page__actions">
+            <app-button
+              type="submit"
+              [text]="saving() ? ('profile.action.saving' | translate) : ('profile.action.save' | translate)"
+              [color]="'primary'"
+              [fill]="true"
+              [loading]="saving()"
+              [disabled]="form.invalid || saving()"
+            ></app-button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </div>
+</div>

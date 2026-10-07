@@ -1,5 +1,6 @@
 import { Injectable, inject, DestroyRef, DOCUMENT } from '@angular/core';
 import { Observable, of, tap } from 'rxjs';
+import { Router } from '@angular/router';
 import { AuthTokenService } from './auth-token.service';
 import { AuthApiService } from './api/auth.api.service';
 import { ApiResponse } from '../../../shared/types';
@@ -13,6 +14,7 @@ const REFRESH_THRESHOLD_MS = 60_000;
 export class AuthService {
   private tokenService = inject(AuthTokenService);
   private authApiService = inject(AuthApiService);
+  private router = inject(Router);
   private destroyRef = inject(DestroyRef);
   private document = inject(DOCUMENT);
   private refreshTimeoutId: number | null = null;
@@ -60,6 +62,7 @@ export class AuthService {
       },
       error: () => {
         this.tokenService.clearTokens();
+        this.router.navigate(['/']);
       },
     });
   }

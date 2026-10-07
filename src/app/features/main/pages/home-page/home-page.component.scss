@@ -1,72 +1,72 @@
-.home-page {
-  padding: var(--spacing-xl);
-  min-height: 100dvh;
+$left-width: 300px;
+
+.home-split {
+  display: grid;
+  grid-template-columns: $left-width 1px 1fr;
+  min-height: calc(100dvh - 56px);
   background-color: var(--color-background);
 
-  &__grid {
-    display: grid;
-    grid-template-columns: 1fr 1px 2fr;
-    gap: var(--spacing-xl);
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  &__panel {
-    padding: var(--spacing-lg);
+  &__left {
+    overflow-y: auto;
+    position: sticky;
+    top: 56px;
+    height: calc(100dvh - 56px);
+    background-color: var(--color-background-card);
+    border-right: none;
   }
 
   &__divider {
     background-color: var(--color-border);
     min-height: 100%;
+    align-self: stretch;
   }
 
-  &__panel-title {
-    font-size: 1.25rem;
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-primary);
-    text-align: center;
-    margin-bottom: var(--spacing-md);
-  }
-}
+  &__right {
+    overflow-y: auto;
+    background-color: var(--color-background);
+    transition: opacity 150ms ease-in-out;
 
-.quick-actions {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: var(--spacing-md);
-
-  &__item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    padding: var(--spacing-md);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    background-color: var(--color-primary-50);
-    color: var(--color-primary-700);
-    cursor: pointer;
-    transition: background-color var(--transition-fast), border-color var(--transition-fast);
-
-    &:hover {
-      background-color: var(--color-primary-100);
-      border-color: var(--color-border-strong);
+    &--fade-out {
+      opacity: 0;
+      pointer-events: none;
     }
   }
 
-  &__label {
-    font-weight: var(--font-weight-medium);
-    font-size: 0.875rem;
-    text-align: center;
+  &__my-entries {
+    padding: var(--spacing-xl);
+  }
+
+  &__panel-title {
+    font-size: 1.125rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-lg) 0;
   }
 }
 
-@media (max-width: 768px) {
-  .home-page {
-    padding: var(--spacing-md);
+.home-simple {
+  padding: var(--spacing-xl);
+  max-width: 900px;
+  margin: 0 auto;
+  min-height: calc(100dvh - 56px);
+  background-color: var(--color-background);
+}
 
-    &__grid {
-      grid-template-columns: 1fr;
+// Mobile: empilha vertical
+@media (max-width: 768px) {
+  .home-split {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+
+    &__left {
+      position: static;
+      height: auto;
+      overflow-y: visible;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    &__divider {
+      display: none;
     }
   }
 }

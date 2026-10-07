@@ -27,6 +27,14 @@ export const routes: Routes = [
         canActivate: [authGuard, translationContextGuard('home')],
       },
       {
+        path: 'settings',
+        loadComponent: () =>
+          import('./features/main/pages/settings-page/settings-page.component').then(
+            (m) => m.SettingsPageComponent,
+          ),
+        canActivate: [authGuard, translationContextGuard('profile')],
+      },
+      {
         path: 'entries/:id',
         loadComponent: () =>
           import('./features/main/pages/time-entrie/time-entrie-detail-page.component').then(

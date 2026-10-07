@@ -21,6 +21,7 @@ export class App {
   private dialogService = inject(DialogService);
 
   private onboardingDialogRef?: MatDialogRef<OnboardingModalComponent>;
+  private onboardingDialogOpening = false;
 
   protected readonly showOnboarding = computed(
     () =>
@@ -48,21 +49,35 @@ export class App {
         return;
       }
 
-      this.translationService.loadContext(this.languageService.language(), 'onboarding');
+      const lang = this.languageService.language();
 
-      if (!this.onboardingDialogRef) {
-        this.onboardingDialogRef = this.dialogService.openDialog<OnboardingModalComponent>(
-          OnboardingModalComponent,
-          {
-            width: '720px',
-            disableClose: true,
-            panelClass: ['onboarding-modal-panel'],
-            closeCallback: () => {
-              this.onboardingDialogRef = undefined;
-            },
-          },
-        );
+      if (this.onboardingDialogRef || this.onboardingDialogOpening) {
+        this.translationService.loadContext(lang, 'onboarding');
+        return;
       }
+
+      this.onboardingDialogOpening = true;
+      this.translationService
+        .loadContext(lang, 'onboarding')
+        .catch(() => {})
+        .finally(() => {
+          this.onboardingDialogOpening = false;
+
+          if (this.showOnboarding() && !this.onboardingDialogRef) {
+            this.onboardingDialogRef = this.dialogService.openDialog<OnboardingModalComponent>(
+              OnboardingModalComponent,
+              {
+                width: '720px',
+                disableClose: true,
+                panelClass: ['onboarding-modal-panel'],
+                backdropClass: 'onboarding-modal-backdrop',
+                closeCallback: () => {
+                  this.onboardingDialogRef = undefined;
+                },
+              },
+            );
+          }
+        });
     });
   }
 }

@@ -67,6 +67,7 @@ export class OnboardingModalComponent implements OnInit {
   readonly processingCompanyId = signal<string | null>(null);
   readonly companyPreview = signal<CompanyPreviewOutput | null>(null);
   readonly companyLookupStatus = signal<CompanyLookupStatus>('idle');
+  readonly ownerCompanyExists = signal<CompanyPreviewOutput | null>(null);
 
   readonly companyForm = new FormGroup({
     document: new FormControl('', {
@@ -114,6 +115,7 @@ export class OnboardingModalComponent implements OnInit {
     }
 
     this.watchCompanyDocument();
+    this.watchOwnerDocument();
   }
 
   submitCompany(): void {
@@ -138,6 +140,11 @@ export class OnboardingModalComponent implements OnInit {
   submitOwner(): void {
     this.ownerForm.markAllAsTouched();
     if (this.ownerForm.invalid) {
+      return;
+    }
+
+    if (this.ownerCompanyExists()) {
+      this.openCompanyExistsDialog();
       return;
     }
 
@@ -209,6 +216,38 @@ export class OnboardingModalComponent implements OnInit {
   }
 
   logout(): void {
+    const config: ConfirmationDialogConfiguration = {
+      title: this.translationService.translate('onboarding.logoutDialog.title'),
+      message: this.translationService.translate('onboarding.logoutDialog.message'),
+      closeable: true,
+      buttons: {
+        cancel: {
+          show: true,
+          order: 1,
+          name: 'cancel',
+          text: this.translationService.translate('common.dialog.cancel'),
+          color: 'secondary',
+        },
+        confirmation: {
+          show: true,
+          order: 2,
+          name: 'confirm',
+          text: this.translationService.translate('common.dialog.confirm'),
+          color: 'error',
+        },
+      },
+    };
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, { data: config });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.confirm) {
+        this.executeLogout();
+      }
+    });
+  }
+
+  private executeLogout(): void {
     this.authService.logout().subscribe({
       next: () => this.router.navigate(['/']),
       error: () => this.router.navigate(['/']),
@@ -219,6 +258,30 @@ export class OnboardingModalComponent implements OnInit {
     this.companyForm.controls.document.valueChanges
       .pipe(debounceTime(400), distinctUntilChanged())
       .subscribe(() => this.loadCompanyPreview());
+  }
+
+  private watchOwnerDocument(): void {
+    this.ownerForm.controls.document.valueChanges
+      .pipe(debounceTime(400), distinctUntilChanged())
+      .subscribe(() => this.checkOwnerDocument());
+  }
+
+  private checkOwnerDocument(): void {
+    const control = this.ownerForm.controls.document;
+
+    if (control.invalid || !control.value) {
+      this.ownerCompanyExists.set(null);
+      return;
+    }
+
+    this.apiAdapterService.executeRequest(
+      this.companyApiService.getByDocument(control.value),
+      {
+        ignoreLoading: true,
+        onSuccess: (response) => this.ownerCompanyExists.set(response.data),
+        onError: () => this.ownerCompanyExists.set(null),
+      },
+    );
   }
 
   private loadCompanyPreview(): void {
@@ -291,7 +354,7 @@ export class OnboardingModalComponent implements OnInit {
     });
   }
 
-  private applyCompanyLink(): void {
+  protected applyCompanyLink(): void {
     this.mode.set('company');
     this.companyForm.controls.document.setValue(this.ownerForm.controls.document.value);
     this.loadCompanyPreview();

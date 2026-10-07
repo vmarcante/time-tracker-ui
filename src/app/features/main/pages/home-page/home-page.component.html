@@ -1,26 +1,60 @@
-<div class="home-page">
-  <div class="home-page__grid">
-    <section class="home-page__panel home-page__panel--actions">
-      <div class="quick-actions">
-        @for (action of quickActions(); track action.id) {
-          <button type="button" class="quick-actions__item">
-            <span class="quick-actions__label">{{ action.label | translate }}</span>
-          </button>
-        }
-      </div>
-    </section>
+@if (isManager()) {
+  <!-- Layout split: painel empresa (esquerda) + conteúdo (direita) -->
+  <div class="home-split">
+    <!-- Painel esquerdo — navegação da empresa -->
+    <aside class="home-split__left">
+      <app-company-overview
+        [companyId]="companyId()"
+        [activeView]="activeView()"
+        (navigate)="navigateTo($event)"
+      />
+    </aside>
 
-    <div class="home-page__divider" aria-hidden="true"></div>
+    <div class="home-split__divider" aria-hidden="true"></div>
 
-    <section
-      class="home-page__panel home-page__panel--entries"
-      aria-labelledby="latest-entries-heading"
+    <!-- Painel direito — marcações pessoais ou detalhe da seção -->
+    <main
+      class="home-split__right"
+      [class.home-split__right--fade-out]="rightAnimating()"
     >
-      <h2 id="latest-entries-heading" class="home-page__panel-title">
-        {{ 'home.latestEntries.title' | translate }}
-      </h2>
+      @if (activeView() === 'overview') {
+        <div class="home-split__my-entries">
+          <h2 class="home-split__panel-title">{{ 'home.myEntries.title' | translate }}</h2>
+          <app-recent-time-entries />
+        </div>
+      }
 
-      <app-recent-time-entries />
-    </section>
+      @if (activeView() === 'members') {
+        <app-members-section
+          [companyId]="companyId()"
+          [companyRole]="companyRole()"
+          (back)="navigateBack()"
+        />
+      }
+
+      @if (activeView() === 'requests') {
+        <app-requests-section
+          [companyId]="companyId()"
+          (back)="navigateBack()"
+        />
+      }
+
+      @if (activeView() === 'teams') {
+        <app-teams-section (back)="navigateBack()" />
+      }
+
+      @if (activeView() === 'projects') {
+        <app-projects-section (back)="navigateBack()" />
+      }
+
+      @if (activeView() === 'time-entries') {
+        <app-time-entries-section (back)="navigateBack()" />
+      }
+    </main>
   </div>
-</div>
+} @else {
+  <!-- Layout simples para MEMBER/INDEPENDENT -->
+  <div class="home-simple">
+    <app-recent-time-entries />
+  </div>
+}

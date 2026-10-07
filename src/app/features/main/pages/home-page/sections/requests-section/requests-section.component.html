@@ -1,0 +1,203 @@
+<div class="section">
+  <div class="section__header">
+    <button type="button" class="section__back" (click)="back.emit()" [attr.aria-label]="'home.section.back' | translate">
+      <app-icon name="arrows/back" size="1rem" />
+      <span>{{ 'home.section.back' | translate }}</span>
+    </button>
+    <h2 class="section__title">{{ 'home.requests.title' | translate }}</h2>
+  </div>
+
+  <!-- Bloco: pendentes (oculto quando não há nenhuma) -->
+  @if (pendingLoading() || pending().length > 0) {
+    <section class="requests-group">
+      <h3 class="requests-group__subtitle">{{ 'home.requests.pendingTitle' | translate }}</h3>
+      <div class="section__body">
+        @if (pendingLoading()) {
+          <div class="section__loading">
+            @for (s of [1, 2, 3]; track s) {
+              <div class="pending-row pending-row--skeleton" aria-hidden="true">
+                <div class="pending-row__avatar-skeleton"></div>
+                <div class="pending-row__info-skeleton"></div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="pending-list">
+            @for (member of pending(); track member.membershipId) {
+              <div
+                class="pending-item"
+                [class.pending-item--expanded]="expandedId() === member.membershipId"
+                [class.pending-item--processing]="processingId() === member.membershipId"
+              >
+                <div
+                  class="pending-row"
+                  role="button"
+                  tabindex="0"
+                  [attr.aria-expanded]="expandedId() === member.membershipId"
+                  [attr.aria-label]="'home.requests.toggleDetails' | translate"
+                  (click)="toggleDetails(member.membershipId)"
+                  (keydown.enter)="toggleDetails(member.membershipId)"
+                >
+                  <div class="pending-row__avatar" aria-hidden="true">
+                    {{ member.name.charAt(0).toUpperCase() }}
+                  </div>
+                  <div class="pending-row__info">
+                    <span class="pending-row__name">{{ member.name }}</span>
+                    <span class="pending-row__meta">
+                      {{ 'home.requests.since' | translate }} {{ member.createdAt | date:'dd/MM/yyyy' }}
+                    </span>
+                  </div>
+                  <app-icon
+                    name="arrows/chevron-down"
+                    size="1rem"
+                    class="pending-row__chevron"
+                    [class.pending-row__chevron--open]="expandedId() === member.membershipId"
+                  />
+                  <div class="pending-row__actions" (click)="$event.stopPropagation()">
+                    <app-button
+                      [text]="'home.requests.reject' | translate"
+                      color="outline-error"
+                      [size]="{ small: true }"
+                      [loading]="processingId() === member.membershipId"
+                      (buttonClick)="reject(member)"
+                    />
+                    <app-button
+                      [text]="'home.requests.approve' | translate"
+                      color="success"
+                      [size]="{ small: true }"
+                      [loading]="processingId() === member.membershipId"
+                      (buttonClick)="approve(member)"
+                    />
+                  </div>
+                </div>
+
+                <div
+                  class="pending-details"
+                  [class.pending-details--open]="expandedId() === member.membershipId"
+                  [attr.aria-hidden]="expandedId() !== member.membershipId"
+                >
+                  <div class="pending-details__inner">
+                    <div class="pending-details__fields">
+                      <div class="pending-details__item">
+                        <span class="pending-details__label">{{ 'home.requests.detail.email' | translate }}</span>
+                        <span class="pending-details__value">{{ member.email || '—' }}</span>
+                      </div>
+                      <div class="pending-details__item">
+                        <span class="pending-details__label">{{ 'home.requests.detail.requestedAt' | translate }}</span>
+                        <span class="pending-details__value">{{ member.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                      </div>
+                      @if (member.age != null) {
+                        <div class="pending-details__item">
+                          <span class="pending-details__label">{{ 'home.requests.detail.age' | translate }}</span>
+                          <span class="pending-details__value">{{ 'home.requests.detail.ageYears' | translate:{ count: member.age } }}</span>
+                        </div>
+                      }
+                      @if (member.requestReason) {
+                        <div class="pending-details__item pending-details__item--full">
+                          <span class="pending-details__label">{{ 'home.requests.detail.reason' | translate }}</span>
+                          <span class="pending-details__reason">"{{ member.requestReason }}"</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <app-pagination
+            [page]="pendingCurrentPage()"
+            [totalPages]="pendingPage()?.totalPages ?? 0"
+            [loading]="pendingLoading()"
+            (pageChange)="loadPending($event)"
+          />
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Bloco: histórico (resolvidas) -->
+  <section class="requests-group">
+    <h3 class="requests-group__subtitle">{{ 'home.requests.history.title' | translate }}</h3>
+    <div class="section__body">
+      @if (resolvedLoading()) {
+        <div class="section__loading">
+          @for (s of [1, 2, 3]; track s) {
+            <div class="pending-row pending-row--skeleton" aria-hidden="true">
+              <div class="pending-row__avatar-skeleton"></div>
+              <div class="pending-row__info-skeleton"></div>
+            </div>
+          }
+        </div>
+      } @else if (resolved().length === 0) {
+        <div class="section__empty">
+          <app-icon name="objects/inbox" size="2rem" />
+          <p>{{ 'home.requests.history.empty' | translate }}</p>
+        </div>
+      } @else {
+        <div class="requests-table" role="table" [attr.aria-label]="'home.requests.history.title' | translate">
+          <div class="requests-table__head" role="row">
+            <span role="columnheader">{{ 'home.requests.history.member' | translate }}</span>
+            <span role="columnheader">{{ 'home.requests.history.type' | translate }}</span>
+            <span role="columnheader">{{ 'home.requests.history.role' | translate }}</span>
+            <span role="columnheader">{{ 'home.requests.history.status' | translate }}</span>
+            <span role="columnheader">{{ 'home.requests.history.requestedAt' | translate }}</span>
+            <span role="columnheader">{{ 'home.requests.history.resolved' | translate }}</span>
+          </div>
+
+          @for (member of resolved(); track member.membershipId) {
+            <div class="requests-table__row" role="row">
+              <div class="requests-table__cell requests-table__cell--member" role="cell">
+                <div class="requests-table__avatar" aria-hidden="true">
+                  {{ member.name.charAt(0).toUpperCase() }}
+                </div>
+                <div class="requests-table__member-info">
+                  <span class="requests-table__name">{{ member.name }}</span>
+                  <span class="requests-table__email">{{ member.email }}</span>
+                </div>
+              </div>
+              <span class="requests-table__cell" role="cell">
+                {{ 'home.requests.origin.' + member.origin | translate }}
+              </span>
+              <span class="requests-table__cell" role="cell">
+                {{ 'home.members.role.' + member.role | translate }}
+              </span>
+              <span class="requests-table__cell" role="cell">
+                <span
+                  class="requests-table__status"
+                  [class.requests-table__status--approved]="statusOf(member) === 'APPROVED'"
+                  [class.requests-table__status--rejected]="statusOf(member) === 'REJECTED'"
+                  [class.requests-table__status--declined]="statusOf(member) === 'DECLINED'"
+                >
+                  {{ 'home.requests.status.' + statusOf(member) | translate }}
+                </span>
+              </span>
+              <span class="requests-table__cell" role="cell">
+                {{ member.createdAt | date:'dd/MM/yyyy' }}
+              </span>
+              <span class="requests-table__cell requests-table__cell--resolved" role="cell">
+                {{ resolvedAt(member) | date:'dd/MM/yyyy' }}
+                @if (resolvedBy(member)) {
+                  <span class="requests-table__resolver">{{ resolvedBy(member) }}</span>
+                }
+                @if (member.rejectionReason) {
+                  <span class="requests-table__reason" [title]="member.rejectionReason">
+                    "{{ member.rejectionReason }}"
+                  </span>
+                }
+              </span>
+            </div>
+          }
+        </div>
+
+        <app-pagination
+          [page]="resolvedCurrentPage()"
+          [totalPages]="resolvedPage()?.totalPages ?? 0"
+          [totalElements]="resolvedPage()?.totalElements ?? null"
+          [loading]="resolvedLoading()"
+          (pageChange)="loadResolved($event)"
+        />
+      }
+    </div>
+  </section>
+</div>

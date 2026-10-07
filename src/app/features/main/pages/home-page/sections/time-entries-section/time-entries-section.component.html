@@ -1,0 +1,59 @@
+<div class="section">
+  <div class="section__header">
+    <button type="button" class="section__back" (click)="back.emit()" [attr.aria-label]="'home.section.back' | translate">
+      <app-icon name="arrows/back" size="1rem" />
+      <span>{{ 'home.section.back' | translate }}</span>
+    </button>
+    <h2 class="section__title">{{ 'home.timeEntries.title' | translate }}</h2>
+  </div>
+
+  <div class="section__body">
+    @if (loading()) {
+      <div class="section__loading">
+        @for (s of [1, 2, 3, 4]; track s) {
+          <div class="entry-row entry-row--skeleton" aria-hidden="true">
+            <div class="entry-row__user-skeleton"></div>
+            <div class="entry-row__name-skeleton"></div>
+            <div class="entry-row__duration-skeleton"></div>
+          </div>
+        }
+      </div>
+    } @else if (entries().length === 0) {
+      <div class="section__empty">
+        <app-icon name="objects/clock" size="2rem" />
+        <p>{{ 'home.timeEntries.empty' | translate }}</p>
+      </div>
+    } @else {
+      <div class="entry-list">
+        @for (entry of entries(); track entry.id) {
+          <div class="entry-row">
+            <div class="entry-row__user-avatar" aria-hidden="true">
+              {{ entry.userName.charAt(0).toUpperCase() }}
+            </div>
+            <div class="entry-row__info">
+              <span class="entry-row__name">{{ entry.name }}</span>
+              <span class="entry-row__meta">{{ entry.userName }} · {{ entry.projectName }}</span>
+            </div>
+            <div class="entry-row__right">
+              @if (entry.running) {
+                <span class="entry-row__running">
+                  <span class="entry-row__running-dot"></span>
+                  {{ 'home.timeEntries.running' | translate }}
+                </span>
+              }
+              <span class="entry-row__duration">{{ formatDuration(entry.durationSeconds) }}</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <app-pagination
+        [page]="currentPage()"
+        [totalPages]="page()?.totalPages ?? 0"
+        [totalElements]="page()?.totalElements ?? null"
+        [loading]="loading()"
+        (pageChange)="loadPage($event)"
+      />
+    }
+  </div>
+</div>

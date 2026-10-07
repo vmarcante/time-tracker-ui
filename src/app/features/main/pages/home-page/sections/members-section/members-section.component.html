@@ -1,0 +1,60 @@
+<div class="section">
+  <div class="section__header">
+    <button type="button" class="section__back" (click)="back.emit()" [attr.aria-label]="'home.section.back' | translate">
+      <app-icon name="arrows/back" size="1rem" />
+      <span>{{ 'home.section.back' | translate }}</span>
+    </button>
+    <h2 class="section__title">{{ 'home.members.title' | translate }}</h2>
+    <div class="section__actions">
+      @if (canManage()) {
+        <app-button
+          [text]="'home.members.invite' | translate"
+          color="primary"
+          [icon]="{ iconName: 'actions/add', position: 'left' }"
+        />
+      }
+    </div>
+  </div>
+
+  <div class="section__body">
+    @if (loading()) {
+      <div class="section__loading">
+        @for (s of [1, 2, 3, 4, 5]; track s) {
+          <div class="member-row member-row--skeleton" aria-hidden="true">
+            <div class="member-row__avatar-skeleton"></div>
+            <div class="member-row__info-skeleton"></div>
+          </div>
+        }
+      </div>
+    } @else if (members().length === 0) {
+      <div class="section__empty">
+        <app-icon name="objects/person" size="2rem" />
+        <p>{{ 'home.members.empty' | translate }}</p>
+      </div>
+    } @else {
+      <div class="member-list">
+        @for (member of members(); track member.membershipId) {
+          <div class="member-row">
+            <div class="member-row__avatar" [attr.aria-hidden]="true">
+              {{ member.name.charAt(0).toUpperCase() }}
+            </div>
+            <div class="member-row__info">
+              <span class="member-row__name">{{ member.name }}</span>
+              <span class="member-row__role member-row__role--{{ member.role | lowercase }}">
+                {{ 'home.members.role.' + member.role | translate }}
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <app-pagination
+        [page]="currentPage()"
+        [totalPages]="page()?.totalPages ?? 0"
+        [totalElements]="page()?.totalElements ?? null"
+        [loading]="loading()"
+        (pageChange)="loadPage($event)"
+      />
+    }
+  </div>
+</div>

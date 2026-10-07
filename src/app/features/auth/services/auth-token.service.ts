@@ -127,14 +127,14 @@ export class AuthTokenService {
   }
 
   private getStoredItem(key: string): string | null {
-    return localStorage.getItem(key);
+    return sessionStorage.getItem(key);
   }
 
   private setStoredItem(key: string, value: string): void {
-    localStorage.setItem(key, value);
+    sessionStorage.setItem(key, value);
   }
 
   private removeStoredItem(key: string): void {
-    localStorage.removeItem(key);
+    sessionStorage.removeItem(key);
   }
 }

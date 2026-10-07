@@ -86,7 +86,7 @@
 
           <ng-template #userMenuContent>
             @if (currentUser(); as user) {
-              <app-user-menu [user]="user" (logout)="logout()"></app-user-menu>
+              <app-user-menu [user]="user" (logout)="logout()" (profileClick)="openProfile()"></app-user-menu>
             }
           </ng-template>
         </div>

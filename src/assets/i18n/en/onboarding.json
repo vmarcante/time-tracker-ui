@@ -4,6 +4,10 @@
     "subtitle": "Before we start, we need to know if you work for a company.",
     "divider": "or",
     "logout": "Sign out",
+    "logoutDialog": {
+      "title": "Sign out",
+      "message": "Do you really want to sign out? Your onboarding is not complete yet."
+    },
     "modeToggle": "Usage type",
     "options": {
       "company": {
@@ -60,6 +64,10 @@
         "message": "A company is already registered with this CNPJ. Do you want to request membership to it as an employee?",
         "cancel": "Cancel",
         "confirm": "Link me to the company"
+      },
+      "existsInline": {
+        "message": "This CNPJ is already registered: {{company}}",
+        "action": "Request membership as employee"
       },
       "submit": "Register company"
     },

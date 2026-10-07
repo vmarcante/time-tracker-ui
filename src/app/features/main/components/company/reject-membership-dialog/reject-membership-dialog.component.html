@@ -1,0 +1,40 @@
+<app-dialog-shell>
+  <div class="reject-dialog">
+    <section class="reject-dialog__header">
+      <h2 class="reject-dialog__title">
+        {{ 'home.requests.rejectDialog.title' | translate }}
+      </h2>
+      <p class="reject-dialog__subtitle">
+        {{ 'home.requests.rejectDialog.subtitle' | translate:{ name: data.memberName } }}
+      </p>
+    </section>
+
+    <div class="reject-dialog__field">
+      <app-textarea-input
+        [control]="reasonControl"
+        [label]="'home.requests.rejectDialog.reason.label' | translate"
+        [placeholder]="'home.requests.rejectDialog.reason.placeholder' | translate"
+        [hint]="'home.requests.rejectDialog.reason.hint' | translate"
+        [rows]="3"
+        [maxLength]="500"
+      />
+    </div>
+
+    <div class="reject-dialog__actions">
+      <app-button
+        type="button"
+        color="outline-white"
+        [rounded]="true"
+        [text]="'home.requests.rejectDialog.cancel' | translate"
+        (buttonClick)="cancel()"
+      />
+      <app-button
+        type="button"
+        color="error"
+        [rounded]="true"
+        [text]="'home.requests.rejectDialog.confirm' | translate"
+        (buttonClick)="confirm()"
+      />
+    </div>
+  </div>
+</app-dialog-shell>

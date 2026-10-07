@@ -1,0 +1,52 @@
+{
+  "profile": {
+    "title": "Meu Perfil",
+    "subtitle": "Gerencie suas informações pessoais",
+    "avatar": {
+      "ariaLabel": "Avatar do usuário"
+    },
+    "section": {
+      "personal": "Informações pessoais",
+      "account": "Conta"
+    },
+    "field": {
+      "name": "Nome completo",
+      "email": "E-mail",
+      "phone": "Telefone",
+      "age": "Idade",
+      "locale": "Idioma",
+      "username": "Usuário",
+      "role": "Perfil de acesso",
+      "affiliation": "Tipo de afiliação",
+      "companyRole": "Papel na empresa"
+    },
+    "role": {
+      "ADMINISTRATOR": "Administrador",
+      "MODERATOR": "Moderador",
+      "USER": "Usuário"
+    },
+    "affiliation": {
+      "INDEPENDENT": "Independente",
+      "COMPANY": "Empresa",
+      "PENDING": "Pendente"
+    },
+    "companyRole": {
+      "OWNER": "Proprietário",
+      "ADMIN": "Administrador",
+      "MANAGER": "Gerente",
+      "MEMBER": "Membro"
+    },
+    "locale": {
+      "pt-BR": "Português (Brasil)",
+      "en-US": "English (US)"
+    },
+    "action": {
+      "save": "Salvar alterações",
+      "saving": "Salvando...",
+      "back": "Voltar"
+    },
+    "toast": {
+      "success": "Perfil atualizado com sucesso!"
+    }
+  }
+}
