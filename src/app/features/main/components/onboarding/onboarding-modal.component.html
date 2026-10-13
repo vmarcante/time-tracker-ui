@@ -64,28 +64,6 @@
             type="button"
             role="radio"
             class="mode-card"
-            [class.mode-card--selected]="mode() === 'company'"
-            [attr.aria-checked]="mode() === 'company'"
-            (click)="mode.set('company')"
-          >
-            <span class="mode-card__radio" aria-hidden="true"></span>
-            <span class="mode-card__icon" aria-hidden="true">
-              <app-icon name="objects/new-person" [size]="20" />
-            </span>
-            <span class="mode-card__text">
-              <span class="mode-card__title">{{
-                'onboarding.options.company.title' | translate
-              }}</span>
-              <span class="mode-card__desc">{{
-                'onboarding.options.company.desc' | translate
-              }}</span>
-            </span>
-          </button>
-
-          <button
-            type="button"
-            role="radio"
-            class="mode-card"
             [class.mode-card--selected]="mode() === 'independent'"
             [attr.aria-checked]="mode() === 'independent'"
             (click)="mode.set('independent')"
@@ -100,6 +78,28 @@
               }}</span>
               <span class="mode-card__desc">{{
                 'onboarding.options.independent.desc' | translate
+              }}</span>
+            </span>
+          </button>
+
+          <button
+            type="button"
+            role="radio"
+            class="mode-card"
+            [class.mode-card--selected]="mode() === 'company'"
+            [attr.aria-checked]="mode() === 'company'"
+            (click)="mode.set('company')"
+          >
+            <span class="mode-card__radio" aria-hidden="true"></span>
+            <span class="mode-card__icon" aria-hidden="true">
+              <app-icon name="objects/new-person" [size]="20" />
+            </span>
+            <span class="mode-card__text">
+              <span class="mode-card__title">{{
+                'onboarding.options.company.title' | translate
+              }}</span>
+              <span class="mode-card__desc">{{
+                'onboarding.options.company.desc' | translate
               }}</span>
             </span>
           </button>
@@ -195,6 +195,8 @@
                 [text]="'onboarding.company.submit' | translate"
                 type="submit"
                 color="primary"
+                [rounded]="true"
+                [icon]="{ iconName: 'arrows/next', svgIcon: true, color: '#FFF', position: 'right' }"
                 [loading]="isSubmitting()"
                 [disabled]="isSubmitting()"
               />
@@ -259,6 +261,8 @@
                 [text]="'onboarding.owner.submit' | translate"
                 type="submit"
                 color="primary"
+                [rounded]="true"
+                [icon]="{ iconName: 'objects/building', svgIcon: true, color: '#FFF', position: 'right' }"
                 [loading]="isSubmitting()"
                 [disabled]="isSubmitting() || !!ownerCompanyExists()"
               />
@@ -273,19 +277,14 @@
               {{ 'onboarding.independent.description' | translate }}
             </p>
 
-            <app-checkbox-input
-              [formControl]="independentControl"
-              [label]="'onboarding.independent.checkbox' | translate"
-              [errorMessages]="{
-                required: 'onboarding.independent.required' | translate,
-              }"
-            />
-
             <div class="onboarding-option__actions">
               <app-button
                 [text]="'onboarding.independent.submit' | translate"
                 color="primary"
-                [disabled]="!independentControl.value || isSubmitting()"
+                [rounded]="true"
+                [icon]="{ iconName: 'arrows/next', svgIcon: true, color: '#FFF', position: 'right' }"
+                [disabled]="isSubmitting()"
+                [loading]="isSubmitting()"
                 (buttonClick)="submitIndependent()"
               />
             </div>

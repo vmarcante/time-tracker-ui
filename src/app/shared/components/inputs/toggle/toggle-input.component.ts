@@ -12,7 +12,7 @@ import { TranslationService } from '../../../../shared/services/translation.serv
 })
 export class ToggleInputComponent {
   // Form control
-  @Input() formControl?: FormControl;
+  @Input() control?: FormControl;
   @Input() formGroup?: FormGroup;
   @Input() controlName?: string;
 
@@ -36,8 +36,8 @@ export class ToggleInputComponent {
   private translationService: TranslationService = inject(TranslationService);
 
   protected get effectiveControl(): FormControl | undefined {
-    if (this.formControl) {
-      return this.formControl;
+    if (this.control) {
+      return this.control;
     }
 
     if (this.formGroup && this.controlName) {
@@ -49,8 +49,10 @@ export class ToggleInputComponent {
 
   @Output() onValueChange = new EventEmitter<InputValue>();
 
+  private readonly generatedId = `toggle-input-${Math.random().toString(36).substring(2, 11)}`;
+
   protected get generatedInputId(): string {
-    return this.inputId || `toggle-input-${Math.random().toString(36).substring(2, 11)}`;
+    return this.inputId || this.generatedId;
   }
 
   protected get hasError(): boolean {

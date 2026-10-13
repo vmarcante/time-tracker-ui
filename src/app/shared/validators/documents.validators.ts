@@ -120,7 +120,42 @@ export class DocumentsValidators {
   }
 
   /**
-   * Validates a Brazilian phone number
+   * Valid Brazilian area codes (DDD) — mirrors backend PhoneValidator.
+   */
+  private static readonly VALID_DDDS = new Set<number>([
+    11, 12, 13, 14, 15, 16, 17, 18, 19,
+    21, 22, 24,
+    27, 28,
+    31, 32, 33, 34, 35, 37, 38,
+    41, 42, 43, 44, 45, 46,
+    47, 48, 49,
+    51, 53, 54, 55,
+    61,
+    62, 64,
+    63,
+    65, 66,
+    67,
+    68,
+    69,
+    71, 73, 74, 75, 77,
+    79,
+    81, 87,
+    82,
+    83,
+    84,
+    85, 88,
+    86, 89,
+    91, 93, 94,
+    92, 97,
+    95,
+    96,
+    98, 99,
+  ]);
+
+  /**
+   * Validates a Brazilian phone number.
+   * Mirrors backend PhoneValidator: 10-11 digits, valid DDD,
+   * cellphones (11 digits) must have 9 as third digit, no repeated digits.
    * @param phoneNumber The phone number to validate
    * @returns True if the phone number is valid, false otherwise
    */
@@ -131,27 +166,69 @@ export class DocumentsValidators {
 
     const phone = phoneNumber.replace(/[^\d]/g, '');
 
-    if (phone.length < 10 || phone.length > 11) {
+    if (phone.length !== 10 && phone.length !== 11) {
       return false;
     }
 
-    if (/(\d)\1{9,10}/.test(phone)) {
+    if (!this.VALID_DDDS.has(parseInt(phone.substring(0, 2), 10))) {
       return false;
     }
 
-    if (phone.length === 10) {
-      return true;
+    if (/^(\d)\1+$/.test(phone)) {
+      return false;
     }
 
-    if (phone.length === 11) {
-      const nineDigitCellphone = phone.charAt(2);
-      if (nineDigitCellphone !== '9') {
-        return false;
-      }
-
-      return true;
+    if (phone.length === 11 && phone.charAt(2) !== '9') {
+      return false;
     }
 
-    return false;
+    return true;
+  }
+
+  /**
+   * ValidatorFn wrapping phone() for reactive forms.
+   * Empty values pass — combine with Validators.required when mandatory.
+   */
+  static phoneNumber(control: AbstractControl): ValidationErrors | null {
+    const value = control.value as string;
+    if (!value) {
+      return null;
+    }
+
+    return DocumentsValidators.phone(value) ? null : { invalidPhone: true };
+  }
+
+  /**
+   * Validates a person's full name mirroring backend rules.
+   * Error value is the i18n key for the specific violated rule.
+   * Empty values pass — combine with Validators.required/minLength/maxLength.
+   */
+  static fullName(control: AbstractControl): ValidationErrors | null {
+    const raw = control.value as string;
+    if (!raw) {
+      return null;
+    }
+
+    const value = raw.trim();
+
+    // Charset rule also covers digits and emoji (none are in the allowed set)
+    if (!/^[a-zA-ZÀ-ÿ\s'-]+$/.test(value)) {
+      return { fullName: 'validation.fullName.invalidChars' };
+    }
+
+    if (/\s{2,}/.test(value)) {
+      return { fullName: 'validation.fullName.multipleSpaces' };
+    }
+
+    const parts = value.split(/\s+/);
+    if (parts.length < 2) {
+      return { fullName: 'validation.fullName.missingSurname' };
+    }
+
+    if (parts.some((part) => part.length < 2)) {
+      return { fullName: 'validation.fullName.partTooShort' };
+    }
+
+    return null;
   }
 }

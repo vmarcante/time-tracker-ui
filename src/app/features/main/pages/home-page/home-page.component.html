@@ -13,10 +13,7 @@
     <div class="home-split__divider" aria-hidden="true"></div>
 
     <!-- Painel direito — marcações pessoais ou detalhe da seção -->
-    <main
-      class="home-split__right"
-      [class.home-split__right--fade-out]="rightAnimating()"
-    >
+    <main class="home-split__right" [class.home-split__right--fade-out]="rightAnimating()">
       @if (activeView() === 'overview') {
         <div class="home-split__my-entries">
           <h2 class="home-split__panel-title">{{ 'home.myEntries.title' | translate }}</h2>
@@ -33,10 +30,7 @@
       }
 
       @if (activeView() === 'requests') {
-        <app-requests-section
-          [companyId]="companyId()"
-          (back)="navigateBack()"
-        />
+        <app-requests-section [companyId]="companyId()" (back)="navigateBack()" />
       }
 
       @if (activeView() === 'teams') {

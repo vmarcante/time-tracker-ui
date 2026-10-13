@@ -1,10 +1,12 @@
 <div class="section">
   <div class="section__header">
     <button type="button" class="section__back" (click)="back.emit()" [attr.aria-label]="'home.section.back' | translate">
-      <app-icon name="arrows/back" size="1rem" />
+      <app-icon name="arrows/back" size="0.875rem" />
       <span>{{ 'home.section.back' | translate }}</span>
     </button>
-    <h2 class="section__title">{{ 'home.timeEntries.title' | translate }}</h2>
+    <div class="section__heading">
+      <h2 class="section__title">{{ 'home.timeEntries.title' | translate }}</h2>
+    </div>
   </div>
 
   <div class="section__body">

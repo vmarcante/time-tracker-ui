@@ -257,9 +257,14 @@ export class RegisterFormComponent implements OnInit {
           Validators.maxLength(30),
           DocumentsValidators.username,
         ]),
-        name: new FormControl('', [Validators.required, Validators.minLength(3)]),
+        name: new FormControl('', [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(100),
+          DocumentsValidators.fullName,
+        ]),
         email: new FormControl('', [Validators.required, Validators.email]),
-        phone: new FormControl('', [Validators.pattern(/^\d{10,11}$/)]),
+        phone: new FormControl('', [DocumentsValidators.phoneNumber]),
         age: new FormControl('', [Validators.required, Validators.min(18), Validators.max(120)]),
         password: new FormControl('', [
           Validators.required,

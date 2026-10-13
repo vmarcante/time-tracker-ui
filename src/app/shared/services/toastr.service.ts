@@ -100,7 +100,9 @@ export class ToastrService {
       ? TOASTR_CONFIG.MOBILE_POSITION
       : TOASTR_CONFIG.DESKTOP_POSITION;
 
-    const panelClass = isMobileOrTablet() ? ['alert-mobile-fullwidth'] : [];
+    const panelClass = isMobileOrTablet()
+      ? ['toastr-panel', 'alert-mobile-fullwidth']
+      : ['toastr-panel'];
 
     this.currentAlert = this.matDialog.open(ToastrComponent, {
       position,

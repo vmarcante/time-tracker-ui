@@ -64,8 +64,6 @@
 }
 
 .textarea-input-counter {
-  font-size: var(--font-size-hint);
-  color: var(--color-text-tertiary);
-  display: flex;
-  gap: 1px;
+  font-size: var(--font-size-hint) !important;
+  color: var(--color-text-tertiary) !important;
 }

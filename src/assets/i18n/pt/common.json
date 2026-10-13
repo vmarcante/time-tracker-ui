@@ -59,6 +59,12 @@
     "invalidFormat": "Formato inválido",
     "usernamePattern": "Use apenas letras, números e underscore",
     "invalidPhone": "Telefone inválido",
+    "fullName": {
+      "invalidChars": "Use apenas letras, espaços, apóstrofos e hífens",
+      "multipleSpaces": "Remova os espaços duplicados",
+      "missingSurname": "Informe nome e sobrenome",
+      "partTooShort": "Cada parte do nome deve ter ao menos 2 caracteres"
+    },
     "passwordStrength": "A senha deve conter maiúsculas, minúsculas, números e caracteres especiais",
     "checkAvailability": "Por favor, verifique se o username e email estão disponíveis",
     "passwordMismatch": "As senhas não coincidem"

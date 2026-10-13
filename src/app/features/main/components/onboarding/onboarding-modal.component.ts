@@ -10,7 +10,6 @@ import { ApiAdapterService } from '../../../../shared/services/api/api-adapter.s
 import { ToastrService } from '../../../../shared/services/toastr.service';
 import { TextInputComponent } from '../../../../shared/components/inputs/text/text-input.component';
 import { TextareaInputComponent } from '../../../../shared/components/inputs/textarea/textarea-input.component';
-import { CheckboxInputComponent } from '../../../../shared/components/inputs/checkbox/checkbox-input.component';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { ConfirmationDialogComponent } from '../../../../shared/components/dialogs/confirmation/confirmation-dialog.component';
@@ -40,7 +39,6 @@ type CompanyLookupStatus = 'idle' | 'checking' | 'found' | 'not-found';
     TranslatePipe,
     TextInputComponent,
     TextareaInputComponent,
-    CheckboxInputComponent,
     ButtonComponent,
     IconComponent,
   ],
@@ -60,7 +58,7 @@ export class OnboardingModalComponent implements OnInit {
   private dialog = inject(MatDialog);
 
   readonly view = signal<OnboardingView>('choice');
-  readonly mode = signal<OnboardingMode>('company');
+  readonly mode = signal<OnboardingMode>('independent');
   readonly pendingCompanyName = signal('');
   readonly invitations = signal<CompanyInvitationOutput[]>([]);
   readonly invitationsLoading = signal(true);
@@ -92,8 +90,6 @@ export class OnboardingModalComponent implements OnInit {
     }),
   });
 
-  readonly independentControl = new FormControl(false, { nonNullable: true });
-
   readonly isSubmitting = computed(
     () => this.apiAdapterService.customLoadings().get('onboarding') ?? false,
   );
@@ -124,16 +120,18 @@ export class OnboardingModalComponent implements OnInit {
       return;
     }
 
-    const reason = this.companyForm.controls.requestReason.value.trim();
-    const request = this.onboardingApiService.complete({
-      document: this.companyForm.controls.document.value,
-      requestReason: reason || undefined,
-    });
+    this.openSubmitConfirmation(() => {
+      const reason = this.companyForm.controls.requestReason.value.trim();
+      const request = this.onboardingApiService.complete({
+        document: this.companyForm.controls.document.value,
+        requestReason: reason || undefined,
+      });
 
-    this.apiAdapterService.executeRequest(request, {
-      customLoadingName: 'onboarding',
-      onSuccess: (response) => this.handleOnboardingSuccess(response.data),
-      onError: (error) => this.handleError(error, 'onboarding.errors.company'),
+      this.apiAdapterService.executeRequest(request, {
+        customLoadingName: 'onboarding',
+        onSuccess: (response) => this.handleOnboardingSuccess(response.data),
+        onError: (error) => this.handleError(error, 'onboarding.errors.company'),
+      });
     });
   }
 
@@ -148,32 +146,67 @@ export class OnboardingModalComponent implements OnInit {
       return;
     }
 
-    const { legalName, tradeName, document } = this.ownerForm.getRawValue();
-    const request = this.companyApiService.create({
-      legalName: legalName.trim(),
-      tradeName: tradeName.trim() || undefined,
-      document,
-    });
+    this.openSubmitConfirmation(() => {
+      const { legalName, tradeName, document } = this.ownerForm.getRawValue();
+      const request = this.companyApiService.create({
+        legalName: legalName.trim(),
+        tradeName: tradeName.trim() || undefined,
+        document,
+      });
 
-    this.apiAdapterService.executeRequest(request, {
-      customLoadingName: 'onboarding',
-      onSuccess: () => this.finishOnboarding(),
-      onError: (error) => this.handleOwnerError(error),
+      this.apiAdapterService.executeRequest(request, {
+        customLoadingName: 'onboarding',
+        onSuccess: () => this.finishOnboarding(),
+        onError: (error) => this.handleOwnerError(error),
+      });
     });
   }
 
   submitIndependent(): void {
-    if (!this.independentControl.value) {
-      this.independentControl.markAsTouched();
-      return;
-    }
+    this.openSubmitConfirmation(() => {
+      const request = this.onboardingApiService.complete({ independent: true });
 
-    const request = this.onboardingApiService.complete({ independent: true });
+      this.apiAdapterService.executeRequest(request, {
+        customLoadingName: 'onboarding',
+        onSuccess: () => this.finishOnboarding(),
+        onError: (error) => this.handleError(error, 'onboarding.errors.independent'),
+      });
+    });
+  }
 
-    this.apiAdapterService.executeRequest(request, {
-      customLoadingName: 'onboarding',
-      onSuccess: () => this.finishOnboarding(),
-      onError: (error) => this.handleError(error, 'onboarding.errors.independent'),
+  private openSubmitConfirmation(onConfirm: () => void): void {
+    const type = this.translationService.translate(
+      `onboarding.confirmDialog.type.${this.mode()}`,
+    );
+
+    const config: ConfirmationDialogConfiguration = {
+      title: this.translationService.translate('onboarding.confirmDialog.title'),
+      message: this.translationService.translate('onboarding.confirmDialog.message', { type }),
+      closeable: true,
+      buttons: {
+        cancel: {
+          show: true,
+          order: 1,
+          name: 'cancel',
+          text: this.translationService.translate('common.dialog.cancel'),
+          color: 'secondary',
+        },
+        confirmation: {
+          show: true,
+          order: 2,
+          name: 'confirm',
+          text: this.translationService.translate('common.dialog.confirm'),
+          color: 'primary',
+        },
+      },
+    };
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, { data: config });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.confirm) {
+        onConfirm();
+      }
     });
   }
 

@@ -9,9 +9,18 @@
       "message": "Deseja realmente sair? Seu onboarding ainda não foi concluído."
     },
     "modeToggle": "Tipo de uso",
+    "confirmDialog": {
+      "title": "Confirmar cadastro",
+      "message": "Você está se cadastrando como {{type}}. Deseja continuar?",
+      "type": {
+        "independent": "Autônomo",
+        "company": "Colaborador",
+        "owner": "Proprietário/Sócio"
+      }
+    },
     "options": {
       "company": {
-        "title": "Funcionário",
+        "title": "Colaborador",
         "desc": "Trabalho em uma empresa e preciso me vincular a ela"
       },
       "independent": {
@@ -19,8 +28,8 @@
         "desc": "Trabalho por conta própria, com meus projetos e clientes"
       },
       "owner": {
-        "title": "Empresário",
-        "desc": "Tenho uma empresa e quero cadastrá-la"
+        "title": "Proprietário/Sócio",
+        "desc": "Sou proprietário ou sócio e quero cadastrar minha empresa"
       }
     },
     "company": {
@@ -74,8 +83,6 @@
     "independent": {
       "title": "Não tenho vínculo com empresa",
       "description": "Use o Time Tracker de forma independente, com seus próprios projetos e clientes. Você pode se vincular a uma empresa depois.",
-      "checkbox": "Confirmo que não possuo vínculo com uma empresa",
-      "required": "É preciso confirmar para continuar",
       "submit": "Continuar como autônomo"
     },
     "invitations": {

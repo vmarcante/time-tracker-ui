@@ -72,3 +72,20 @@ export interface CompanyOverviewCounts {
 export interface CompanyMenuOverviewOutput {
   pendingMembershipsCount: number;
 }
+
+export type PersonInviteLookupStatus = 'NOT_FOUND' | 'AVAILABLE' | 'IN_THIS_COMPANY' | 'IN_ANOTHER_COMPANY';
+
+export interface PersonInviteLookupOutput {
+  status: PersonInviteLookupStatus;
+  personId: string | null;
+  name: string | null;
+  email: string | null;
+}
+
+export interface PreRegisterAndInviteInput {
+  name: string;
+  email: string;
+  phone: string | null;
+  age: number | null;
+  role: CompanyRole;
+}

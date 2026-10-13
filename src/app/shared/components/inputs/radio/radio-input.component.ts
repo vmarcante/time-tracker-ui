@@ -13,7 +13,7 @@ import { TranslationService } from '../../../../shared/services/translation.serv
 })
 export class RadioInputComponent {
   // Form control
-  @Input() formControl?: FormControl;
+  @Input() control?: FormControl;
 
   // UI properties
   @Input() label: string = '';
@@ -37,12 +37,14 @@ export class RadioInputComponent {
 
   @Output() onValueChange = new EventEmitter<InputValue>();
 
+  private readonly generatedId = `radio-input-${Math.random().toString(36).substring(2, 11)}`;
+
   protected get generatedInputId(): string {
-    return this.inputId || `radio-input-${Math.random().toString(36).substring(2, 11)}`;
+    return this.inputId || this.generatedId;
   }
 
   protected get hasError(): boolean {
-    const ctrl = this.formControl;
+    const ctrl = this.control;
     return ctrl ? ctrl.invalid && ctrl.touched : false;
   }
 
@@ -80,7 +82,7 @@ export class RadioInputComponent {
   }
 
   protected get errorMessage(): string {
-    const ctrl = this.formControl;
+    const ctrl = this.control;
     if (!ctrl || !ctrl.errors || !ctrl.touched) {
       return '';
     }
@@ -96,7 +98,7 @@ export class RadioInputComponent {
   }
 
   protected onChange(value: InputValue): void {
-    this.formControl?.setValue(value);
+    this.control?.setValue(value);
     this.onValueChange.emit(value);
   }
 }

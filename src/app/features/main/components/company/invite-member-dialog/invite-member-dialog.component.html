@@ -1,0 +1,185 @@
+<app-dialog-shell>
+  <div class="invite-layout">
+
+    <!-- Left panel — step description -->
+    <div class="invite-panel">
+      <div class="invite-panel__content">
+        <p class="invite-panel__description">
+          @if (currentStep() === 1) {
+            {{ 'home.members.inviteDialog.steps.emailDescription' | translate }}
+          } @else {
+            {{ 'home.members.inviteDialog.steps.detailsDescription' | translate }}
+          }
+        </p>
+      </div>
+    </div>
+
+    <!-- Vertical step progress — positioned at panel boundary -->
+    <div class="invite-progress">
+      <app-step-progress
+        class="invite-step-progress"
+        [config]="stepProgressConfig()"
+        [currentStep]="currentStep()"
+        orientation="vertical"
+        (stepClick)="goToStep($event)"
+      />
+    </div>
+
+    <!-- Right panel — content -->
+    <div class="invite-content">
+
+      <div class="invite-content__header">
+        <h1 class="invite-content__title">
+          {{ 'home.members.inviteDialog.title' | translate }}
+        </h1>
+        <p class="invite-content__subtitle">
+          @if (currentStep() === 1) {
+            {{ 'home.members.inviteDialog.subtitle.step1' | translate }}
+          } @else {
+            {{ 'home.members.inviteDialog.subtitle.step2' | translate }}
+          }
+        </p>
+      </div>
+
+      <div class="invite-content__fields">
+
+        <!-- Step 1: Email -->
+        @if (currentStep() === 1) {
+          <div class="invite-dialog__email-row">
+            <app-text-input
+              class="invite-dialog__email-input"
+              inputType="email"
+              [control]="emailControl"
+              [labelIcon]="'objects/envelope'"
+              [label]="'home.members.inviteDialog.email.label' | translate"
+              [placeholder]="'home.members.inviteDialog.email.placeholder' | translate"
+              [required]="true"
+              [errorMessages]="{ availability: inviteError() }"
+            />
+            <div class="invite-dialog__lookup-indicator">
+              @if (lookupLoading()) {
+                <mat-progress-spinner [diameter]="18" [strokeWidth]="2" mode="indeterminate" />
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Step 2: Result + role -->
+        @if (currentStep() === 2) {
+
+          @if (isAvailable()) {
+            <div class="invite-dialog__person-card">
+              <div class="invite-dialog__person-avatar">
+                {{ lookupResult()?.name?.charAt(0)?.toUpperCase() }}
+              </div>
+              <div class="invite-dialog__person-info">
+                <span class="invite-dialog__person-name">{{ lookupResult()?.name }}</span>
+                <span class="invite-dialog__person-email">{{ emailControl.value }}</span>
+              </div>
+            </div>
+          }
+
+          @if (isNotFound()) {
+            <app-text-input
+              [control]="nameControl"
+              [labelIcon]="'objects/person'"
+              [label]="'home.members.inviteDialog.name.label' | translate"
+              [placeholder]="'home.members.inviteDialog.name.placeholder' | translate"
+              [required]="true"
+            />
+
+            <div class="invite-dialog__row">
+              <app-text-input
+                class="invite-dialog__field--phone"
+                inputType="tel"
+                [control]="phoneControl"
+                [labelIcon]="'objects/phone'"
+                [label]="'home.members.inviteDialog.phone.label' | translate"
+                [placeholder]="'home.members.inviteDialog.phone.placeholder' | translate"
+              />
+
+              <app-integer-input
+                class="invite-dialog__field--age"
+                [control]="ageControl"
+                [labelIcon]="'objects/calendar'"
+                [label]="'home.members.inviteDialog.age.label' | translate"
+                [placeholder]="'home.members.inviteDialog.age.placeholder' | translate"
+              />
+            </div>
+          }
+
+          <app-select-input
+            [control]="roleControl"
+            [labelIcon]="'objects/shield'"
+            [label]="'home.members.inviteDialog.role.label' | translate"
+            [placeholder]="'home.members.inviteDialog.role.placeholder' | translate"
+            [options]="roleOptions()"
+            [required]="true"
+          />
+
+          @if (isNotFound()) {
+            <p class="invite-dialog__pre-register-note">
+              {{ 'home.members.inviteDialog.preRegisterNote' | translate }}
+            </p>
+          }
+        }
+
+      </div>
+
+      <!-- Actions -->
+      <div class="invite-dialog__actions">
+        @if (currentStep() === 1) {
+          <app-button
+            type="button"
+            color="secondary"
+            [rounded]="true"
+            [size]="{ fullWidth: true }"
+            [text]="'home.members.inviteDialog.cancel' | translate"
+            (buttonClick)="cancel()"
+          />
+          <app-button
+            type="button"
+            color="primary"
+            [rounded]="true"
+            [size]="{ fullWidth: true }"
+            [text]="'home.members.inviteDialog.next' | translate"
+            [icon]="{ iconName: 'arrows/next', svgIcon: true, color: '#FFF', position: 'right' }"
+            [disabled]="!canProceed()"
+            (buttonClick)="nextStep()"
+          />
+        } @else {
+          <app-button
+            type="button"
+            color="secondary"
+            [rounded]="true"
+            [size]="{ fullWidth: true }"
+            [text]="'home.members.inviteDialog.previous' | translate"
+            [icon]="{ iconName: 'arrows/back', svgIcon: true, position: 'left' }"
+            (buttonClick)="previousStep()"
+          />
+          @if (isAvailable()) {
+            <app-button
+              type="button"
+              color="primary"
+              [rounded]="true"
+              [size]="{ fullWidth: true }"
+              [text]="'home.members.inviteDialog.sendInvite' | translate"
+              (buttonClick)="confirmInvite()"
+            />
+          }
+          @if (isNotFound()) {
+            <app-button
+              type="button"
+              color="primary"
+              [rounded]="true"
+              [size]="{ fullWidth: true }"
+              [text]="'home.members.inviteDialog.registerAndInvite' | translate"
+              (buttonClick)="confirmPreRegister()"
+            />
+          }
+        }
+      </div>
+
+    </div>
+  </div>
+</app-dialog-shell>

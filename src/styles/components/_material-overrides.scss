@@ -54,7 +54,8 @@
   min-height: 14px !important;
 }
 
-.mat-text-input-field--no-subscript .mat-mdc-form-field-subscript-wrapper {
+.mat-text-input-field--no-subscript .mat-mdc-form-field-subscript-wrapper,
+.mat-integer-input-field--no-subscript .mat-mdc-form-field-subscript-wrapper {
   display: none !important;
 }
 
@@ -82,11 +83,25 @@ input.mat-mdc-input-element {
   background-color: var(--color-background-input) !important;
   display: flex !important;
   align-items: center !important;
-  
+
   &:focus {
     background-color: var(--color-background-input-focus) !important;
   }
-  
+
+  &:disabled,
+  &[readonly] {
+    background-color: var(--color-background-input-disabled) !important;
+    cursor: not-allowed !important;
+  }
+}
+
+textarea.mat-mdc-input-element {
+  background-color: var(--color-background-input) !important;
+
+  &:focus {
+    background-color: var(--color-background-input-focus) !important;
+  }
+
   &:disabled,
   &[readonly] {
     background-color: var(--color-background-input-disabled) !important;
@@ -125,6 +140,92 @@ input.mat-mdc-input-element {
 
 .mat-mdc-form-field-focus-overlay {
   background-color: transparent !important;
+}
+
+// ============================================
+// FORM FIELD COLOR TOKENS (override Material cyan theme)
+// ============================================
+// Sobrescreve a paleta cyan do tema com as cores neutras do projeto
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-outline-color: var(--color-border);
+  --mdc-outlined-text-field-hover-outline-color: var(--color-border-strong);
+  --mdc-outlined-text-field-focus-outline-color: var(--color-border-focus);
+  --mdc-outlined-text-field-focus-label-text-color: var(--color-border-focus);
+  --mdc-outlined-text-field-caret-color: var(--color-primary);
+  --mdc-outlined-text-field-input-text-color: var(--color-text-primary);
+  --mdc-outlined-text-field-error-outline-color: var(--color-error);
+  --mdc-outlined-text-field-error-focus-outline-color: var(--color-error);
+  --mdc-outlined-text-field-error-hover-outline-color: var(--color-error-dark);
+  --mat-select-focused-arrow-color: var(--color-text-secondary);
+  --mat-select-arrow-color: var(--color-text-tertiary);
+}
+
+// ============================================
+// ANGULAR MATERIAL SELECT OVERRIDES
+// ============================================
+
+// Trigger: altura e padding iguais ao text-input
+.mat-mdc-select-trigger {
+  height: var(--input-height) !important;
+  padding: 0 var(--input-padding-horizontal) !important;
+  box-sizing: border-box !important;
+}
+
+.mat-mdc-select-value {
+  font-size: var(--font-size-input) !important;
+  color: var(--color-text-primary) !important;
+  line-height: var(--input-height) !important;
+}
+
+.mat-mdc-select-placeholder {
+  color: var(--color-text-tertiary) !important;
+  opacity: 0.7 !important;
+}
+
+.mat-mdc-select-arrow-wrapper {
+  height: var(--input-height) !important;
+  padding-right: 0 !important;
+  transform: none !important;
+}
+
+.mat-mdc-select-arrow {
+  color: var(--color-text-tertiary) !important;
+}
+
+.mat-mdc-form-field.mat-focused .mat-mdc-select-arrow {
+  color: var(--color-text-primary) !important;
+}
+
+// Painel dropdown
+.mat-mdc-select-panel {
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: var(--shadow-md) !important;
+  padding: var(--spacing-xs) 0 !important;
+  background-color: var(--color-background-card) !important;
+}
+
+// Opções
+.mat-mdc-option {
+  min-height: 36px !important;
+  font-size: var(--font-size-input) !important;
+  padding: 0 var(--input-padding-horizontal) !important;
+
+  .mdc-list-item__primary-text {
+    font-size: var(--font-size-input) !important;
+    color: var(--color-text-primary) !important;
+  }
+
+  &.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+    background-color: var(--color-surface) !important;
+  }
+
+  // Cor do checkmark da opção selecionada
+  .mat-pseudo-checkbox-minimal {
+    &::after {
+      color: var(--color-primary) !important;
+    }
+  }
 }
 
 // ============================================
@@ -244,6 +345,22 @@ input.mat-mdc-input-element {
   background-color: rgba(30, 41, 59, 0.45);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+}
+
+// ============================================
+// TOASTR (alertas)
+// ============================================
+.toastr-panel {
+  .mat-mdc-dialog-container {
+    padding: 0;
+  }
+
+  .mdc-dialog__surface {
+    padding: 0;
+    background-color: transparent;
+    box-shadow: none;
+    overflow: visible;
+  }
 }
 
 // Previne scroll no body quando dialogs fullscreen estão abertas

@@ -6,6 +6,9 @@ import { IconComponent } from '../../../../../../shared/components/icon/icon.com
 import { PaginationComponent } from '../../../../../../shared/components/pagination/pagination.component';
 import { ApiAdapterService } from '../../../../../../shared/services/api/api-adapter.service';
 import { DialogService } from '../../../../../../shared/services/dialog.service';
+import { TranslationService } from '../../../../../../shared/services/translation.service';
+import { ConfirmationDialogComponent } from '../../../../../../shared/components/dialogs/confirmation/confirmation-dialog.component';
+import { ConfirmationDialogConfiguration } from '../../../../../../shared/types';
 import { CompanyManagementApiService } from '../../../../services/company-management.api.service';
 import {
   RejectMembershipDialogComponent,
@@ -26,6 +29,7 @@ export class RequestsSectionComponent implements OnInit {
   private companyApi = inject(CompanyManagementApiService);
   private apiAdapter = inject(ApiAdapterService);
   private dialogService = inject(DialogService);
+  private translationService = inject(TranslationService);
 
   @Input() companyId: string | null = null;
   @Output() back = new EventEmitter<void>();
@@ -90,7 +94,43 @@ export class RequestsSectionComponent implements OnInit {
   }
 
   approve(member: CompanyMemberOutput): void {
-    this.resolve(member, () => this.companyApi.approveMembership(this.companyId!, member.membershipId));
+    const dialogData: ConfirmationDialogConfiguration = {
+      title: this.translationService.translate('home.requests.approveDialog.title'),
+      message: this.translationService.translate('home.requests.approveDialog.message', {
+        name: member.name,
+      }),
+      closeable: true,
+      buttons: {
+        cancel: {
+          show: true,
+          text: this.translationService.translate('home.requests.approveDialog.cancel'),
+          order: 1,
+          name: 'cancel',
+          color: 'outline-white',
+        },
+        confirmation: {
+          show: true,
+          text: this.translationService.translate('home.requests.approveDialog.confirm'),
+          order: 2,
+          name: 'confirm',
+          color: 'success',
+        },
+      },
+    };
+
+    this.dialogService.openDialog<ConfirmationDialogComponent, { confirm?: boolean }>(
+      ConfirmationDialogComponent,
+      {
+        width: '480px',
+        data: dialogData,
+        closeCallback: (result) => {
+          if (!result?.confirm) return;
+          this.resolve(member, () =>
+            this.companyApi.approveMembership(this.companyId!, member.membershipId),
+          );
+        },
+      },
+    );
   }
 
   reject(member: CompanyMemberOutput): void {

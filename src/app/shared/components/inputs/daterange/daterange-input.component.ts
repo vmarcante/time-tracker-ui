@@ -146,8 +146,10 @@ export class DaterangeInputComponent {
     return '';
   }
 
+  private readonly generatedId = `daterange-input-${Math.random().toString(36).substring(2, 11)}`;
+
   protected get generatedInputId(): string {
-    return this.inputId || `daterange-input-${Math.random().toString(36).substring(2, 11)}`;
+    return this.inputId || this.generatedId;
   }
 
   protected get hasError(): boolean {

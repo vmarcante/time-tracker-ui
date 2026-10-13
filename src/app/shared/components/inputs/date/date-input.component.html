@@ -6,11 +6,11 @@
     matInput
     [matDatepicker]="picker"
     [id]="generatedInputId"
-    [formControl]="formControl!"
+    [formControl]="control!"
     [placeholder]="placeholder"
     [min]="minDate"
     [max]="maxDate"
-    [disabled]="readonly || formControl!.disabled"
+    [disabled]="readonly || control!.disabled"
     [attr.aria-describedby]="ariaDescribedBy"
     [attr.aria-invalid]="ariaInvalid"
     [attr.aria-required]="ariaRequired"

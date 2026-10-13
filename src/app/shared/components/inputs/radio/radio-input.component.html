@@ -3,8 +3,8 @@
     <label [id]="generatedInputId" class="input-wrapper__label">{{ label }}</label>
   }
   <mat-radio-group
-    [formControl]="formControl!"
-    [disabled]="readonly || formControl!.disabled"
+    [formControl]="control!"
+    [disabled]="readonly || control!.disabled"
     [class]="radioGroupClasses"
     [attr.aria-describedby]="ariaDescribedBy"
     [attr.aria-invalid]="ariaInvalid"

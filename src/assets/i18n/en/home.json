@@ -59,6 +59,51 @@
         "ADMIN": "Administrator",
         "MANAGER": "Manager",
         "MEMBER": "Member"
+      },
+      "inviteDialog": {
+        "title": "Invite member",
+        "subtitle": {
+          "step1": "Enter an email address to check if the person is already registered.",
+          "step2": "Confirm the details and select a role before sending the invitation."
+        },
+        "steps": {
+          "email": "Email",
+          "emailDescription": "Enter the email address of the person you want to invite. The system will automatically check if they already have an account.",
+          "details": "Details",
+          "detailsDescription": "Confirm the person's details or fill in the information for pre-registration. Then, select the role they will have in the company."
+        },
+        "email": {
+          "label": "E-mail",
+          "placeholder": "name@example.com"
+        },
+        "name": {
+          "label": "Full name",
+          "placeholder": "John Smith"
+        },
+        "phone": {
+          "label": "Phone",
+          "placeholder": "(11) 99999-9999"
+        },
+        "age": {
+          "label": "Age",
+          "placeholder": "25"
+        },
+        "role": {
+          "label": "Role",
+          "placeholder": "Select a role"
+        },
+        "back": "Try another email",
+        "cancel": "Cancel",
+        "next": "Next",
+        "previous": "Back",
+        "sendInvite": "Send invitation",
+        "registerAndInvite": "Register and invite",
+        "tryAnotherEmail": "Try another email",
+        "preRegisterNote": "An email will be sent with instructions to create an account and accept the invitation.",
+        "blocked": {
+          "inThisCompany": "This user is already a member or has a pending invitation in this company.",
+          "inAnotherCompany": "This user is already an active member of another company."
+        }
       }
     },
     "requests": {
@@ -94,6 +139,12 @@
         "APPROVED": "Approved",
         "REJECTED": "Rejected",
         "DECLINED": "Declined"
+      },
+      "approveDialog": {
+        "title": "Approve request",
+        "message": "Do you confirm approving {{name}} as a member of the company?",
+        "cancel": "Cancel",
+        "confirm": "Approve"
       },
       "rejectDialog": {
         "title": "Reject request",

@@ -12,7 +12,7 @@ import { TranslationService } from '../../../../shared/services/translation.serv
 })
 export class CheckboxInputComponent {
   // Form control
-  @Input() formControl?: FormControl;
+  @Input() control?: FormControl;
 
   // UI properties
   @Input() label: string = '';
@@ -33,12 +33,14 @@ export class CheckboxInputComponent {
 
   @Output() onValueChange = new EventEmitter<InputValue>();
 
+  private readonly generatedId = `checkbox-input-${Math.random().toString(36).substring(2, 11)}`;
+
   protected get generatedInputId(): string {
-    return this.inputId || `checkbox-input-${Math.random().toString(36).substring(2, 11)}`;
+    return this.inputId || this.generatedId;
   }
 
   protected get hasError(): boolean {
-    const ctrl = this.formControl;
+    const ctrl = this.control;
     return ctrl ? ctrl.invalid && ctrl.touched : false;
   }
 
@@ -70,7 +72,7 @@ export class CheckboxInputComponent {
   }
 
   protected get errorMessage(): string {
-    const ctrl = this.formControl;
+    const ctrl = this.control;
     if (!ctrl || !ctrl.errors || !ctrl.touched) {
       return '';
     }
@@ -87,7 +89,7 @@ export class CheckboxInputComponent {
 
   protected onChange(event: Event): void {
     const value = (event.target as HTMLInputElement).checked;
-    this.formControl?.setValue(value);
+    this.control?.setValue(value);
     this.onValueChange.emit(value);
   }
 }

@@ -36,13 +36,11 @@
       (blur)="blur($event)"
       (focusout)="focusOut($event)"
     ></textarea>
-    @if (showCounter && maxLength) {
-      <div matSuffix class="textarea-input-counter">
-        <span>{{ currentLength }}</span><span>/</span><span>{{ maxLength }}</span>
-      </div>
-    }
     @if (hint) {
       <mat-hint [id]="hintId">{{ hint }}</mat-hint>
+    }
+    @if (showCounter && maxLength) {
+      <mat-hint align="end" class="textarea-input-counter">{{ currentLength }}/{{ maxLength }}</mat-hint>
     }
     @if (hasError) {
       <mat-error [id]="errorId">{{ errorMessage }}</mat-error>

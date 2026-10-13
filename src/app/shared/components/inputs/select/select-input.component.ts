@@ -6,19 +6,21 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSelectChange } from '@angular/material/select';
 import { InputValue, SelectOption } from '../../../types/input.types';
 import { TranslationService } from '../../../../shared/services/translation.service';
+import { IconComponent } from '../../icon/icon.component';
 
 @Component({
   selector: 'app-select-input',
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatSelectModule],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, IconComponent],
   templateUrl: './select-input.component.html',
   styleUrl: './select-input.component.scss',
 })
 export class SelectInputComponent {
   // Form control
-  @Input() formControl?: FormControl;
+  @Input() control?: FormControl;
 
   // UI properties
   @Input() label: string = '';
+  @Input() labelIcon: string | null = null;
   @Input() placeholder: string = '';
   @Input() hint: string | null = '';
   @Input() showLabel: boolean = true;
@@ -45,12 +47,14 @@ export class SelectInputComponent {
   @Output() onFocusOut = new EventEmitter<FocusEvent>();
   @Output() onReset = new EventEmitter<void>();
 
+  private readonly generatedId = `select-input-${Math.random().toString(36).substring(2, 11)}`;
+
   protected get generatedInputId(): string {
-    return this.inputId || `select-input-${Math.random().toString(36).substring(2, 11)}`;
+    return this.inputId || this.generatedId;
   }
 
   protected get hasError(): boolean {
-    const ctrl = this.formControl;
+    const ctrl = this.control;
     return ctrl ? ctrl.invalid && ctrl.touched : false;
   }
 
@@ -82,7 +86,7 @@ export class SelectInputComponent {
   }
 
   protected get errorMessage(): string {
-    const ctrl = this.formControl;
+    const ctrl = this.control;
     if (!ctrl || !ctrl.errors || !ctrl.touched) {
       return '';
     }
@@ -98,7 +102,7 @@ export class SelectInputComponent {
   }
 
   protected get displayValue(): string {
-    const control = this.formControl;
+    const control = this.control;
     if (!control) return '';
 
     const value = control.value;
@@ -124,7 +128,7 @@ export class SelectInputComponent {
 
   protected onChange(event: MatSelectChange): void {
     const value = event.value;
-    this.formControl?.setValue(value);
+    this.control?.setValue(value);
     this.onValueChange.emit(value as InputValue);
   }
 
@@ -141,7 +145,7 @@ export class SelectInputComponent {
   }
 
   protected reset(): void {
-    this.formControl?.reset();
+    this.control?.reset();
     this.onReset.emit();
   }
 }

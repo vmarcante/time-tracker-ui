@@ -13,6 +13,7 @@ export interface CurrentUserOutput {
   email: string;
   phone: string;
   locale: string;
+  age: number | null;
   pendingInvitations: number;
   pendingCompanyName: string | null;
   companyId: string | null;

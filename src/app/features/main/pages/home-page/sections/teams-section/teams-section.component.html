@@ -1,12 +1,14 @@
 <div class="section">
   <div class="section__header">
     <button type="button" class="section__back" (click)="back.emit()" [attr.aria-label]="'home.section.back' | translate">
-      <app-icon name="arrows/back" size="1rem" />
+      <app-icon name="arrows/back" size="0.875rem" />
       <span>{{ 'home.section.back' | translate }}</span>
     </button>
-    <h2 class="section__title">{{ 'home.teams.title' | translate }}</h2>
-    <div class="section__actions">
-      <app-button [text]="'home.teams.create' | translate" color="primary" [icon]="{ iconName: 'actions/add', position: 'left' }" />
+    <div class="section__heading">
+      <h2 class="section__title">{{ 'home.teams.title' | translate }}</h2>
+      <div class="section__actions">
+        <app-button [text]="'home.teams.create' | translate" color="primary" [rounded]="true" [icon]="{ iconName: 'actions/add', position: 'left', color: '#FFF' }" />
+      </div>
     </div>
   </div>
 

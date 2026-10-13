@@ -1,6 +1,7 @@
 import { Injectable, inject, DestroyRef, DOCUMENT } from '@angular/core';
-import { Observable, of, tap } from 'rxjs';
+import { Observable, Subject, of, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { AuthTokenService } from './auth-token.service';
 import { AuthApiService } from './api/auth.api.service';
 import { ApiResponse } from '../../../shared/types';
@@ -15,9 +16,14 @@ export class AuthService {
   private tokenService = inject(AuthTokenService);
   private authApiService = inject(AuthApiService);
   private router = inject(Router);
+  private matDialog = inject(MatDialog);
   private destroyRef = inject(DestroyRef);
   private document = inject(DOCUMENT);
   private refreshTimeoutId: number | null = null;
+
+  private readonly _sessionEnded$ = new Subject<void>();
+
+  readonly sessionEnded$ = this._sessionEnded$.asObservable();
 
   constructor() {
     this.destroyRef.onDestroy(() => this.clearRefreshTimeout());
@@ -35,6 +41,7 @@ export class AuthService {
 
   logout(): ApiResponse<void> {
     this.clearRefreshTimeout();
+    this.terminateSession();
     return this.authApiService.logout().pipe(tap(() => this.tokenService.clearTokens()));
   }
 
@@ -61,10 +68,16 @@ export class AuthService {
         this.scheduleAccessTokenRefresh();
       },
       error: () => {
+        this.terminateSession();
         this.tokenService.clearTokens();
         this.router.navigate(['/']);
       },
     });
+  }
+
+  private terminateSession(): void {
+    this._sessionEnded$.next();
+    this.matDialog.closeAll();
   }
 
   private clearRefreshTimeout(): void {

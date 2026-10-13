@@ -14,7 +14,7 @@ import { TranslationService } from '../../../../shared/services/translation.serv
 })
 export class DecimalInputComponent {
   // Form control
-  @Input() formControl?: FormControl;
+  @Input() control?: FormControl;
 
   // UI properties
   @Input() label: string = '';
@@ -46,12 +46,14 @@ export class DecimalInputComponent {
   @Output() onFocusOut = new EventEmitter<FocusEvent>();
   @Output() onReset = new EventEmitter<void>();
 
+  private readonly generatedId = `decimal-input-${Math.random().toString(36).substring(2, 11)}`;
+
   protected get generatedInputId(): string {
-    return this.inputId || `decimal-input-${Math.random().toString(36).substring(2, 11)}`;
+    return this.inputId || this.generatedId;
   }
 
   protected get hasError(): boolean {
-    const ctrl = this.formControl;
+    const ctrl = this.control;
     return ctrl ? ctrl.invalid && ctrl.touched : false;
   }
 
@@ -83,7 +85,7 @@ export class DecimalInputComponent {
   }
 
   protected get errorMessage(): string {
-    const ctrl = this.formControl;
+    const ctrl = this.control;
     if (!ctrl || !ctrl.errors || !ctrl.touched) {
       return '';
     }
@@ -144,7 +146,7 @@ export class DecimalInputComponent {
   }
 
   protected reset(): void {
-    this.formControl?.reset();
+    this.control?.reset();
     this.onReset.emit();
   }
 }

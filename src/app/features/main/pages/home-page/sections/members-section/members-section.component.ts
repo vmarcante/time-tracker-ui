@@ -5,10 +5,15 @@ import { ButtonComponent } from '../../../../../../shared/components/button/butt
 import { IconComponent } from '../../../../../../shared/components/icon/icon.component';
 import { PaginationComponent } from '../../../../../../shared/components/pagination/pagination.component';
 import { ApiAdapterService } from '../../../../../../shared/services/api/api-adapter.service';
+import { DialogService } from '../../../../../../shared/services/dialog.service';
 import { CompanyManagementApiService } from '../../../../services/company-management.api.service';
 import { CompanyMemberOutput } from '../../../../models/company-management.model';
 import { CompanyRole } from '../../../../../auth/models';
 import { PageWrapper } from '../../../../../../shared/types';
+import {
+  InviteMemberDialogComponent,
+  InviteMemberDialogResult,
+} from '../../../../components/company/invite-member-dialog/invite-member-dialog.component';
 
 @Component({
   selector: 'app-members-section',
@@ -19,6 +24,7 @@ import { PageWrapper } from '../../../../../../shared/types';
 export class MembersSectionComponent implements OnInit {
   private companyApi = inject(CompanyManagementApiService);
   private apiAdapter = inject(ApiAdapterService);
+  private dialogService = inject(DialogService);
 
   @Input() companyId: string | null = null;
   @Input() companyRole: CompanyRole | null = null;
@@ -28,6 +34,7 @@ export class MembersSectionComponent implements OnInit {
   readonly page = signal<PageWrapper<CompanyMemberOutput> | null>(null);
   readonly loading = signal(true);
   readonly currentPage = signal(1);
+  readonly inviting = signal(false);
 
   readonly canManage = (): boolean => {
     const role = this.companyRole;
@@ -56,5 +63,41 @@ export class MembersSectionComponent implements OnInit {
     );
   }
 
+  openInviteDialog(): void {
+    if (!this.companyId || !this.companyRole) return;
 
+    const companyId = this.companyId;
+
+    this.dialogService.openDialog<InviteMemberDialogComponent, InviteMemberDialogResult>(
+      InviteMemberDialogComponent,
+      {
+        autoAdjustSize: true,
+        data: { companyId, companyRole: this.companyRole },
+        closeCallback: (result) => {
+          if (!result?.confirmed) return;
+          this.inviting.set(true);
+
+          const request =
+            result.action === 'invite'
+              ? this.companyApi.inviteMember(companyId, { email: result.email, role: result.role })
+              : this.companyApi.preRegisterAndInvite(companyId, {
+                  email: result.email,
+                  role: result.role,
+                  name: result.name!,
+                  phone: result.phone ?? null,
+                  age: result.age ?? null,
+                });
+
+          this.apiAdapter.executeRequest(request, {
+            ignoreLoading: true,
+            onSuccess: () => {
+              this.inviting.set(false);
+              this.loadPage(this.currentPage());
+            },
+            onError: () => this.inviting.set(false),
+          });
+        },
+      },
+    );
+  }
 }

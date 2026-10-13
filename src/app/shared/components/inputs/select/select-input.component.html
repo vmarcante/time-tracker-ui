@@ -1,12 +1,27 @@
-<mat-form-field appearance="outline">
-  @if (showLabel && label) {
-    <mat-label>{{ label }}</mat-label>
-  }
+@if (showLabel && label) {
+  <label class="select-input-label" [for]="generatedInputId">
+    @if (labelIcon) {
+      <app-icon
+        class="select-input-label__icon"
+        [name]="labelIcon"
+        [size]="14"
+      />
+    }
+    <span class="select-input-label__text">
+      {{ label }}
+      @if (required) {
+        <span class="select-input-label__required">*</span>
+      }
+    </span>
+  </label>
+}
+
+<mat-form-field class="mat-select-input-field" appearance="outline">
   <mat-select
     [id]="generatedInputId"
-    [formControl]="formControl!"
+    [formControl]="control!"
     [multiple]="multiple"
-    [disabled]="readonly || formControl!.disabled"
+    [disabled]="readonly || control!.disabled"
     [attr.aria-describedby]="ariaDescribedBy"
     [attr.aria-invalid]="ariaInvalid"
     [attr.aria-required]="ariaRequired"

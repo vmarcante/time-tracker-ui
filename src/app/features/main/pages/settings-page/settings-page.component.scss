@@ -13,12 +13,38 @@
 
   &__header {
     display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__back {
+    display: inline-flex;
     align-items: center;
-    gap: var(--spacing-md);
+    gap: var(--spacing-xs);
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: color 0.15s ease;
+    width: fit-content;
+
+    app-icon {
+      opacity: 0.6;
+    }
+
+    &:hover {
+      color: var(--color-text-primary);
+
+      app-icon {
+        opacity: 1;
+      }
+    }
   }
 
   &__title {
-    font-size: 1.5rem;
+    font-size: 1.625rem;
     font-weight: 700;
     color: var(--color-text-primary);
     margin: 0;
@@ -27,7 +53,7 @@
   &__subtitle {
     font-size: 0.875rem;
     color: var(--color-text-secondary);
-    margin: var(--spacing-xs) 0 0;
+    margin: 0;
   }
 
   &__body {
@@ -49,7 +75,7 @@
 
   &__avatar-card {
     background-color: var(--color-background-card);
-    border-radius: var(--border-radius-lg);
+    border-radius: var(--radius-xl);
     padding: var(--spacing-lg);
     display: flex;
     flex-direction: column;
@@ -97,7 +123,7 @@
 
   &__card {
     background-color: var(--color-background-card);
-    border-radius: var(--border-radius-lg);
+    border-radius: var(--radius-xl);
     padding: var(--spacing-lg);
     box-shadow: var(--shadow-sm);
 
@@ -156,16 +182,31 @@
 
   &__form-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(6, 1fr);
     gap: var(--spacing-md);
-
-    @media (max-width: 600px) {
-      grid-template-columns: 1fr;
-    }
   }
 
   &__field {
     &--full {
+      grid-column: 1 / -1;
+    }
+
+    &--half {
+      grid-column: span 3;
+    }
+
+    &--third {
+      grid-column: span 2;
+    }
+  }
+
+  @media (max-width: 600px) {
+    &__form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    &__field--half,
+    &__field--third {
       grid-column: 1 / -1;
     }
   }
@@ -176,7 +217,7 @@
     gap: var(--spacing-sm);
     background-color: var(--color-success-light, #d1fae5);
     color: var(--color-success-dark, #065f46);
-    border-radius: var(--border-radius-sm);
+    border-radius: var(--radius-md);
     padding: var(--spacing-sm) var(--spacing-md);
     font-size: 0.875rem;
     font-weight: 500;

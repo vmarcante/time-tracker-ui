@@ -6,7 +6,11 @@
     [attr.aria-live]="alertData.type === 'error' ? 'assertive' : 'polite'"
   >
     <div class="toastr-icon-wrapper" aria-hidden="true">
-      <img [src]="iconConfig.path" [alt]="iconConfig.altMessage | translate" loading="eager" />
+      <app-icon
+        [name]="iconConfig.name"
+        size="var(--toastr-icon-size, 2rem)"
+        [attr.aria-label]="iconConfig.altMessage | translate"
+      />
 
       @if (alertData.queueInfo && alertData.queueInfo.total > 1) {
         <div class="toastr-queue-counter">
@@ -42,7 +46,7 @@
           (click)="dismissAlert(true)"
           [attr.aria-label]="'common.toastr.actions.clearQueue' | translate"
         >
-          <img src="/assets/icons/clear-queue.svg" alt="" aria-hidden="true" />
+          <app-icon name="objects/trash" size="var(--toastr-clear-icon-size, 0.75rem)" />
         </button>
       }
 
@@ -53,7 +57,7 @@
           (click)="dismissAlert()"
           [attr.aria-label]="closeButtonAriaLabel"
         >
-          <img src="/assets/icons/close-cross.svg" alt="" aria-hidden="true" />
+          <app-icon name="actions/close" size="var(--toastr-action-icon-size, 1.125rem)" />
         </button>
       }
 
@@ -64,7 +68,7 @@
           (click)="dismissAlert()"
           [attr.aria-label]="'common.toastr.actions.next' | translate"
         >
-          <img src="/assets/icons/next-arrow.svg" alt="" aria-hidden="true" />
+          <app-icon name="arrows/next" size="var(--toastr-action-icon-size, 1.125rem)" />
         </button>
       }
     </div>

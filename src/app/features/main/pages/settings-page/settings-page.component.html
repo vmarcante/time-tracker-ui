@@ -3,17 +3,12 @@
 
     <!-- Cabeçalho da página -->
     <div class="settings-page__header">
-      <app-button
-        [icon]="{ iconName: 'arrow-left', iconOnly: true }"
-        [color]="'secondary'"
-        [size]="{ small: true }"
-        [hoverTitle]="'profile.action.back' | translate"
-        (buttonClick)="goBack()"
-      ></app-button>
-      <div>
-        <h1 class="settings-page__title">{{ 'profile.title' | translate }}</h1>
-        <p class="settings-page__subtitle">{{ 'profile.subtitle' | translate }}</p>
-      </div>
+      <button class="settings-page__back" (click)="goBack()">
+        <app-icon name="arrows/back" size="0.875rem" />
+        {{ 'profile.action.back' | translate }}
+      </button>
+      <h1 class="settings-page__title">{{ 'profile.title' | translate }}</h1>
+      <p class="settings-page__subtitle">{{ 'profile.subtitle' | translate }}</p>
     </div>
 
     <div class="settings-page__body">
@@ -67,43 +62,50 @@
         <form [formGroup]="form" (ngSubmit)="save()" novalidate>
           <div class="settings-page__form-grid">
 
-            <div class="settings-page__field settings-page__field--full">
+            <div class="settings-page__field settings-page__field--half">
               <app-text-input
                 [label]="'profile.field.name' | translate"
-                [formControl]="nameControl"
+                [labelIcon]="'objects/person'"
+                [control]="nameControl"
                 [required]="true"
               ></app-text-input>
             </div>
 
-            <div class="settings-page__field">
+            <div class="settings-page__field settings-page__field--half">
+              <app-text-input
+                [label]="'profile.field.email' | translate"
+                [labelIcon]="'objects/envelope'"
+                [control]="emailControl"
+                [readonly]="true"
+              ></app-text-input>
+            </div>
+
+            <div class="settings-page__field settings-page__field--third">
+              <app-integer-input
+                [label]="'profile.field.age' | translate"
+                [labelIcon]="'objects/calendar'"
+                [control]="ageControl"
+                [min]="18"
+                [max]="120"
+              ></app-integer-input>
+            </div>
+
+            <div class="settings-page__field settings-page__field--third">
               <app-text-input
                 [label]="'profile.field.phone' | translate"
-                [formControl]="phoneControl"
+                [labelIcon]="'objects/phone'"
+                [control]="phoneControl"
                 [mask]="'(00) 00000-0000'"
               ></app-text-input>
             </div>
 
-            <div class="settings-page__field">
-              <app-integer-input
-                [label]="'profile.field.age' | translate"
-                [formControl]="ageControl"
-              ></app-integer-input>
-            </div>
-
-            <div class="settings-page__field settings-page__field--full">
+            <div class="settings-page__field settings-page__field--third">
               <app-select-input
                 [label]="'profile.field.locale' | translate"
-                [formControl]="localeControl"
+                [labelIcon]="'objects/globe'"
+                [control]="localeControl"
                 [options]="localeOptions()"
               ></app-select-input>
-            </div>
-
-            <div class="settings-page__field settings-page__field--full">
-              <app-text-input
-                [label]="'profile.field.email' | translate"
-                [formControl]="emailControl"
-                [readonly]="true"
-              ></app-text-input>
             </div>
 
           </div>
@@ -119,6 +121,8 @@
               type="submit"
               [text]="saving() ? ('profile.action.saving' | translate) : ('profile.action.save' | translate)"
               [color]="'primary'"
+              [rounded]="true"
+              [icon]="{ iconName: 'status/check', svgIcon: true, color: '#FFF', position: 'right' }"
               [fill]="true"
               [loading]="saving()"
               [disabled]="form.invalid || saving()"

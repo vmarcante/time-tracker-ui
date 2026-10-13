@@ -10,29 +10,30 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ToastrAlertData } from '../../types/toastr.types';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { TranslationService } from '../../services/translation.service';
+import { IconComponent } from '../icon/icon.component';
 
 type ToastrType = 'success' | 'error' | 'warning' | 'info';
 
 interface IconConfig {
-  path: string;
+  name: string;
   altMessage: string;
 }
 
 const ICONS_CONFIG: Record<ToastrType, IconConfig> = {
   success: {
-    path: '/assets/icons/success-check.svg',
+    name: 'status/check-circle',
     altMessage: 'common.toastr.types.success',
   },
   error: {
-    path: '/assets/icons/error-cross.svg',
+    name: 'status/x-circle',
     altMessage: 'common.toastr.types.error',
   },
   warning: {
-    path: '/assets/icons/warning-exclamation.svg',
+    name: 'status/alert',
     altMessage: 'common.toastr.types.warning',
   },
   info: {
-    path: '/assets/icons/info-circle.svg',
+    name: 'status/info-circle',
     altMessage: 'common.toastr.types.info',
   },
 } as const;
@@ -41,7 +42,7 @@ const ICONS_CONFIG: Record<ToastrType, IconConfig> = {
   selector: 'app-toastr',
   templateUrl: './toastr.component.html',
   styleUrls: ['./toastr.component.scss'],
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, TranslatePipe, IconComponent],
 })
 export class ToastrComponent implements OnInit, OnDestroy {
   readonly ICONS_CONFIG = ICONS_CONFIG;

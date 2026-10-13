@@ -46,7 +46,9 @@
       "back": "Voltar"
     },
     "toast": {
-      "success": "Perfil atualizado com sucesso!"
+      "success": "Perfil atualizado com sucesso!",
+      "error": "Não foi possível salvar as alterações. Tente novamente.",
+      "localeError": "Perfil salvo, mas não foi possível atualizar o idioma."
     }
   }
 }

@@ -13,7 +13,7 @@ export class FileInputComponent {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   // Form control
-  @Input() formControl?: FormControl;
+  @Input() control?: FormControl;
 
   // UI properties
   @Input() label: string = '';
@@ -39,12 +39,14 @@ export class FileInputComponent {
 
   protected selectedFiles: File[] = [];
 
+  private readonly generatedId = `file-input-${Math.random().toString(36).substring(2, 11)}`;
+
   protected get generatedInputId(): string {
-    return this.inputId || `file-input-${Math.random().toString(36).substring(2, 11)}`;
+    return this.inputId || this.generatedId;
   }
 
   protected get hasError(): boolean {
-    const ctrl = this.formControl;
+    const ctrl = this.control;
     return ctrl ? ctrl.invalid && ctrl.touched : false;
   }
 
@@ -57,7 +59,7 @@ export class FileInputComponent {
   }
 
   protected get errorMessage(): string {
-    const ctrl = this.formControl;
+    const ctrl = this.control;
     if (!ctrl || !ctrl.errors || !ctrl.touched) {
       return '';
     }
@@ -94,13 +96,13 @@ export class FileInputComponent {
 
     if (this.multiple) {
       this.selectedFiles = filesToAdd;
-      this.formControl?.setValue(filesToAdd);
+      this.control?.setValue(filesToAdd);
       this.onValueChange.emit(filesToAdd);
     } else {
       const firstFile = filesToAdd[0];
       if (firstFile) {
         this.selectedFiles = [firstFile];
-        this.formControl?.setValue(firstFile);
+        this.control?.setValue(firstFile);
         this.onValueChange.emit(firstFile);
       }
     }
@@ -109,7 +111,7 @@ export class FileInputComponent {
   }
 
   protected triggerFileInput(): void {
-    if (!this.readonly && !this.formControl?.disabled) {
+    if (!this.readonly && !this.control?.disabled) {
       this.fileInput.nativeElement.click();
     }
   }
@@ -121,10 +123,10 @@ export class FileInputComponent {
       this.clearFiles();
     } else {
       if (this.multiple) {
-        this.formControl?.setValue(this.selectedFiles);
+        this.control?.setValue(this.selectedFiles);
         this.onValueChange.emit(this.selectedFiles);
       } else {
-        this.formControl?.setValue(this.selectedFiles[0]);
+        this.control?.setValue(this.selectedFiles[0]);
         this.onValueChange.emit(this.selectedFiles[0]);
       }
       this.filesSelected.emit(this.selectedFiles);
@@ -138,7 +140,7 @@ export class FileInputComponent {
 
   protected clearFiles(): void {
     this.selectedFiles = [];
-    this.formControl?.setValue(null);
+    this.control?.setValue(null);
     this.onValueChange.emit(null);
 
     if (this.fileInput) {

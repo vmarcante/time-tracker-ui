@@ -1,10 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { takeUntil } from 'rxjs';
 import { BaseDialogStyleConfiguration, BaseDialogOptions } from '../types';
 import { ResponsiveService } from './responsive.service';
 import { ComponentType } from '@angular/cdk/overlay';
 import { TranslationService } from './translation.service';
 import { ConfirmationDialogComponent } from '../components/dialogs/confirmation/confirmation-dialog.component';
+import { AuthService } from '../../features/auth/services/auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +15,7 @@ export class DialogService {
   private matDialog = inject(MatDialog);
   private responsiveService = inject(ResponsiveService);
   private translationService = inject(TranslationService);
+  private authService = inject(AuthService);
 
   private calculateSize(
     isMobile: boolean,
@@ -86,9 +89,11 @@ export class DialogService {
     const dialog = this.matDialog.open(component, dialogConfig);
 
     if (options?.closeCallback) {
-      dialog.afterClosed().subscribe((result) => {
-        options?.closeCallback?.(result);
-      });
+      dialog.afterClosed()
+        .pipe(takeUntil(this.authService.sessionEnded$))
+        .subscribe((result) => {
+          options?.closeCallback?.(result);
+        });
     }
 
     if (backdropConfirmation) {

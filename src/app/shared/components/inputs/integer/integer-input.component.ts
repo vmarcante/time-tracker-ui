@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { InputValue } from '../../../types/input.types';
 import { TranslationService } from '../../../../shared/services/translation.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
@@ -10,23 +11,26 @@ import { IconComponent } from '../../icon/icon.component';
 
 @Component({
   selector: 'app-integer-input',
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, TranslatePipe, IconComponent],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatTooltipModule, TranslatePipe, IconComponent],
   templateUrl: './integer-input.component.html',
   styleUrl: './integer-input.component.scss',
 })
 export class IntegerInputComponent {
   // Form control
-  @Input() formControl?: FormControl;
+  @Input() control?: FormControl;
   @Input() formGroup?: FormGroup;
   @Input() controlName?: string;
 
   // UI properties
   @Input() label: string = '';
   @Input() labelIcon: string | null = null;
+  @Input() labelHint: string | null = null;
   @Input() placeholder: string = '';
   @Input() hint: string | null = '';
   @Input() showLabel: boolean = true;
   @Input() required: boolean = false;
+  @Input() hideHint: boolean = false;
+  @Input() hideError: boolean = false;
 
   // Integer specific
   @Input() min: number | null = null;
@@ -45,8 +49,8 @@ export class IntegerInputComponent {
   private translationService: TranslationService = inject(TranslationService);
 
   protected get effectiveControl(): FormControl | undefined {
-    if (this.formControl) {
-      return this.formControl;
+    if (this.control) {
+      return this.control;
     }
 
     if (this.formGroup && this.controlName) {
@@ -63,8 +67,10 @@ export class IntegerInputComponent {
   @Output() onFocusOut = new EventEmitter<FocusEvent>();
   @Output() onReset = new EventEmitter<void>();
 
+  private readonly generatedId = `integer-input-${Math.random().toString(36).substring(2, 11)}`;
+
   protected get generatedInputId(): string {
-    return this.inputId || `integer-input-${Math.random().toString(36).substring(2, 11)}`;
+    return this.inputId || this.generatedId;
   }
 
   protected get hasError(): boolean {
@@ -78,6 +84,14 @@ export class IntegerInputComponent {
 
   protected get hintId(): string {
     return `${this.generatedInputId}-hint`;
+  }
+
+  protected get labelHintId(): string {
+    return `${this.generatedInputId}-label-hint`;
+  }
+
+  protected get hideSubscript(): boolean {
+    return this.hideHint && this.hideError;
   }
 
   protected get hasStepButtons(): boolean {
@@ -95,6 +109,7 @@ export class IntegerInputComponent {
     return {
       'mat-integer-input-field': true,
       'mat-integer-input-field--with-step-buttons': this.hasStepButtons,
+      'mat-integer-input-field--no-subscript': this.hideSubscript,
     };
   }
 
@@ -144,19 +159,15 @@ export class IntegerInputComponent {
   // Methods
   protected onInput(event: Event): void {
     const target = event.target as HTMLInputElement;
-    let value: number | string = target.value;
+    const digits = target.value.replace(/\D/g, '');
 
-    if (value !== '') {
-      const numValue = parseFloat(value);
-
-      if (!isNaN(numValue)) {
-        value = Math.floor(numValue);
-        target.value = value.toString();
-        this.onValueChange.emit(value);
-      }
-    } else {
-      this.onValueChange.emit(null);
+    if (target.value !== digits) {
+      target.value = digits;
     }
+
+    const value = digits === '' ? null : parseInt(digits, 10);
+    this.effectiveControl?.setValue(value);
+    this.onValueChange.emit(value);
   }
 
   protected focus(event: FocusEvent): void {

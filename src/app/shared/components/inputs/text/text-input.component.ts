@@ -29,7 +29,7 @@ export class TextInputComponent {
 
   // Input properties
   @Input() inputType: 'text' | 'email' | 'url' | 'tel' | 'password' = 'text';
-  @Input() formControl?: FormControl;
+  @Input() control?: FormControl;
   @Input() controlName?: string;
   @Input() formGroup?: FormGroup;
 
@@ -67,10 +67,10 @@ export class TextInputComponent {
   @Output() onFocusOut = new EventEmitter<FocusEvent>();
   @Output() onReset = new EventEmitter<void>();
 
-  get control(): FormControl {
-    // Prioriza formControl direto se foi passado
-    if (this.formControl) {
-      return this.formControl;
+  get effectiveControl(): FormControl {
+    // Prioriza control direto se foi passado
+    if (this.control) {
+      return this.control;
     }
 
     // Fallback para formGroup + controlName
@@ -82,17 +82,15 @@ export class TextInputComponent {
     return new FormControl();
   }
 
+  private readonly generatedId = `text-input-${Math.random().toString(36).substring(2, 11)}`;
+
   // Computed properties
   get generatedInputId(): string {
-    return (
-      this.inputId ||
-      this.controlName ||
-      `text-input-${Math.random().toString(36).substring(2, 11)}`
-    );
+    return this.inputId || this.controlName || this.generatedId;
   }
 
   get hasError(): boolean {
-    const ctrl = this.control;
+    const ctrl = this.effectiveControl;
     return ctrl ? ctrl.invalid && ctrl.touched : false;
   }
 
@@ -158,7 +156,7 @@ export class TextInputComponent {
   }
 
   get errorMessage(): string {
-    const ctrl = this.control;
+    const ctrl = this.effectiveControl;
     if (!ctrl || !ctrl.errors || !ctrl.touched) {
       return '';
     }
@@ -210,6 +208,20 @@ export class TextInputComponent {
       );
     }
 
+    if (errors['invalidPhone']) {
+      return (
+        customMessages['invalidPhone'] ||
+        this.translationService.translate('validation.invalidPhone')
+      );
+    }
+
+    if (errors['fullName']) {
+      return (
+        customMessages['fullName'] ||
+        this.translationService.translate(String(errors['fullName']))
+      );
+    }
+
     return '';
   }
 
@@ -232,7 +244,7 @@ export class TextInputComponent {
   }
 
   protected focusReset(): void {
-    this.control?.reset();
+    this.effectiveControl?.reset();
     this.onReset.emit();
   }
 }

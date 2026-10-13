@@ -59,6 +59,51 @@
         "ADMIN": "Administrador",
         "MANAGER": "Gerente",
         "MEMBER": "Membro"
+      },
+      "inviteDialog": {
+        "title": "Convidar membro",
+        "subtitle": {
+          "step1": "Informe o e-mail para verificar se a pessoa já possui cadastro.",
+          "step2": "Confirme os dados e selecione o papel antes de enviar o convite."
+        },
+        "steps": {
+          "email": "E-mail",
+          "emailDescription": "Informe o e-mail da pessoa que deseja convidar. O sistema irá verificar automaticamente se ela já possui cadastro.",
+          "details": "Detalhes",
+          "detailsDescription": "Confirme os dados da pessoa encontrada ou preencha as informações para o pré-cadastro. Depois, selecione o papel que ela terá na empresa."
+        },
+        "email": {
+          "label": "E-mail",
+          "placeholder": "nome@exemplo.com"
+        },
+        "name": {
+          "label": "Nome completo",
+          "placeholder": "João da Silva"
+        },
+        "phone": {
+          "label": "Telefone",
+          "placeholder": "(11) 99999-9999"
+        },
+        "age": {
+          "label": "Idade",
+          "placeholder": "25"
+        },
+        "role": {
+          "label": "Papel",
+          "placeholder": "Selecione o papel"
+        },
+        "back": "Tentar outro e-mail",
+        "cancel": "Cancelar",
+        "next": "Avançar",
+        "previous": "Voltar",
+        "sendInvite": "Enviar convite",
+        "registerAndInvite": "Cadastrar e convidar",
+        "tryAnotherEmail": "Tentar outro e-mail",
+        "preRegisterNote": "Um e-mail será enviado com instruções para criar a conta e aceitar o convite.",
+        "blocked": {
+          "inThisCompany": "Este usuário já é membro ou possui um convite pendente nesta empresa.",
+          "inAnotherCompany": "Este usuário já é membro ativo de outra empresa."
+        }
       }
     },
     "requests": {
@@ -84,7 +129,7 @@
         "role": "Papel",
         "status": "Status",
         "requestedAt": "Solicitado em",
-        "resolved": "Resolução"
+        "resolved": "Resposta em"
       },
       "origin": {
         "REQUEST": "Solicitação",
@@ -94,6 +139,12 @@
         "APPROVED": "Aprovada",
         "REJECTED": "Reprovada",
         "DECLINED": "Recusada"
+      },
+      "approveDialog": {
+        "title": "Aprovar solicitação",
+        "message": "Você confirma a aprovação de {{name}} como membro da empresa?",
+        "cancel": "Cancelar",
+        "confirm": "Aprovar"
       },
       "rejectDialog": {
         "title": "Reprovar solicitação",

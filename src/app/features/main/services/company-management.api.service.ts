@@ -6,6 +6,8 @@ import {
   CompanyMemberOutput,
   CompanyMenuOverviewOutput,
   CompanyTimeEntryOutput,
+  PersonInviteLookupOutput,
+  PreRegisterAndInviteInput,
   ProjectSummaryOutput,
   TeamSummaryOutput,
 } from '../models/company-management.model';
@@ -64,11 +66,24 @@ export class CompanyManagementApiService {
     return this.httpService.delete(`/companies/${companyId}/members/${membershipId}`);
   }
 
+  lookupPersonForInvite(companyId: string, email: string): ApiResponse<PersonInviteLookupOutput> {
+    return this.httpService.get(`/companies/${companyId}/members/lookup`, {
+      params: { email },
+    });
+  }
+
   inviteMember(
     companyId: string,
-    input: { userId: string; role: CompanyRole },
+    input: { email: string; role: CompanyRole },
   ): ApiResponse<CompanyMemberOutput> {
     return this.httpService.post(`/companies/${companyId}/members/invite`, input);
+  }
+
+  preRegisterAndInvite(
+    companyId: string,
+    input: PreRegisterAndInviteInput,
+  ): ApiResponse<CompanyMemberOutput> {
+    return this.httpService.post(`/companies/${companyId}/members/pre-register-and-invite`, input);
   }
 
   listTeams(page = 1, size = 10): ApiResponse<PageWrapper<TeamSummaryOutput>> {

@@ -59,6 +59,12 @@
     "invalidFormat": "Invalid format",
     "usernamePattern": "Use only letters, numbers and underscore",
     "invalidPhone": "Invalid phone number",
+    "fullName": {
+      "invalidChars": "Use only letters, spaces, apostrophes and hyphens",
+      "multipleSpaces": "Remove duplicate spaces",
+      "missingSurname": "Enter first and last name",
+      "partTooShort": "Each name part must have at least 2 characters"
+    },
     "passwordStrength": "Password must contain uppercase, lowercase, numbers and special characters",
     "checkAvailability": "Please check if username and email are available",
     "passwordMismatch": "Passwords do not match"

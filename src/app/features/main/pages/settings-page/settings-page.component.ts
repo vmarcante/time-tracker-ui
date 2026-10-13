@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
+import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { TextInputComponent } from '../../../../shared/components/inputs/text/text-input.component';
 import { IntegerInputComponent } from '../../../../shared/components/inputs/integer/integer-input.component';
 import { SelectInputComponent } from '../../../../shared/components/inputs/select/select-input.component';
@@ -12,7 +13,9 @@ import { PersonApiService } from '../../../auth/services/api/person.api.service'
 import { ApiAdapterService } from '../../../../shared/services/api/api-adapter.service';
 import { LanguageService } from '../../../../shared/services/language.service';
 import { TranslationService } from '../../../../shared/services/translation.service';
+import { ToastrService } from '../../../../shared/services/toastr.service';
 import { SupportedLanguages } from '../../../../shared/types/supported-languages.type';
+import { DocumentsValidators } from '../../../../shared/validators/documents.validators';
 
 @Component({
   selector: 'app-settings-page',
@@ -21,6 +24,7 @@ import { SupportedLanguages } from '../../../../shared/types/supported-languages
     ReactiveFormsModule,
     TranslatePipe,
     ButtonComponent,
+    IconComponent,
     TextInputComponent,
     IntegerInputComponent,
     SelectInputComponent,
@@ -34,6 +38,7 @@ export class SettingsPageComponent implements OnInit {
   private apiAdapterService = inject(ApiAdapterService);
   private languageService = inject(LanguageService);
   private translationService = inject(TranslationService);
+  private toastrService = inject(ToastrService);
   private router = inject(Router);
 
   readonly currentUser = this.authTokenService.currentUser;
@@ -53,9 +58,17 @@ export class SettingsPageComponent implements OnInit {
     { value: 'en-US', label: this.translationService.translate('profile.locale.en-US') },
   ]);
 
-  readonly nameControl = new FormControl('', [Validators.required, Validators.minLength(2)]);
-  readonly phoneControl = new FormControl('');
-  readonly ageControl = new FormControl<number | null>(null);
+  readonly nameControl = new FormControl('', [
+    Validators.required,
+    Validators.minLength(3),
+    Validators.maxLength(100),
+    DocumentsValidators.fullName,
+  ]);
+  readonly phoneControl = new FormControl('', [DocumentsValidators.phoneNumber]);
+  readonly ageControl = new FormControl<number | null>(null, [
+    Validators.min(18),
+    Validators.max(120),
+  ]);
   readonly localeControl = new FormControl('');
   readonly emailControl = new FormControl({ value: '', disabled: true });
 
@@ -72,11 +85,15 @@ export class SettingsPageComponent implements OnInit {
       this.form.patchValue({
         name: user.name,
         phone: user.phone ?? '',
-        age: null,
-        locale: user.locale ?? 'pt-BR',
+        age: user.age ?? null,
+        locale: this.normalizeLocale(user.locale),
       });
       this.emailControl.setValue(user.email);
     }
+  }
+
+  private normalizeLocale(locale: string | null | undefined): string {
+    return locale?.toLowerCase().startsWith('en') ? 'en-US' : 'pt-BR';
   }
 
   goBack(): void {
@@ -90,8 +107,8 @@ export class SettingsPageComponent implements OnInit {
     }
 
     const { name, phone, age, locale } = this.form.getRawValue();
-    const currentLocale = this.currentUser()?.locale;
-    const localeChanged = locale && locale !== currentLocale;
+    const currentLocale = this.normalizeLocale(this.currentUser()?.locale);
+    const localeChanged = !!locale && locale !== currentLocale;
 
     this.saving.set(true);
     this.saveSuccess.set(false);
@@ -115,7 +132,12 @@ export class SettingsPageComponent implements OnInit {
                   this.languageService.setLanguage(langCode as SupportedLanguages);
                   this.finishSave();
                 },
-                onError: () => this.finishSave(),
+                onError: () => {
+                  this.toastrService.errorMessage(
+                    this.translationService.translate('profile.toast.localeError'),
+                  );
+                  this.finishSave();
+                },
               },
             );
           } else {
@@ -124,6 +146,9 @@ export class SettingsPageComponent implements OnInit {
         },
         onError: () => {
           this.saving.set(false);
+          this.toastrService.errorMessage(
+            this.translationService.translate('profile.toast.error'),
+          );
         },
       },
     );

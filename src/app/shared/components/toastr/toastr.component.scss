@@ -32,40 +32,52 @@ $toastr-info-progress: var(--color-info);
   justify-content: space-between;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow-lg);
 
   &.success-toastr {
     background-color: $toastr-success-bg;
     border-color: $toastr-success-border;
     color: $toastr-success-text;
+
+    .toastr-icon-wrapper {
+      color: $toastr-success-border;
+    }
   }
 
   &.error-toastr {
     background-color: $toastr-error-bg;
     border-color: $toastr-error-border;
     color: $toastr-error-text;
+
+    .toastr-icon-wrapper {
+      color: $toastr-error-border;
+    }
   }
 
   &.warning-toastr {
     background-color: $toastr-warning-bg;
     border-color: $toastr-warning-border;
     color: $toastr-warning-text;
+
+    .toastr-icon-wrapper {
+      color: $toastr-warning-border;
+    }
   }
 
   &.info-toastr {
     background-color: $toastr-info-bg;
     border-color: $toastr-info-border;
     color: $toastr-info-text;
+
+    .toastr-icon-wrapper {
+      color: $toastr-info-border;
+    }
   }
 
   .toastr-icon-wrapper {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xs);
-
-    img {
-      width: 32px;
-      height: 32px;
-    }
   }
 
   .toastr-content-wrapper {
@@ -131,22 +143,9 @@ $toastr-info-progress: var(--color-info);
   }
 
   .toastr-close-button,
-  .toastr-next-button {
-    @extend %toastr-button-base;
-
-    img {
-      width: 18px;
-      height: 18px;
-    }
-  }
-
+  .toastr-next-button,
   .toastr-clear-queue-button {
     @extend %toastr-button-base;
-
-    img {
-      width: 12px;
-      height: 12px;
-    }
   }
 
   .toastr-queue-counter {
@@ -204,32 +203,16 @@ $toastr-info-progress: var(--color-info);
     gap: 0.75rem;
     padding: 0.75rem;
 
+    --toastr-icon-size: 1.75rem;
+    --toastr-action-icon-size: 1rem;
+    --toastr-clear-icon-size: 0.625rem;
+
     .toastr-icon-wrapper {
       gap: 0.2rem;
-
-      img {
-        width: 28px;
-        height: 28px;
-      }
     }
 
     .toastr-content-wrapper {
       font-size: 0.875rem;
-    }
-
-    .toastr-close-button,
-    .toastr-next-button {
-      img {
-        width: 16px;
-        height: 16px;
-      }
-    }
-
-    .toastr-clear-queue-button {
-      img {
-        width: 10px;
-        height: 10px;
-      }
     }
 
     .toastr-queue-counter {

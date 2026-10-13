@@ -11,14 +11,14 @@
       [name]="generatedInputId"
       [accept]="accept"
       [multiple]="multiple"
-      [disabled]="readonly || formControl!.disabled"
+      [disabled]="readonly || control!.disabled"
       (change)="onFileChange($event)"
     />
 
     <button
       type="button"
       class="file-input-button"
-      [disabled]="readonly || formControl!.disabled || (multiple && !canAddMore)"
+      [disabled]="readonly || control!.disabled || (multiple && !canAddMore)"
       (click)="triggerFileInput()"
     >
     <img
@@ -56,7 +56,7 @@
               <span class="file-size">{{ formatFileSize(file.size) }}</span>
             </div>
           </div>
-          @if (!readonly && !formControl!.disabled) {
+          @if (!readonly && !control!.disabled) {
             <button
               type="button"
               class="file-remove-button"

@@ -1,4 +1,4 @@
-@if (control) {
+@if (effectiveControl) {
   @if (showLabel && label) {
     <label class="text-input-label" [for]="generatedInputId">
       @if (labelIcon) {
@@ -42,7 +42,7 @@
         [type]="inputType"
         [id]="generatedInputId"
         [name]="generatedInputId"
-        [formControl]="control"
+        [formControl]="effectiveControl"
         [placeholder]="placeholder"
         [attr.maxlength]="maxLength"
         [attr.minlength]="minLength"
@@ -65,7 +65,7 @@
         [type]="inputType"
         [id]="generatedInputId"
         [name]="generatedInputId"
-        [formControl]="control"
+        [formControl]="effectiveControl"
         [placeholder]="placeholder"
         [attr.maxlength]="maxLength"
         [attr.minlength]="minLength"

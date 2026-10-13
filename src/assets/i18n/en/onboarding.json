@@ -9,6 +9,15 @@
       "message": "Do you really want to sign out? Your onboarding is not complete yet."
     },
     "modeToggle": "Usage type",
+    "confirmDialog": {
+      "title": "Confirm registration",
+      "message": "You are registering as {{type}}. Do you want to continue?",
+      "type": {
+        "independent": "Freelancer",
+        "company": "Employee",
+        "owner": "Owner/Partner"
+      }
+    },
     "options": {
       "company": {
         "title": "Employee",
@@ -19,8 +28,8 @@
         "desc": "I work on my own, with my projects and clients"
       },
       "owner": {
-        "title": "Business owner",
-        "desc": "I have a company and want to register it"
+        "title": "Owner/Partner",
+        "desc": "I'm an owner or partner and want to register my company"
       }
     },
     "company": {
@@ -74,8 +83,6 @@
     "independent": {
       "title": "I don't belong to a company",
       "description": "Use Time Tracker independently, with your own projects and clients. You can join a company later.",
-      "checkbox": "I confirm that I don't belong to a company",
-      "required": "Confirmation is required to continue",
       "submit": "Continue as a freelancer"
     },
     "invitations": {

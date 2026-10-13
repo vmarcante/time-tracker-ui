@@ -46,7 +46,9 @@
       "back": "Back"
     },
     "toast": {
-      "success": "Profile updated successfully!"
+      "success": "Profile updated successfully!",
+      "error": "Could not save your changes. Please try again.",
+      "localeError": "Profile saved, but the language could not be updated."
     }
   }
 }
