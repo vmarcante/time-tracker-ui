@@ -55,7 +55,8 @@
 }
 
 .mat-text-input-field--no-subscript .mat-mdc-form-field-subscript-wrapper,
-.mat-integer-input-field--no-subscript .mat-mdc-form-field-subscript-wrapper {
+.mat-integer-input-field--no-subscript .mat-mdc-form-field-subscript-wrapper,
+.mat-date-input-field--no-subscript .mat-mdc-form-field-subscript-wrapper {
   display: none !important;
 }
 
@@ -226,6 +227,135 @@ textarea.mat-mdc-input-element {
       color: var(--color-primary) !important;
     }
   }
+}
+
+// ============================================
+// ANGULAR MATERIAL DATEPICKER OVERRIDES
+// ============================================
+
+// Botão de abrir o calendário (suffix do input)
+.mat-datepicker-toggle .mat-mdc-icon-button {
+  width: 32px !important;
+  height: 32px !important;
+  padding: 4px !important;
+  color: var(--color-text-tertiary) !important;
+  border-radius: var(--radius-md) !important;
+
+  .mat-mdc-button-touch-target {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  &:hover:not(:disabled) {
+    color: var(--color-primary) !important;
+    background-color: var(--color-surface) !important;
+  }
+}
+
+// Container do popup
+.mat-datepicker-content {
+  border-radius: var(--radius-xl) !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: var(--shadow-lg) !important;
+  background-color: var(--color-background-card) !important;
+  color: var(--color-text-primary) !important;
+
+  .mat-calendar {
+    width: 296px;
+    height: auto;
+    font-family: inherit;
+  }
+}
+
+// Header do calendário (mês/ano + navegação)
+.mat-calendar-header {
+  padding: var(--spacing-md) var(--spacing-sm) 0 !important;
+}
+
+.mat-calendar-controls {
+  margin: 0 !important;
+}
+
+.mat-calendar-period-button {
+  font-size: var(--font-size-input) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  color: var(--color-text-primary) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 4px 8px !important;
+  min-height: 32px !important;
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-surface) !important;
+  }
+}
+
+.mat-calendar-arrow {
+  border-top-color: var(--color-text-secondary) !important;
+}
+
+.mat-calendar-previous-button,
+.mat-calendar-next-button {
+  color: var(--color-text-secondary) !important;
+  border-radius: var(--radius-full) !important;
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text-primary) !important;
+  }
+}
+
+.mat-calendar-spacer {
+  flex: 1;
+}
+
+// Tabela de dias
+.mat-calendar-table-header th {
+  font-size: var(--font-size-hint) !important;
+  font-weight: var(--font-weight-medium) !important;
+  color: var(--color-text-tertiary) !important;
+  padding-bottom: var(--spacing-xs) !important;
+}
+
+.mat-calendar-body-label {
+  font-size: var(--font-size-hint) !important;
+  color: var(--color-text-tertiary) !important;
+}
+
+.mat-calendar-body-cell-content {
+  font-size: var(--font-size-input) !important;
+  color: var(--color-text-primary) !important;
+  border-radius: var(--radius-md) !important;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+// Hover em dia disponível
+.mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover
+  > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical) {
+  background-color: var(--color-surface) !important;
+}
+
+// Dia selecionado
+.mat-calendar-body-selected {
+  background-color: var(--color-primary) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+// Hoje
+.mat-calendar-body-today:not(.mat-calendar-body-selected) {
+  border-color: var(--color-primary) !important;
+  box-shadow: none !important;
+}
+
+// Dias desabilitados / fora do mês
+.mat-calendar-body-disabled > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
+  color: var(--color-text-disabled) !important;
+}
+
+// Seleção de mês/ano (grid 4x3)
+.mat-calendar-body-cell .mat-calendar-body-selected {
+  background-color: var(--color-primary) !important;
+  color: #ffffff !important;
 }
 
 // ============================================
