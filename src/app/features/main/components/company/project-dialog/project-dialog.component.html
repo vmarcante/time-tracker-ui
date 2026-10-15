@@ -1,0 +1,73 @@
+<app-dialog-shell>
+  <div class="project-dialog">
+    <section class="project-dialog__header">
+      <h2 class="project-dialog__title">
+        @if (isEdit()) {
+          {{ 'home.projects.dialog.title.edit' | translate }}
+        } @else {
+          {{ 'home.projects.dialog.title.create' | translate }}
+        }
+      </h2>
+      <p class="project-dialog__subtitle">
+        @if (isEdit()) {
+          {{ 'home.projects.dialog.subtitle.edit' | translate }}
+        } @else {
+          {{ 'home.projects.dialog.subtitle.create' | translate }}
+        }
+      </p>
+    </section>
+
+    <div class="project-dialog__fields">
+      <app-text-input
+        [control]="nameControl"
+        [labelIcon]="'objects/folder'"
+        [label]="'home.projects.dialog.name.label' | translate"
+        [placeholder]="'home.projects.dialog.name.placeholder' | translate"
+        [required]="true"
+      />
+      <app-text-input
+        [control]="clientNameControl"
+        [labelIcon]="'objects/person'"
+        [label]="'home.projects.dialog.clientName.label' | translate"
+        [placeholder]="'home.projects.dialog.clientName.placeholder' | translate"
+        [required]="true"
+      />
+      <app-textarea-input
+        [control]="descriptionControl"
+        [labelIcon]="'objects/text-file'"
+        [label]="'home.projects.dialog.description.label' | translate"
+        [placeholder]="'home.projects.dialog.description.placeholder' | translate"
+        [hint]="'home.projects.dialog.description.hint' | translate"
+        [rows]="3"
+        [showCounter]="false"
+      />
+      <app-daterange-input
+        [formGroup]="datesGroup"
+        [label]="'home.projects.dialog.dates.label' | translate"
+        [startLabel]="'home.projects.dialog.dates.start' | translate"
+        [endLabel]="'home.projects.dialog.dates.end' | translate"
+        [separator]="'home.projects.dialog.dates.separator' | translate"
+        [hint]="'home.projects.dialog.dates.hint' | translate"
+        [errorMessages]="dateErrorMessages"
+      />
+    </div>
+
+    <div class="project-dialog__actions">
+      <app-button
+        type="button"
+        color="outline-white"
+        [rounded]="true"
+        [text]="'common.dialog.cancel' | translate"
+        (buttonClick)="cancel()"
+      />
+      <app-button
+        type="button"
+        color="primary"
+        [rounded]="true"
+        [text]="(isEdit() ? 'home.projects.dialog.submit.edit' : 'home.projects.dialog.submit.create') | translate"
+        [icon]="{ iconName: 'status/check', svgIcon: true, color: '#FFF', position: 'right' }"
+        (buttonClick)="confirm()"
+      />
+    </div>
+  </div>
+</app-dialog-shell>

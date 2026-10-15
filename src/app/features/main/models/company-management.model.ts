@@ -29,6 +29,55 @@ export interface TeamSummaryOutput {
   memberCount: number;
 }
 
+export interface TeamDetailOutput {
+  id: string;
+  companyId: string;
+  name: string;
+  description: string | null;
+  leadUserId: string | null;
+  leadName: string | null;
+  memberCount: number;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateTeamInput {
+  name: string;
+  description: string | null;
+}
+
+export interface UpdateTeamInput {
+  name: string;
+  description: string | null;
+}
+
+export interface CreateTeamOutput {
+  id: string;
+  name: string;
+  description: string | null;
+}
+
+export type TeamRole = 'LEAD' | 'MEMBER';
+
+export interface TeamMemberOutput {
+  membershipId: string;
+  userId: string;
+  name: string;
+  role: TeamRole;
+  createdAt: string;
+}
+
+export interface ProjectAssignmentOutput {
+  assignmentId: string;
+  userId: string;
+  userName: string;
+  projectId: string;
+  projectName: string;
+  teamId: string;
+  createdAt: string;
+}
+
 export type ProjectStatus = 'ACTIVE' | 'PAUSED' | 'COMPLETED' | 'ARCHIVED';
 
 export interface ProjectSummaryOutput {
@@ -38,6 +87,50 @@ export interface ProjectSummaryOutput {
   status: ProjectStatus;
   teamCount: number;
   memberCount: number;
+}
+
+export interface ProjectDetailOutput {
+  id: string;
+  companyId: string;
+  name: string;
+  clientName: string | null;
+  description: string | null;
+  status: ProjectStatus;
+  startDate: string | null;
+  endDate: string | null;
+  teamCount: number;
+  memberCount: number;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateProjectInput {
+  name: string;
+  clientName: string;
+  description: string | null;
+  startDate: string | null;
+  endDate: string | null;
+}
+
+export interface UpdateProjectInput {
+  name: string;
+  clientName: string;
+  description: string | null;
+  startDate: string | null;
+  endDate: string | null;
+}
+
+export interface CreateProjectOutput {
+  id: string;
+  companyId: string;
+  name: string;
+  clientName: string | null;
+  description: string | null;
+  status: ProjectStatus;
+  startDate: string | null;
+  endDate: string | null;
+  createdAt: string;
 }
 
 export interface TagOutput {

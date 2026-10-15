@@ -1,0 +1,208 @@
+<div class="section">
+  <div class="section__header">
+    <button type="button" class="section__back" (click)="back.emit()" [attr.aria-label]="'home.section.back' | translate">
+      <app-icon name="arrows/back" size="0.875rem" />
+      <span>{{ 'home.section.back' | translate }}</span>
+    </button>
+    <div class="section__heading">
+      <div class="team-detail__heading">
+        <h2 class="section__title">{{ team.name }}</h2>
+        @if (team.description) {
+          <p class="team-detail__description">{{ team.description }}</p>
+        }
+        <div class="team-detail__meta">
+          @if (team.leadName) {
+            <span class="team-detail__lead">
+              <app-icon name="objects/star" size="0.8125rem" />
+              {{ team.leadName }}
+            </span>
+          }
+          <span>{{ members().length }} {{ 'home.teams.members' | translate }}</span>
+        </div>
+      </div>
+      @if (isMember()) {
+        <div class="section__actions">
+          <app-button
+            type="button"
+            color="outline-white"
+            [rounded]="true"
+            [text]="'home.teams.detail.leave.action' | translate"
+            [icon]="{ iconName: 'actions/logout', position: 'left' }"
+            [disabled]="processing()"
+            (buttonClick)="leaveTeam()"
+          />
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Membros -->
+  <section class="team-group">
+    <h3 class="team-group__subtitle">{{ 'home.teams.detail.members.title' | translate }}</h3>
+    <div class="section__body">
+      @if (canManageMembers()) {
+        <div class="team-detail__add-row">
+          <app-select-input
+            class="team-detail__add-select"
+            [control]="memberSelectControl"
+            [options]="memberCandidates()"
+            [showLabel]="false"
+            [placeholder]="'home.teams.detail.members.addPlaceholder' | translate"
+          />
+          <app-button
+            type="button"
+            color="primary"
+            [rounded]="true"
+            [text]="'home.teams.detail.members.add' | translate"
+            [icon]="{ iconName: 'actions/add', position: 'left', color: '#FFF' }"
+            [disabled]="!memberSelectControl.value || processing()"
+            (buttonClick)="addMember()"
+          />
+        </div>
+      }
+
+      @if (membersLoading()) {
+        <div class="section__loading">
+          @for (s of [1, 2, 3]; track s) {
+            <div class="detail-row detail-row--skeleton" aria-hidden="true">
+              <div class="detail-row__avatar-skeleton"></div>
+              <div class="detail-row__info-skeleton"></div>
+            </div>
+          }
+        </div>
+      } @else if (members().length === 0) {
+        <div class="section__empty">
+          <app-icon name="objects/person" size="2rem" />
+          <p>{{ 'home.teams.detail.members.empty' | translate }}</p>
+        </div>
+      } @else {
+        <div class="detail-list">
+          @for (member of members(); track member.membershipId) {
+            <div class="detail-item">
+              <div class="detail-row">
+                <div class="detail-row__avatar" aria-hidden="true">
+                  {{ member.name.charAt(0).toUpperCase() }}
+                </div>
+                <div class="detail-row__info">
+                  <span class="detail-row__name">
+                    {{ member.name }}
+                    @if (isSelf(member)) {
+                      <span class="detail-row__self">{{ 'home.teams.detail.members.you' | translate }}</span>
+                    }
+                  </span>
+                </div>
+                @if (member.role === 'LEAD') {
+                  <span class="detail-row__badge detail-row__badge--lead">
+                    {{ 'home.teams.detail.members.role.LEAD' | translate }}
+                  </span>
+                }
+                <div class="detail-row__actions">
+                  @if (canPromoteToLead(member)) {
+                    <button
+                      type="button"
+                      class="detail-row__action"
+                      [attr.aria-label]="'home.teams.detail.members.promote' | translate"
+                      [attr.title]="'home.teams.detail.members.promote' | translate"
+                      [disabled]="processing()"
+                      (click)="promoteToLead(member)"
+                    >
+                      <app-icon name="objects/star" size="1rem" />
+                    </button>
+                  }
+                  @if (canManageMembers() && !isSelf(member)) {
+                    <button
+                      type="button"
+                      class="detail-row__action detail-row__action--danger"
+                      [attr.aria-label]="'home.teams.detail.members.remove.action' | translate"
+                      [attr.title]="'home.teams.detail.members.remove.action' | translate"
+                      [disabled]="processing()"
+                      (click)="removeMember(member)"
+                    >
+                      <app-icon name="objects/trash" size="1rem" />
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Projetos -->
+  <section class="team-group">
+    <h3 class="team-group__subtitle">{{ 'home.teams.detail.projects.title' | translate }}</h3>
+    <div class="section__body">
+      @if (canManageCompany()) {
+        <div class="team-detail__add-row">
+          <app-select-input
+            class="team-detail__add-select"
+            [control]="projectSelectControl"
+            [options]="projectCandidates()"
+            [showLabel]="false"
+            [placeholder]="'home.teams.detail.projects.linkPlaceholder' | translate"
+          />
+          <app-button
+            type="button"
+            color="primary"
+            [rounded]="true"
+            [text]="'home.teams.detail.projects.link' | translate"
+            [icon]="{ iconName: 'actions/add', position: 'left', color: '#FFF' }"
+            [disabled]="!projectSelectControl.value || processing()"
+            (buttonClick)="linkProject()"
+          />
+        </div>
+      }
+
+      @if (projectsLoading()) {
+        <div class="section__loading">
+          @for (s of [1, 2]; track s) {
+            <div class="detail-row detail-row--skeleton" aria-hidden="true">
+              <div class="detail-row__avatar-skeleton"></div>
+              <div class="detail-row__info-skeleton"></div>
+            </div>
+          }
+        </div>
+      } @else if (projects().length === 0) {
+        <div class="section__empty">
+          <app-icon name="objects/folder" size="2rem" />
+          <p>{{ 'home.teams.detail.projects.empty' | translate }}</p>
+        </div>
+      } @else {
+        <div class="detail-list">
+          @for (project of projects(); track project.id) {
+            <div class="detail-item">
+              <div class="detail-row">
+                <div class="detail-row__project-icon" aria-hidden="true">
+                  <app-icon name="objects/folder" size="1rem" />
+                </div>
+                <div class="detail-row__info">
+                  <span class="detail-row__name">{{ project.name }}</span>
+                  @if (project.clientName) {
+                    <span class="detail-row__meta">{{ project.clientName }}</span>
+                  }
+                </div>
+                <span class="detail-row__meta">{{ project.memberCount }} {{ 'home.teams.members' | translate }}</span>
+                <div class="detail-row__actions">
+                  @if (canManageCompany()) {
+                    <button
+                      type="button"
+                      class="detail-row__action detail-row__action--danger"
+                      [attr.aria-label]="'home.teams.detail.projects.unlinkAction' | translate"
+                      [attr.title]="'home.teams.detail.projects.unlinkAction' | translate"
+                      [disabled]="processing()"
+                      (click)="unlinkProject(project)"
+                    >
+                      <app-icon name="actions/close" size="1rem" />
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </section>
+</div>

@@ -6,9 +6,11 @@
     </button>
     <div class="section__heading">
       <h2 class="section__title">{{ 'home.projects.title' | translate }}</h2>
-      <div class="section__actions">
-        <app-button [text]="'home.projects.create' | translate" color="primary" [rounded]="true" [icon]="{ iconName: 'actions/add', position: 'left', color: '#FFF' }" />
-      </div>
+      @if (canManage()) {
+        <div class="section__actions">
+          <app-button [text]="'home.projects.create' | translate" color="primary" [rounded]="true" [icon]="{ iconName: 'actions/add', position: 'left', color: '#FFF' }" (buttonClick)="openCreateDialog()" />
+        </div>
+      }
     </div>
   </div>
 
@@ -43,6 +45,18 @@
             <span class="project-row__status project-row__status--{{ project.status | lowercase }}">
               {{ 'home.projects.status.' + project.status | translate }}
             </span>
+            @if (canManage()) {
+              <button
+                type="button"
+                class="project-row__edit"
+                [attr.aria-label]="'home.projects.edit' | translate"
+                [attr.title]="'home.projects.edit' | translate"
+                [disabled]="editingProjectId() === project.id"
+                (click)="$event.stopPropagation(); openEditDialog(project)"
+              >
+                <app-icon name="actions/edit" size="1rem" />
+              </button>
+            }
           </div>
         }
       </div>

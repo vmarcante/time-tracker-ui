@@ -1,43 +1,42 @@
 <div class="input-wrapper">
   @if (label) {
-    <label class="input-wrapper__label">{{ label }}</label>
+    <label class="input-wrapper__label">
+      @if (labelIcon) {
+        <app-icon class="input-wrapper__label-icon" [name]="labelIcon" [size]="14" />
+      }
+      <span class="input-wrapper__label-text">
+        {{ label }}
+        @if (required) {
+          <span class="input-wrapper__required">*</span>
+        }
+      </span>
+    </label>
   }
-  <div class="daterange-wrapper">
-    <div class="daterange-input-group">
-      <div class="date-field">
-        <label [for]="getStartId()" class="date-label">Início</label>
-        <input
-          type="date"
-          class="date-input"
-          [id]="getStartId()"
-          [name]="getStartId()"
-          [value]="formattedStartValue"
-          [placeholder]="placeholder"
-          [attr.min]="startMinDate"
-          [attr.max]="startMaxDate"
-          [disabled]="readonly || formGroup.disabled"
-          (change)="onStartChange($event)"
-        />
-      </div>
 
-      <span class="date-separator">até</span>
+  <div class="daterange-input-group">
+    <app-date-input
+      [control]="startControl"
+      [showLabel]="false"
+      [placeholder]="startLabel"
+      [minDate]="minDate"
+      [maxDate]="startMaxDate"
+      [readonly]="readonly"
+      [hideHint]="true"
+      [hideError]="true"
+    />
 
-      <div class="date-field">
-        <label [for]="getEndId()" class="date-label">Fim</label>
-        <input
-          type="date"
-          class="date-input"
-          [id]="getEndId()"
-          [name]="getEndId()"
-          [value]="formattedEndValue"
-          [placeholder]="placeholder"
-          [attr.min]="endMinDate"
-          [attr.max]="endMaxDate"
-          [disabled]="readonly || formGroup.disabled"
-          (change)="onEndChange($event)"
-        />
-      </div>
-    </div>
+    <span class="date-separator">{{ separator }}</span>
+
+    <app-date-input
+      [control]="endControl"
+      [showLabel]="false"
+      [placeholder]="endLabel"
+      [minDate]="endMinDate"
+      [maxDate]="maxDate"
+      [readonly]="readonly"
+      [hideHint]="true"
+      [hideError]="true"
+    />
   </div>
 
   @if (hint) {

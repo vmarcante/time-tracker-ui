@@ -5,8 +5,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatTooltip } from '@angular/material/tooltip';
 import { InputValue } from '../../../types/input.types';
 import { TranslationService } from '../../../../shared/services/translation.service';
+import { IconComponent } from '../../icon/icon.component';
 
 @Component({
   selector: 'app-date-input',
@@ -17,6 +19,8 @@ import { TranslationService } from '../../../../shared/services/translation.serv
     MatInputModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatTooltip,
+    IconComponent,
   ],
   templateUrl: './date-input.component.html',
   styleUrl: './date-input.component.scss',
@@ -27,8 +31,10 @@ export class DateInputComponent {
 
   // UI properties
   @Input() label: string = '';
+  @Input() labelIcon: string | null = null;
   @Input() placeholder: string = '';
   @Input() hint: string | null = '';
+  @Input() labelHint: string | null = null;
   @Input() showLabel: boolean = true;
   @Input() required: boolean = false;
 
@@ -42,6 +48,8 @@ export class DateInputComponent {
 
   // Custom error messages
   @Input() errorMessages: Record<string, string> = {};
+  @Input() hideHint: boolean = false;
+  @Input() hideError: boolean = false;
 
   private translationService: TranslationService = inject(TranslationService);
 
@@ -70,8 +78,15 @@ export class DateInputComponent {
     return `${this.generatedInputId}-hint`;
   }
 
+  protected get labelHintId(): string {
+    return `${this.generatedInputId}-label-hint`;
+  }
+
   protected get ariaDescribedBy(): string | null {
     const parts: string[] = [];
+    if (this.labelHint) {
+      parts.push(this.labelHintId);
+    }
     if (this.hasError) {
       parts.push(this.errorId);
     }
@@ -79,6 +94,17 @@ export class DateInputComponent {
       parts.push(this.hintId);
     }
     return parts.length > 0 ? parts.join(' ') : null;
+  }
+
+  protected get fieldClasses(): Record<string, boolean> {
+    return {
+      'mat-date-input-field': true,
+      'mat-date-input-field--no-subscript': this.hideSubscript,
+    };
+  }
+
+  protected get hideSubscript(): boolean {
+    return this.hideHint && this.hideError;
   }
 
   protected get ariaInvalid(): boolean | null {
@@ -108,6 +134,17 @@ export class DateInputComponent {
 
     if (errors['matDatepickerMax']) {
       return customMessages['max'] || this.translationService.translate('validation.max');
+    }
+
+    if (errors['matDatepickerParse']) {
+      return (
+        customMessages['parse'] || this.translationService.translate('validation.invalidFormat')
+      );
+    }
+
+    const customKey = Object.keys(errors).find((key) => customMessages[key] !== undefined);
+    if (customKey) {
+      return customMessages[customKey]!;
     }
 
     return '';

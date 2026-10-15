@@ -1,30 +1,64 @@
-<mat-form-field appearance="outline">
+@if (control) {
   @if (showLabel && label) {
-    <mat-label>{{ label }}</mat-label>
+    <label class="date-input-label" [for]="generatedInputId">
+      @if (labelIcon) {
+        <app-icon
+          class="date-input-label__icon"
+          [name]="labelIcon"
+          [size]="14"
+        />
+      }
+      <span class="date-input-label__text">
+        {{ label }}
+        @if (required) {
+          <span class="date-input-required">*</span>
+        }
+      </span>
+      @if (labelHint) {
+        <span
+          class="date-input-label-hint"
+          [id]="labelHintId"
+          [matTooltip]="labelHint"
+          matTooltipPosition="above"
+          role="img"
+          [attr.aria-label]="labelHint"
+          tabindex="0"
+        >
+          <svg class="date-input-label-hint__icon">
+            <use xlink:href="/assets/icons/actions/help.svg#icon"></use>
+          </svg>
+        </span>
+      }
+    </label>
   }
-  <input
-    matInput
-    [matDatepicker]="picker"
-    [id]="generatedInputId"
-    [formControl]="control!"
-    [placeholder]="placeholder"
-    [min]="minDate"
-    [max]="maxDate"
-    [disabled]="readonly || control!.disabled"
-    [attr.aria-describedby]="ariaDescribedBy"
-    [attr.aria-invalid]="ariaInvalid"
-    [attr.aria-required]="ariaRequired"
-    (focus)="focus($event)"
-    (blur)="blur($event)"
-    (focusout)="focusOut($event)"
-  />
-  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-  <mat-datepicker #picker></mat-datepicker>
 
-  @if (hint) {
-    <mat-hint [id]="hintId">{{ hint }}</mat-hint>
-  }
-  @if (hasError) {
-    <mat-error [id]="errorId">{{ errorMessage }}</mat-error>
-  }
-</mat-form-field>
+  <mat-form-field [class]="fieldClasses" appearance="outline">
+    <input
+      matInput
+      [matDatepicker]="picker"
+      [id]="generatedInputId"
+      [formControl]="control"
+      [placeholder]="placeholder"
+      [min]="minDate"
+      [max]="maxDate"
+      [readonly]="readonly"
+      [attr.aria-describedby]="ariaDescribedBy"
+      [attr.aria-invalid]="ariaInvalid"
+      [attr.aria-required]="ariaRequired"
+      (focus)="focus($event)"
+      (blur)="blur($event)"
+      (focusout)="focusOut($event)"
+    />
+    <mat-datepicker-toggle matSuffix [for]="picker" [disabled]="readonly || control.disabled">
+      <app-icon matDatepickerToggleIcon name="objects/calendar" size="1rem" />
+    </mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+
+    @if (hint && !hideHint) {
+      <mat-hint [id]="hintId">{{ hint }}</mat-hint>
+    }
+    @if (hasError && !hideError) {
+      <mat-error [id]="errorId">{{ errorMessage }}</mat-error>
+    }
+  </mat-form-field>
+}

@@ -34,15 +34,23 @@
       }
 
       @if (activeView() === 'teams') {
-        <app-teams-section (back)="navigateBack()" />
+        <app-teams-section
+          [companyId]="companyId()"
+          [companyRole]="companyRole()"
+          (back)="navigateBack()"
+        />
       }
 
       @if (activeView() === 'projects') {
-        <app-projects-section (back)="navigateBack()" />
+        <app-projects-section
+          [companyId]="companyId()"
+          [companyRole]="companyRole()"
+          (back)="navigateBack()"
+        />
       }
 
       @if (activeView() === 'time-entries') {
-        <app-time-entries-section (back)="navigateBack()" />
+        <app-time-entries-section [companyId]="companyId()" (back)="navigateBack()" />
       }
     </main>
   </div>

@@ -161,13 +161,117 @@
     "teams": {
       "title": "Times",
       "create": "Novo Time",
+      "edit": "Editar time",
       "empty": "Nenhum time cadastrado",
-      "members": "membros"
+      "members": "membros",
+      "dialog": {
+        "title": {
+          "create": "Novo time",
+          "edit": "Editar time"
+        },
+        "subtitle": {
+          "create": "Crie um time para organizar os membros da empresa em projetos.",
+          "edit": "Atualize o nome e a descrição do time."
+        },
+        "name": {
+          "label": "Nome do time",
+          "placeholder": "Ex.: Squad de Produto"
+        },
+        "description": {
+          "label": "Descrição",
+          "placeholder": "Descreva o propósito do time",
+          "hint": "Opcional."
+        },
+        "submit": {
+          "create": "Criar time",
+          "edit": "Salvar alterações"
+        }
+      },
+      "detail": {
+        "leave": {
+          "action": "Sair do time",
+          "title": "Sair do time",
+          "message": "Deseja sair do time {{team}}? Você poderá ser adicionado novamente depois.",
+          "confirm": "Sair do time"
+        },
+        "members": {
+          "title": "Membros",
+          "addPlaceholder": "Selecione um membro da empresa",
+          "add": "Adicionar",
+          "empty": "Nenhum membro neste time",
+          "you": "(você)",
+          "promote": "Tornar líder",
+          "role": {
+            "LEAD": "Líder"
+          },
+          "lead": {
+            "title": "Definir líder",
+            "message": "Tornar {{name}} líder deste time? O líder atual passará a ser membro.",
+            "confirm": "Definir líder"
+          },
+          "remove": {
+            "action": "Remover do time",
+            "title": "Remover membro",
+            "message": "Remover {{name}} deste time?",
+            "messageWithImpact": "Remover {{name}} deste time? {{count}} atribuição(ões) de projeto serão desativadas.",
+            "confirm": "Remover"
+          }
+        },
+        "projects": {
+          "title": "Projetos",
+          "linkPlaceholder": "Selecione um projeto para vincular",
+          "link": "Vincular",
+          "empty": "Nenhum projeto vinculado",
+          "unlinkAction": "Desvincular projeto",
+          "unlink": {
+            "title": "Desvincular projeto",
+            "message": "Desvincular {{project}} deste time?",
+            "messageWithImpact": "Desvincular {{project}} deste time? {{count}} atribuição(ões) de membro serão desativadas.",
+            "confirm": "Desvincular"
+          }
+        }
+      }
     },
     "projects": {
       "title": "Projetos",
       "create": "Novo Projeto",
+      "edit": "Editar projeto",
       "empty": "Nenhum projeto cadastrado",
+      "dialog": {
+        "title": {
+          "create": "Novo projeto",
+          "edit": "Editar projeto"
+        },
+        "subtitle": {
+          "create": "Crie um projeto para organizar os lançamentos e times da empresa.",
+          "edit": "Atualize os dados do projeto."
+        },
+        "name": {
+          "label": "Nome do projeto",
+          "placeholder": "Ex.: Sistema de Vendas"
+        },
+        "clientName": {
+          "label": "Cliente",
+          "placeholder": "Ex.: Empresa XYZ"
+        },
+        "description": {
+          "label": "Descrição",
+          "placeholder": "Descreva o objetivo do projeto",
+          "hint": "Opcional."
+        },
+        "dates": {
+          "label": "Período",
+          "start": "Início",
+          "end": "Fim",
+          "separator": "até",
+          "hint": "Opcional. Informe o período previsto do projeto.",
+          "invalidRange": "A data de fim não pode ser anterior à data de início."
+        },
+        "submit": {
+          "create": "Criar projeto",
+          "edit": "Salvar alterações"
+        }
+      },
       "status": {
         "ACTIVE": "Ativo",
         "PAUSED": "Pausado",

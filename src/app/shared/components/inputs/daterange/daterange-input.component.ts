@@ -1,7 +1,9 @@
 import { Component, Input, Output, EventEmitter, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslationService } from '../../../../shared/services/translation.service';
+import { DateInputComponent } from '../date/date-input.component';
+import { IconComponent } from '../../icon/icon.component';
 
 export interface DateRange {
   start: Date | null;
@@ -10,7 +12,7 @@ export interface DateRange {
 
 @Component({
   selector: 'app-daterange-input',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, DateInputComponent, IconComponent],
   templateUrl: './daterange-input.component.html',
   styleUrl: './daterange-input.component.scss',
 })
@@ -20,6 +22,7 @@ export class DaterangeInputComponent {
 
   // UI properties
   @Input() label: string = '';
+  @Input() labelIcon: string | null = null;
   @Input() placeholder: string = '';
   @Input() hint: string | null = '';
   @Input() required: boolean = false;
@@ -28,6 +31,9 @@ export class DaterangeInputComponent {
   @Input() minDate: Date | null = null;
   @Input() maxDate: Date | null = null;
   @Input() readonly: boolean = false;
+  @Input() startLabel: string = 'Início';
+  @Input() endLabel: string = 'Fim';
+  @Input() separator: string = 'até';
 
   // Accessibility
   @Input() inputId: string = '';
@@ -42,108 +48,30 @@ export class DaterangeInputComponent {
   constructor() {
     effect(() => {
       const fg = this.formGroup;
-      
+
       fg.valueChanges.subscribe(() => {
         this.emitRangeChange();
       });
     });
   }
 
-  protected get minDateString(): string | null {
-    const date = this.minDate;
-    return date ? this.formatDateToInput(date) : null;
+  protected get startControl(): FormControl {
+    return this.formGroup.get('start') as FormControl;
   }
 
-  protected get maxDateString(): string | null {
-    const date = this.maxDate;
-    return date ? this.formatDateToInput(date) : null;
+  protected get endControl(): FormControl {
+    return this.formGroup.get('end') as FormControl;
   }
 
-  protected get startMinDate(): string | null {
-    return this.minDateString;
+  // Limites cruzados: o início não pode passar do fim escolhido e vice-versa
+  protected get startMaxDate(): Date | null {
+    const endValue = this.endControl?.value;
+    return endValue instanceof Date ? endValue : this.maxDate;
   }
 
-  protected get startMaxDate(): string | null {
-    const endValue = this.formGroup.get('end')?.value;
-    if (endValue instanceof Date) {
-      return this.formatDateToInput(endValue);
-    }
-    return this.maxDateString;
-  }
-
-  protected get endMinDate(): string | null {
-    const startValue = this.formGroup.get('start')?.value;
-    if (startValue instanceof Date) {
-      return this.formatDateToInput(startValue);
-    }
-    return this.minDateString;
-  }
-
-  protected get endMaxDate(): string | null {
-    return this.maxDateString;
-  }
-
-  protected onStartChange(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    const value = target.value;
-    
-    if (value) {
-      const date = new Date(value);
-      this.formGroup.get('start')?.setValue(date);
-    } else {
-      this.formGroup.get('start')?.setValue(null);
-    }
-  }
-
-  protected onEndChange(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    const value = target.value;
-    
-    if (value) {
-      const date = new Date(value);
-      this.formGroup.get('end')?.setValue(date);
-    } else {
-      this.formGroup.get('end')?.setValue(null);
-    }
-  }
-
-  private emitRangeChange(): void {
-    const start = this.formGroup.get('start')?.value;
-    const end = this.formGroup.get('end')?.value;
-    
-    this.rangeChange.emit({
-      start: start instanceof Date ? start : null,
-      end: end instanceof Date ? end : null,
-    });
-  }
-
-  private formatDateToInput(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
-  protected get formattedStartValue(): string {
-    const value = this.formGroup.get('start')?.value;
-    if (!value) return '';
-    
-    if (value instanceof Date) {
-      return this.formatDateToInput(value);
-    }
-    
-    return '';
-  }
-
-  protected get formattedEndValue(): string {
-    const value = this.formGroup.get('end')?.value;
-    if (!value) return '';
-    
-    if (value instanceof Date) {
-      return this.formatDateToInput(value);
-    }
-    
-    return '';
+  protected get endMinDate(): Date | null {
+    const startValue = this.startControl?.value;
+    return startValue instanceof Date ? startValue : this.minDate;
   }
 
   private readonly generatedId = `daterange-input-${Math.random().toString(36).substring(2, 11)}`;
@@ -154,7 +82,8 @@ export class DaterangeInputComponent {
 
   protected get hasError(): boolean {
     const fg = this.formGroup;
-    return fg ? fg.invalid && fg.touched : false;
+    if (!fg?.invalid) return false;
+    return fg.touched || this.startControl?.touched || this.endControl?.touched;
   }
 
   protected get errorId(): string {
@@ -167,12 +96,17 @@ export class DaterangeInputComponent {
 
   protected get errorMessage(): string {
     const fg = this.formGroup;
-    if (!fg || !fg.errors || !fg.touched) {
+    if (!fg || !fg.errors || !this.hasError) {
       return '';
     }
 
     const errors = fg.errors;
     const customMessages = this.errorMessages;
+
+    const customKey = Object.keys(errors).find((key) => customMessages[key] !== undefined);
+    if (customKey) {
+      return customMessages[customKey]!;
+    }
 
     if (errors['required']) {
       return customMessages['required'] || this.translationService.translate('validation.required');
@@ -181,11 +115,13 @@ export class DaterangeInputComponent {
     return '';
   }
 
-  protected getStartId(): string {
-    return `${this.generatedInputId}-start`;
-  }
+  private emitRangeChange(): void {
+    const start = this.startControl?.value;
+    const end = this.endControl?.value;
 
-  protected getEndId(): string {
-    return `${this.generatedInputId}-end`;
+    this.rangeChange.emit({
+      start: start instanceof Date ? start : null,
+      end: end instanceof Date ? end : null,
+    });
   }
 }

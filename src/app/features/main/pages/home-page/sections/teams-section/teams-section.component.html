@@ -1,17 +1,60 @@
 <div class="section">
-  <div class="section__header">
-    <button type="button" class="section__back" (click)="back.emit()" [attr.aria-label]="'home.section.back' | translate">
-      <app-icon name="arrows/back" size="0.875rem" />
-      <span>{{ 'home.section.back' | translate }}</span>
-    </button>
-    <div class="section__heading">
-      <h2 class="section__title">{{ 'home.teams.title' | translate }}</h2>
-      <div class="section__actions">
-        <app-button [text]="'home.teams.create' | translate" color="primary" [rounded]="true" [icon]="{ iconName: 'actions/add', position: 'left', color: '#FFF' }" />
+  @if (!selectedTeam()) {
+    <div class="section__header">
+      <button type="button" class="section__back" (click)="back.emit()" [attr.aria-label]="'home.section.back' | translate">
+        <app-icon name="arrows/back" size="0.875rem" />
+        <span>{{ 'home.section.back' | translate }}</span>
+      </button>
+      <div class="section__heading">
+        <h2 class="section__title">{{ 'home.teams.title' | translate }}</h2>
+        @if (canManage()) {
+          <div class="section__actions">
+            <app-button
+              [text]="'home.teams.create' | translate"
+              color="primary"
+              [rounded]="true"
+              [icon]="{ iconName: 'actions/add', position: 'left', color: '#FFF' }"
+              [loading]="saving()"
+              (buttonClick)="openCreateDialog()"
+            />
+          </div>
+        }
       </div>
     </div>
-  </div>
+  }
 
+  @if (detailLoading()) {
+    <div class="section">
+      <div class="section__header">
+        <div class="team-detail-skeleton__back"></div>
+        <div class="team-detail-skeleton__title"></div>
+      </div>
+      @for (g of [1, 2]; track g) {
+        <section class="team-detail-skeleton__group">
+          <div class="team-detail-skeleton__subtitle"></div>
+          <div class="section__body">
+            <div class="section__loading">
+              @for (s of [1, 2, 3]; track s) {
+                <div class="detail-row detail-row--skeleton" aria-hidden="true">
+                  <div class="detail-row__avatar-skeleton"></div>
+                  <div class="detail-row__info-skeleton"></div>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+    </div>
+  } @else if (selectedTeam(); as team) {
+    <app-team-detail
+      [companyId]="companyId!"
+      [companyRole]="companyRole"
+      [currentUserId]="currentUserId()"
+      [team]="team"
+      (back)="closeDetail()"
+      (changed)="loadPage(currentPage())"
+    />
+  } @else {
   <div class="section__body">
     @if (loading()) {
       <div class="section__loading">
@@ -30,7 +73,13 @@
     } @else {
       <div class="team-list">
         @for (team of teams(); track team.id) {
-          <div class="team-row">
+          <div
+            class="team-row team-row--clickable"
+            role="button"
+            tabindex="0"
+            (click)="openDetail(team)"
+            (keydown.enter)="openDetail(team)"
+          >
             <div class="team-row__icon">
               <app-icon name="objects/layers" size="1.125rem" />
             </div>
@@ -41,6 +90,18 @@
               }
             </div>
             <span class="team-row__count">{{ team.memberCount }} {{ 'home.teams.members' | translate }}</span>
+            @if (canManage()) {
+              <button
+                type="button"
+                class="team-row__edit"
+                [attr.aria-label]="'home.teams.edit' | translate"
+                [attr.title]="'home.teams.edit' | translate"
+                [disabled]="editingTeamId() === team.id"
+                (click)="$event.stopPropagation(); openEditDialog(team)"
+              >
+                <app-icon name="actions/edit" size="1rem" />
+              </button>
+            }
           </div>
         }
       </div>
@@ -54,4 +115,5 @@
       />
     }
   </div>
+  }
 </div>

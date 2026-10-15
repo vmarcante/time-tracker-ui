@@ -1,0 +1,54 @@
+.project-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl);
+  min-width: 460px;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__title {
+    font-size: 1.125rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  &__subtitle {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  &__fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-sm);
+  }
+}
+
+@media (max-width: 560px) {
+  .project-dialog {
+    min-width: unset;
+    padding: var(--spacing-md);
+
+    &__actions {
+      flex-direction: column-reverse;
+
+      app-button {
+        width: 100%;
+      }
+    }
+  }
+}

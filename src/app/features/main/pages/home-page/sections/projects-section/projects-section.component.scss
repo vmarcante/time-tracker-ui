@@ -84,6 +84,37 @@
     }
   }
 
+  &__edit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-text-tertiary);
+    cursor: pointer;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity var(--transition-fast), background-color var(--transition-fast);
+
+    &:hover {
+      background-color: var(--color-primary-100);
+      color: var(--color-primary);
+    }
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.4;
+    }
+  }
+
+  &:hover &__edit,
+  &__edit:focus-visible {
+    opacity: 1;
+  }
+
   &--skeleton {
     pointer-events: none;
     padding: var(--spacing-md) var(--spacing-lg);

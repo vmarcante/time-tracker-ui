@@ -161,13 +161,117 @@
     "teams": {
       "title": "Teams",
       "create": "New Team",
+      "edit": "Edit team",
       "empty": "No teams registered",
-      "members": "members"
+      "members": "members",
+      "dialog": {
+        "title": {
+          "create": "New team",
+          "edit": "Edit team"
+        },
+        "subtitle": {
+          "create": "Create a team to organize company members into projects.",
+          "edit": "Update the team's name and description."
+        },
+        "name": {
+          "label": "Team name",
+          "placeholder": "E.g.: Product Squad"
+        },
+        "description": {
+          "label": "Description",
+          "placeholder": "Describe the team's purpose",
+          "hint": "Optional."
+        },
+        "submit": {
+          "create": "Create team",
+          "edit": "Save changes"
+        }
+      },
+      "detail": {
+        "leave": {
+          "action": "Leave team",
+          "title": "Leave team",
+          "message": "Do you want to leave the team {{team}}? You can be added again later.",
+          "confirm": "Leave team"
+        },
+        "members": {
+          "title": "Members",
+          "addPlaceholder": "Select a company member",
+          "add": "Add",
+          "empty": "No members in this team",
+          "you": "(you)",
+          "promote": "Make lead",
+          "role": {
+            "LEAD": "Lead"
+          },
+          "lead": {
+            "title": "Assign lead",
+            "message": "Make {{name}} the lead of this team? The current lead will become a member.",
+            "confirm": "Assign lead"
+          },
+          "remove": {
+            "action": "Remove from team",
+            "title": "Remove member",
+            "message": "Remove {{name}} from this team?",
+            "messageWithImpact": "Remove {{name}} from this team? {{count}} project assignment(s) will be deactivated.",
+            "confirm": "Remove"
+          }
+        },
+        "projects": {
+          "title": "Projects",
+          "linkPlaceholder": "Select a project to link",
+          "link": "Link",
+          "empty": "No linked projects",
+          "unlinkAction": "Unlink project",
+          "unlink": {
+            "title": "Unlink project",
+            "message": "Unlink {{project}} from this team?",
+            "messageWithImpact": "Unlink {{project}} from this team? {{count}} member assignment(s) will be deactivated.",
+            "confirm": "Unlink"
+          }
+        }
+      }
     },
     "projects": {
       "title": "Projects",
       "create": "New Project",
+      "edit": "Edit project",
       "empty": "No projects registered",
+      "dialog": {
+        "title": {
+          "create": "New project",
+          "edit": "Edit project"
+        },
+        "subtitle": {
+          "create": "Create a project to organize company time entries and teams.",
+          "edit": "Update the project details."
+        },
+        "name": {
+          "label": "Project name",
+          "placeholder": "E.g.: Sales System"
+        },
+        "clientName": {
+          "label": "Client",
+          "placeholder": "E.g.: XYZ Company"
+        },
+        "description": {
+          "label": "Description",
+          "placeholder": "Describe the project's goal",
+          "hint": "Optional."
+        },
+        "dates": {
+          "label": "Period",
+          "start": "Start",
+          "end": "End",
+          "separator": "to",
+          "hint": "Optional. Provide the project's expected period.",
+          "invalidRange": "End date cannot be earlier than start date."
+        },
+        "submit": {
+          "create": "Create project",
+          "edit": "Save changes"
+        }
+      },
       "status": {
         "ACTIVE": "Active",
         "PAUSED": "Paused",

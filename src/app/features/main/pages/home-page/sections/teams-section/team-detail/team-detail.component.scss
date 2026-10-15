@@ -1,0 +1,224 @@
+@use '../../section-shared' as *;
+
+.section__empty {
+  padding: var(--spacing-2xl) var(--spacing-xl);
+  gap: var(--spacing-sm);
+}
+
+.team-detail {
+  &__heading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    min-width: 0;
+  }
+
+  &__description {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    font-size: 0.75rem;
+    color: var(--color-text-tertiary);
+  }
+
+  &__lead {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__add-row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  &__add-select {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.team-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+
+  & + & {
+    margin-top: var(--spacing-xl);
+  }
+
+  &__subtitle {
+    font-size: 0.8125rem;
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-tertiary);
+    margin: 0;
+    padding-left: var(--spacing-xs);
+  }
+}
+
+.detail-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-item {
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--color-border);
+  }
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  transition: background-color var(--transition-fast);
+
+  &:hover {
+    background-color: var(--color-surface);
+  }
+
+  &__avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--color-primary-100);
+    color: var(--color-primary);
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-semibold);
+    flex-shrink: 0;
+  }
+
+  &__project-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    background-color: var(--color-primary-100);
+    color: var(--color-primary);
+    flex-shrink: 0;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__self {
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text-tertiary);
+    margin-left: var(--spacing-xs);
+  }
+
+  &__meta {
+    font-size: 0.75rem;
+    color: var(--color-text-tertiary);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  &__badge {
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-semibold);
+    padding: 2px var(--spacing-sm);
+    border-radius: var(--radius-pill, var(--radius-sm));
+    flex-shrink: 0;
+
+    &--lead {
+      background-color: var(--color-primary-100);
+      color: var(--color-primary);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    flex-shrink: 0;
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-text-tertiary);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity var(--transition-fast), background-color var(--transition-fast);
+
+    &:hover {
+      background-color: var(--color-primary-100);
+      color: var(--color-primary);
+    }
+
+    &--danger:hover {
+      background-color: var(--color-error-100, rgba(220, 38, 38, 0.08));
+      color: var(--color-error);
+    }
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.4;
+    }
+  }
+
+  &:hover &__action,
+  &__action:focus-visible {
+    opacity: 1;
+  }
+
+  &--skeleton {
+    pointer-events: none;
+  }
+
+  &__avatar-skeleton {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    @include skeleton-shimmer;
+  }
+
+  &__info-skeleton {
+    width: 160px;
+    height: 18px;
+    border-radius: var(--radius-md);
+    @include skeleton-shimmer;
+  }
+}

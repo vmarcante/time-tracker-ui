@@ -1,57 +1,75 @@
+// ============================================
+// DATE INPUT COMPONENT
+// ============================================
+// Estilos específicos do componente date-input
+// Estilos globais do Angular Material estão em:
+// src/styles/components/_material-overrides.scss
+
 :host {
   display: block;
   width: 100%;
+  margin-bottom: 0;
 }
 
-.date-input {
+// Label externo (fora do mat-form-field)
+.date-input-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-label);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+  line-height: 1.2;
+
+  &__icon {
+    flex-shrink: 0;
+    color: var(--color-text-secondary);
+    opacity: 0.8;
+  }
+
+  &__text {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .date-input-required {
+    color: var(--color-error);
+    margin-left: 2px;
+  }
+}
+
+.date-input-label-hint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 4px;
+  color: var(--color-text-secondary);
+  cursor: help;
+  vertical-align: middle;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--color-primary);
+  }
+
+  &__icon {
+    width: 12px;
+    height: 12px;
+    fill: currentColor;
+  }
+}
+
+// Container do mat-form-field
+.mat-date-input-field {
   width: 100%;
-  padding: 0.75rem;
-  font-size: 1rem;
-  line-height: 1.5;
-  font-family: inherit;
-  color: var(--color-text-primary, #1f2937);
-  background-color: var(--color-bg-primary, #ffffff);
-  border: 1px solid var(--color-border, #d1d5db);
-  border-radius: 0.375rem;
-  transition: all 0.2s ease-in-out;
-  outline: none;
+  font-size: var(--font-size-input);
 
-  &::placeholder {
-    color: var(--color-text-tertiary, #9ca3af);
-  }
-
-  &::-webkit-calendar-picker-indicator {
-    cursor: pointer;
-    padding: 0.25rem;
-    border-radius: 0.25rem;
-    transition: background-color 0.2s ease-in-out;
-
-    &:hover {
-      background-color: rgba(59, 130, 246, 0.1);
-    }
-  }
-
-  &:focus {
-    border-color: var(--color-primary, #3b82f6);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  }
-
-  &:disabled {
-    background-color: var(--color-bg-disabled, #f3f4f6);
-    cursor: not-allowed;
-    opacity: 0.6;
-
-    &::-webkit-calendar-picker-indicator {
-      cursor: not-allowed;
-      opacity: 0.5;
-    }
-  }
-
-  &[aria-invalid='true'] {
-    border-color: var(--color-error, #ef4444);
-
-    &:focus {
-      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-    }
+  .mat-mdc-form-field-icon-suffix {
+    padding-right: 6px;
+    display: flex;
+    align-items: center;
   }
 }

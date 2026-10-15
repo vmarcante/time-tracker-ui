@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, OnInit, inject, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '../../../../../../shared/pipes/translate.pipe';
 import { IconComponent } from '../../../../../../shared/components/icon/icon.component';
@@ -18,6 +18,7 @@ export class TimeEntriesSectionComponent implements OnInit {
   private companyApi = inject(CompanyManagementApiService);
   private apiAdapter = inject(ApiAdapterService);
 
+  @Input() companyId: string | null = null;
   @Output() back = new EventEmitter<void>();
 
   readonly entries = signal<CompanyTimeEntryOutput[]>([]);
@@ -30,9 +31,10 @@ export class TimeEntriesSectionComponent implements OnInit {
   }
 
   loadPage(pageNumber: number): void {
+    if (!this.companyId) return;
     this.loading.set(true);
     this.apiAdapter.executeRequest(
-      this.companyApi.listCompanyTimeEntries(pageNumber, 10),
+      this.companyApi.listCompanyTimeEntries(this.companyId, pageNumber, 10),
       {
         ignoreLoading: true,
         onSuccess: (response) => {
