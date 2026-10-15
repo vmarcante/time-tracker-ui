@@ -1,18 +1,5 @@
 {
-  "home": {
-    "quickActions": {
-      "title": "Quick Actions",
-      "newTimeEntry": "New time entry",
-      "viewReports": "View reports",
-      "manageProjects": "Manage projects",
-      "exportData": "Export data"
-    },
-    "latestEntries": {
-      "title": "Latest time entries"
-    },
-    "myEntries": {
-      "title": "My time entries"
-    },
+  "workspace": {
     "overview": {
       "company": "Company",
       "requests": {

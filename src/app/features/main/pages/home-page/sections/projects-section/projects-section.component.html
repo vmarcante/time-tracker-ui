@@ -1,14 +1,14 @@
 <div class="section">
   <div class="section__header">
-    <button type="button" class="section__back" (click)="back.emit()" [attr.aria-label]="'home.section.back' | translate">
+    <button type="button" class="section__back" (click)="navigateBack()" [attr.aria-label]="'workspace.section.back' | translate">
       <app-icon name="arrows/back" size="0.875rem" />
-      <span>{{ 'home.section.back' | translate }}</span>
+      <span>{{ 'workspace.section.back' | translate }}</span>
     </button>
     <div class="section__heading">
-      <h2 class="section__title">{{ 'home.projects.title' | translate }}</h2>
+      <h2 class="section__title">{{ 'workspace.projects.title' | translate }}</h2>
       @if (canManage()) {
         <div class="section__actions">
-          <app-button [text]="'home.projects.create' | translate" color="primary" [rounded]="true" [icon]="{ iconName: 'actions/add', position: 'left', color: '#FFF' }" (buttonClick)="openCreateDialog()" />
+          <app-button [text]="'workspace.projects.create' | translate" color="primary" [rounded]="true" [icon]="{ iconName: 'actions/add', position: 'left', color: '#FFF' }" (buttonClick)="openCreateDialog()" />
         </div>
       }
     </div>
@@ -27,7 +27,7 @@
     } @else if (projects().length === 0) {
       <div class="section__empty">
         <app-icon name="objects/folder" size="2rem" />
-        <p>{{ 'home.projects.empty' | translate }}</p>
+        <p>{{ 'workspace.projects.empty' | translate }}</p>
       </div>
     } @else {
       <div class="project-list">
@@ -43,14 +43,14 @@
               }
             </div>
             <span class="project-row__status project-row__status--{{ project.status | lowercase }}">
-              {{ 'home.projects.status.' + project.status | translate }}
+              {{ 'workspace.projects.status.' + project.status | translate }}
             </span>
             @if (canManage()) {
               <button
                 type="button"
                 class="project-row__edit"
-                [attr.aria-label]="'home.projects.edit' | translate"
-                [attr.title]="'home.projects.edit' | translate"
+                [attr.aria-label]="'workspace.projects.edit' | translate"
+                [attr.title]="'workspace.projects.edit' | translate"
                 [disabled]="editingProjectId() === project.id"
                 (click)="$event.stopPropagation(); openEditDialog(project)"
               >

@@ -1,4 +1,5 @@
-import { Component, Input, Output, EventEmitter, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '../../../../../../shared/pipes/translate.pipe';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
@@ -13,6 +14,7 @@ import {
 } from '../../../../models/company-management.model';
 import { CompanyRole } from '../../../../../auth/models';
 import { PageWrapper } from '../../../../../../shared/types';
+import { AuthTokenService } from '../../../../../auth/services/auth-token.service';
 import {
   ProjectDialogComponent,
   ProjectDialogResult,
@@ -28,10 +30,20 @@ export class ProjectsSectionComponent implements OnInit {
   private companyApi = inject(CompanyManagementApiService);
   private apiAdapter = inject(ApiAdapterService);
   private dialogService = inject(DialogService);
+  private authTokenService = inject(AuthTokenService);
+  private router = inject(Router);
 
-  @Input() companyId: string | null = null;
-  @Input() companyRole: CompanyRole | null = null;
-  @Output() back = new EventEmitter<void>();
+  private get companyId(): string | null {
+    return this.authTokenService.currentUser()?.companyId ?? null;
+  }
+
+  private get companyRole(): CompanyRole | null {
+    return this.authTokenService.currentUser()?.companyRole ?? null;
+  }
+
+  navigateBack(): void {
+    this.router.navigate(['/workspace']);
+  }
 
   readonly projects = signal<ProjectSummaryOutput[]>([]);
   readonly page = signal<PageWrapper<ProjectSummaryOutput> | null>(null);

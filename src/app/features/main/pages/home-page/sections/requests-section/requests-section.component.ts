@@ -1,4 +1,5 @@
-import { Component, Input, Output, EventEmitter, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '../../../../../../shared/pipes/translate.pipe';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
@@ -16,6 +17,7 @@ import {
 } from '../../../../components/company/reject-membership-dialog/reject-membership-dialog.component';
 import { CompanyMemberOutput } from '../../../../models/company-management.model';
 import { ApiResponse, PageWrapper } from '../../../../../../shared/types';
+import { AuthTokenService } from '../../../../../auth/services/auth-token.service';
 
 export type RequestStatus = 'APPROVED' | 'REJECTED' | 'DECLINED';
 
@@ -30,9 +32,16 @@ export class RequestsSectionComponent implements OnInit {
   private apiAdapter = inject(ApiAdapterService);
   private dialogService = inject(DialogService);
   private translationService = inject(TranslationService);
+  private authTokenService = inject(AuthTokenService);
+  private router = inject(Router);
 
-  @Input() companyId: string | null = null;
-  @Output() back = new EventEmitter<void>();
+  private get companyId(): string | null {
+    return this.authTokenService.currentUser()?.companyId ?? null;
+  }
+
+  navigateBack(): void {
+    this.router.navigate(['/workspace']);
+  }
 
   // Pending
   readonly pending = signal<CompanyMemberOutput[]>([]);
@@ -95,22 +104,22 @@ export class RequestsSectionComponent implements OnInit {
 
   approve(member: CompanyMemberOutput): void {
     const dialogData: ConfirmationDialogConfiguration = {
-      title: this.translationService.translate('home.requests.approveDialog.title'),
-      message: this.translationService.translate('home.requests.approveDialog.message', {
+      title: this.translationService.translate('workspace.requests.approveDialog.title'),
+      message: this.translationService.translate('workspace.requests.approveDialog.message', {
         name: member.name,
       }),
       closeable: true,
       buttons: {
         cancel: {
           show: true,
-          text: this.translationService.translate('home.requests.approveDialog.cancel'),
+          text: this.translationService.translate('workspace.requests.approveDialog.cancel'),
           order: 1,
           name: 'cancel',
           color: 'outline-white',
         },
         confirmation: {
           show: true,
-          text: this.translationService.translate('home.requests.approveDialog.confirm'),
+          text: this.translationService.translate('workspace.requests.approveDialog.confirm'),
           order: 2,
           name: 'confirm',
           color: 'success',

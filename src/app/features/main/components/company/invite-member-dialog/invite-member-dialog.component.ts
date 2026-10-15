@@ -102,9 +102,9 @@ export class InviteMemberDialogComponent {
   readonly roleOptions = computed<SelectOption[]>(() => {
     const actorRole = this.data.companyRole;
     const allRoles: { value: CompanyRole; labelKey: string }[] = [
-      { value: 'ADMIN', labelKey: 'home.members.role.ADMIN' },
-      { value: 'MANAGER', labelKey: 'home.members.role.MANAGER' },
-      { value: 'MEMBER', labelKey: 'home.members.role.MEMBER' },
+      { value: 'ADMIN', labelKey: 'workspace.members.role.ADMIN' },
+      { value: 'MANAGER', labelKey: 'workspace.members.role.MANAGER' },
+      { value: 'MEMBER', labelKey: 'workspace.members.role.MEMBER' },
     ];
     const allowed = actorRole === 'OWNER' ? allRoles : allRoles.filter((r) => r.value !== 'ADMIN');
     return allowed.map((r) => ({
@@ -130,14 +130,14 @@ export class InviteMemberDialogComponent {
     return {
       steps: [
         {
-          label: this.translationService.translate('home.members.inviteDialog.steps.email'),
-          ariaLabel: this.translationService.translate('home.members.inviteDialog.steps.email'),
+          label: this.translationService.translate('workspace.members.inviteDialog.steps.email'),
+          ariaLabel: this.translationService.translate('workspace.members.inviteDialog.steps.email'),
           disabled: this.isStepDisabled(1),
           buttonColor: this.getStepButtonColor(1, step1Valid),
         },
         {
-          label: this.translationService.translate('home.members.inviteDialog.steps.details'),
-          ariaLabel: this.translationService.translate('home.members.inviteDialog.steps.details'),
+          label: this.translationService.translate('workspace.members.inviteDialog.steps.details'),
+          ariaLabel: this.translationService.translate('workspace.members.inviteDialog.steps.details'),
           disabled: this.isStepDisabled(2),
           buttonColor: this.getStepButtonColor(2, this.currentStep() === 2),
         },
@@ -177,8 +177,8 @@ export class InviteMemberDialogComponent {
 
           if (result.status === 'IN_THIS_COMPANY' || result.status === 'IN_ANOTHER_COMPANY') {
             const key = result.status === 'IN_THIS_COMPANY'
-              ? 'home.members.inviteDialog.blocked.inThisCompany'
-              : 'home.members.inviteDialog.blocked.inAnotherCompany';
+              ? 'workspace.members.inviteDialog.blocked.inThisCompany'
+              : 'workspace.members.inviteDialog.blocked.inAnotherCompany';
             this.inviteError.set(this.translationService.translate(key));
             InputValidators.insertErrorOnControl(this.emailControl, 'availability', true);
             this.emailControl.markAsTouched();

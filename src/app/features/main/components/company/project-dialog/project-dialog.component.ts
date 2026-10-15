@@ -92,7 +92,7 @@ export class ProjectDialogComponent {
   );
 
   readonly dateErrorMessages: Record<string, string> = {
-    invalidRange: this.translationService.translate('home.projects.dialog.dates.invalidRange'),
+    invalidRange: this.translationService.translate('workspace.projects.dialog.dates.invalidRange'),
   };
 
   confirm(): void {

@@ -1,18 +1,18 @@
 <div class="section">
   <div class="section__header">
-    <button type="button" class="section__back" (click)="back.emit()" [attr.aria-label]="'home.section.back' | translate">
+    <button type="button" class="section__back" (click)="navigateBack()" [attr.aria-label]="'workspace.section.back' | translate">
       <app-icon name="arrows/back" size="0.875rem" />
-      <span>{{ 'home.section.back' | translate }}</span>
+      <span>{{ 'workspace.section.back' | translate }}</span>
     </button>
     <div class="section__heading">
-      <h2 class="section__title">{{ 'home.requests.title' | translate }}</h2>
+      <h2 class="section__title">{{ 'workspace.requests.title' | translate }}</h2>
     </div>
   </div>
 
   <!-- Bloco: pendentes (oculto quando não há nenhuma) -->
   @if (pendingLoading() || pending().length > 0) {
     <section class="requests-group">
-      <h3 class="requests-group__subtitle">{{ 'home.requests.pendingTitle' | translate }}</h3>
+      <h3 class="requests-group__subtitle">{{ 'workspace.requests.pendingTitle' | translate }}</h3>
       <div class="section__body">
         @if (pendingLoading()) {
           <div class="section__loading">
@@ -36,7 +36,7 @@
                   role="button"
                   tabindex="0"
                   [attr.aria-expanded]="expandedId() === member.membershipId"
-                  [attr.aria-label]="'home.requests.toggleDetails' | translate"
+                  [attr.aria-label]="'workspace.requests.toggleDetails' | translate"
                   (click)="toggleDetails(member.membershipId)"
                   (keydown.enter)="toggleDetails(member.membershipId)"
                 >
@@ -46,7 +46,7 @@
                   <div class="pending-row__info">
                     <span class="pending-row__name">{{ member.name }}</span>
                     <span class="pending-row__meta">
-                      {{ 'home.requests.since' | translate }} {{ member.createdAt | date:'dd/MM/yyyy' }}
+                      {{ 'workspace.requests.since' | translate }} {{ member.createdAt | date:'dd/MM/yyyy' }}
                     </span>
                   </div>
                   <app-icon
@@ -57,14 +57,14 @@
                   />
                   <div class="pending-row__actions" (click)="$event.stopPropagation()">
                     <app-button
-                      [text]="'home.requests.reject' | translate"
+                      [text]="'workspace.requests.reject' | translate"
                       color="outline-error"
                       [size]="{ small: true }"
                       [loading]="processingId() === member.membershipId"
                       (buttonClick)="reject(member)"
                     />
                     <app-button
-                      [text]="'home.requests.approve' | translate"
+                      [text]="'workspace.requests.approve' | translate"
                       color="success"
                       [size]="{ small: true }"
                       [loading]="processingId() === member.membershipId"
@@ -81,22 +81,22 @@
                   <div class="pending-details__inner">
                     <div class="pending-details__fields">
                       <div class="pending-details__item">
-                        <span class="pending-details__label">{{ 'home.requests.detail.email' | translate }}</span>
+                        <span class="pending-details__label">{{ 'workspace.requests.detail.email' | translate }}</span>
                         <span class="pending-details__value">{{ member.email || '—' }}</span>
                       </div>
                       <div class="pending-details__item">
-                        <span class="pending-details__label">{{ 'home.requests.detail.requestedAt' | translate }}</span>
+                        <span class="pending-details__label">{{ 'workspace.requests.detail.requestedAt' | translate }}</span>
                         <span class="pending-details__value">{{ member.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
                       </div>
                       @if (member.age != null) {
                         <div class="pending-details__item">
-                          <span class="pending-details__label">{{ 'home.requests.detail.age' | translate }}</span>
-                          <span class="pending-details__value">{{ 'home.requests.detail.ageYears' | translate:{ count: member.age } }}</span>
+                          <span class="pending-details__label">{{ 'workspace.requests.detail.age' | translate }}</span>
+                          <span class="pending-details__value">{{ 'workspace.requests.detail.ageYears' | translate:{ count: member.age } }}</span>
                         </div>
                       }
                       @if (member.requestReason) {
                         <div class="pending-details__item pending-details__item--full">
-                          <span class="pending-details__label">{{ 'home.requests.detail.reason' | translate }}</span>
+                          <span class="pending-details__label">{{ 'workspace.requests.detail.reason' | translate }}</span>
                           <span class="pending-details__reason">"{{ member.requestReason }}"</span>
                         </div>
                       }
@@ -120,7 +120,7 @@
 
   <!-- Bloco: histórico (resolvidas) -->
   <section class="requests-group">
-    <h3 class="requests-group__subtitle">{{ 'home.requests.history.title' | translate }}</h3>
+    <h3 class="requests-group__subtitle">{{ 'workspace.requests.history.title' | translate }}</h3>
     <div class="section__body">
       @if (resolvedLoading()) {
         <div class="section__loading">
@@ -134,17 +134,17 @@
       } @else if (resolved().length === 0) {
         <div class="section__empty">
           <app-icon name="objects/inbox" size="2rem" />
-          <p>{{ 'home.requests.history.empty' | translate }}</p>
+          <p>{{ 'workspace.requests.history.empty' | translate }}</p>
         </div>
       } @else {
-        <div class="requests-table" role="table" [attr.aria-label]="'home.requests.history.title' | translate">
+        <div class="requests-table" role="table" [attr.aria-label]="'workspace.requests.history.title' | translate">
           <div class="requests-table__head" role="row">
-            <span role="columnheader">{{ 'home.requests.history.member' | translate }}</span>
-            <span role="columnheader">{{ 'home.requests.history.type' | translate }}</span>
-            <span role="columnheader">{{ 'home.requests.history.role' | translate }}</span>
-            <span role="columnheader">{{ 'home.requests.history.status' | translate }}</span>
-            <span role="columnheader">{{ 'home.requests.history.requestedAt' | translate }}</span>
-            <span role="columnheader">{{ 'home.requests.history.resolved' | translate }}</span>
+            <span role="columnheader">{{ 'workspace.requests.history.member' | translate }}</span>
+            <span role="columnheader">{{ 'workspace.requests.history.type' | translate }}</span>
+            <span role="columnheader">{{ 'workspace.requests.history.role' | translate }}</span>
+            <span role="columnheader">{{ 'workspace.requests.history.status' | translate }}</span>
+            <span role="columnheader">{{ 'workspace.requests.history.requestedAt' | translate }}</span>
+            <span role="columnheader">{{ 'workspace.requests.history.resolved' | translate }}</span>
           </div>
 
           @for (member of resolved(); track member.membershipId) {
@@ -159,10 +159,10 @@
                 </div>
               </div>
               <span class="requests-table__cell" role="cell">
-                {{ 'home.requests.origin.' + member.origin | translate }}
+                {{ 'workspace.requests.origin.' + member.origin | translate }}
               </span>
               <span class="requests-table__cell" role="cell">
-                {{ 'home.members.role.' + member.role | translate }}
+                {{ 'workspace.members.role.' + member.role | translate }}
               </span>
               <span class="requests-table__cell" role="cell">
                 <span
@@ -171,7 +171,7 @@
                   [class.requests-table__status--rejected]="statusOf(member) === 'REJECTED'"
                   [class.requests-table__status--declined]="statusOf(member) === 'DECLINED'"
                 >
-                  {{ 'home.requests.status.' + statusOf(member) | translate }}
+                  {{ 'workspace.requests.status.' + statusOf(member) | translate }}
                 </span>
               </span>
               <span class="requests-table__cell" role="cell">

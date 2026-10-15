@@ -6,9 +6,9 @@
       <div class="invite-panel__content">
         <p class="invite-panel__description">
           @if (currentStep() === 1) {
-            {{ 'home.members.inviteDialog.steps.emailDescription' | translate }}
+            {{ 'workspace.members.inviteDialog.steps.emailDescription' | translate }}
           } @else {
-            {{ 'home.members.inviteDialog.steps.detailsDescription' | translate }}
+            {{ 'workspace.members.inviteDialog.steps.detailsDescription' | translate }}
           }
         </p>
       </div>
@@ -30,13 +30,13 @@
 
       <div class="invite-content__header">
         <h1 class="invite-content__title">
-          {{ 'home.members.inviteDialog.title' | translate }}
+          {{ 'workspace.members.inviteDialog.title' | translate }}
         </h1>
         <p class="invite-content__subtitle">
           @if (currentStep() === 1) {
-            {{ 'home.members.inviteDialog.subtitle.step1' | translate }}
+            {{ 'workspace.members.inviteDialog.subtitle.step1' | translate }}
           } @else {
-            {{ 'home.members.inviteDialog.subtitle.step2' | translate }}
+            {{ 'workspace.members.inviteDialog.subtitle.step2' | translate }}
           }
         </p>
       </div>
@@ -51,8 +51,8 @@
               inputType="email"
               [control]="emailControl"
               [labelIcon]="'objects/envelope'"
-              [label]="'home.members.inviteDialog.email.label' | translate"
-              [placeholder]="'home.members.inviteDialog.email.placeholder' | translate"
+              [label]="'workspace.members.inviteDialog.email.label' | translate"
+              [placeholder]="'workspace.members.inviteDialog.email.placeholder' | translate"
               [required]="true"
               [errorMessages]="{ availability: inviteError() }"
             />
@@ -83,8 +83,8 @@
             <app-text-input
               [control]="nameControl"
               [labelIcon]="'objects/person'"
-              [label]="'home.members.inviteDialog.name.label' | translate"
-              [placeholder]="'home.members.inviteDialog.name.placeholder' | translate"
+              [label]="'workspace.members.inviteDialog.name.label' | translate"
+              [placeholder]="'workspace.members.inviteDialog.name.placeholder' | translate"
               [required]="true"
             />
 
@@ -94,16 +94,16 @@
                 inputType="tel"
                 [control]="phoneControl"
                 [labelIcon]="'objects/phone'"
-                [label]="'home.members.inviteDialog.phone.label' | translate"
-                [placeholder]="'home.members.inviteDialog.phone.placeholder' | translate"
+                [label]="'workspace.members.inviteDialog.phone.label' | translate"
+                [placeholder]="'workspace.members.inviteDialog.phone.placeholder' | translate"
               />
 
               <app-integer-input
                 class="invite-dialog__field--age"
                 [control]="ageControl"
                 [labelIcon]="'objects/calendar'"
-                [label]="'home.members.inviteDialog.age.label' | translate"
-                [placeholder]="'home.members.inviteDialog.age.placeholder' | translate"
+                [label]="'workspace.members.inviteDialog.age.label' | translate"
+                [placeholder]="'workspace.members.inviteDialog.age.placeholder' | translate"
               />
             </div>
           }
@@ -111,15 +111,15 @@
           <app-select-input
             [control]="roleControl"
             [labelIcon]="'objects/shield'"
-            [label]="'home.members.inviteDialog.role.label' | translate"
-            [placeholder]="'home.members.inviteDialog.role.placeholder' | translate"
+            [label]="'workspace.members.inviteDialog.role.label' | translate"
+            [placeholder]="'workspace.members.inviteDialog.role.placeholder' | translate"
             [options]="roleOptions()"
             [required]="true"
           />
 
           @if (isNotFound()) {
             <p class="invite-dialog__pre-register-note">
-              {{ 'home.members.inviteDialog.preRegisterNote' | translate }}
+              {{ 'workspace.members.inviteDialog.preRegisterNote' | translate }}
             </p>
           }
         }
@@ -134,7 +134,7 @@
             color="secondary"
             [rounded]="true"
             [size]="{ fullWidth: true }"
-            [text]="'home.members.inviteDialog.cancel' | translate"
+            [text]="'workspace.members.inviteDialog.cancel' | translate"
             (buttonClick)="cancel()"
           />
           <app-button
@@ -142,7 +142,7 @@
             color="primary"
             [rounded]="true"
             [size]="{ fullWidth: true }"
-            [text]="'home.members.inviteDialog.next' | translate"
+            [text]="'workspace.members.inviteDialog.next' | translate"
             [icon]="{ iconName: 'arrows/next', svgIcon: true, color: '#FFF', position: 'right' }"
             [disabled]="!canProceed()"
             (buttonClick)="nextStep()"
@@ -153,7 +153,7 @@
             color="secondary"
             [rounded]="true"
             [size]="{ fullWidth: true }"
-            [text]="'home.members.inviteDialog.previous' | translate"
+            [text]="'workspace.members.inviteDialog.previous' | translate"
             [icon]="{ iconName: 'arrows/back', svgIcon: true, position: 'left' }"
             (buttonClick)="previousStep()"
           />
@@ -163,7 +163,7 @@
               color="primary"
               [rounded]="true"
               [size]="{ fullWidth: true }"
-              [text]="'home.members.inviteDialog.sendInvite' | translate"
+              [text]="'workspace.members.inviteDialog.sendInvite' | translate"
               (buttonClick)="confirmInvite()"
             />
           }
@@ -173,7 +173,7 @@
               color="primary"
               [rounded]="true"
               [size]="{ fullWidth: true }"
-              [text]="'home.members.inviteDialog.registerAndInvite' | translate"
+              [text]="'workspace.members.inviteDialog.registerAndInvite' | translate"
               (buttonClick)="confirmPreRegister()"
             />
           }

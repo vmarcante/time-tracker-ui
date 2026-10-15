@@ -1,7 +1,11 @@
-.company-nav {
+.workspace-nav {
   display: flex;
   flex-direction: column;
   height: 100%;
+  width: 220px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--color-border);
+  background-color: var(--color-bg);
 
   &__header {
     display: flex;
@@ -60,11 +64,10 @@
     gap: var(--spacing-sm);
     width: 100%;
     padding: 10px var(--spacing-sm);
-    border: none;
     border-radius: var(--radius-md);
     background-color: transparent;
     cursor: pointer;
-    text-align: left;
+    text-decoration: none;
     transition:
       background-color var(--transition-fast),
       color var(--transition-fast);
@@ -84,13 +87,13 @@
         background-color: var(--color-primary-100);
       }
 
-      .company-nav__item-icon {
+      .workspace-nav__item-icon {
         background-color: var(--color-primary-200);
       }
     }
 
     &--alert {
-      .company-nav__item-count {
+      .workspace-nav__item-count {
         background-color: var(--color-warning);
         color: var(--color-white);
       }
@@ -163,15 +166,6 @@
     background-size: 200% 100%;
     animation: shimmer 1.4s infinite;
   }
-
-  &__skeleton-count {
-    width: 24px;
-    height: 20px;
-    border-radius: var(--radius-pill);
-    background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-hover) 50%, var(--color-surface) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.4s infinite;
-  }
 }
 
 @keyframes shimmer {
@@ -180,9 +174,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .company-nav__skeleton-icon,
-  .company-nav__skeleton-label,
-  .company-nav__skeleton-count {
+  .workspace-nav__skeleton-icon,
+  .workspace-nav__skeleton-label {
     animation: none;
     background: var(--color-surface);
   }

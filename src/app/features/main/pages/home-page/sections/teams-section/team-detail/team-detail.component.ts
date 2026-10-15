@@ -214,17 +214,17 @@ export class TeamDetailComponent implements OnInit {
 
   private confirmMemberRemoval(member: TeamMemberOutput, impact: { projectName: string }[]): void {
     const messageKey = impact.length > 0
-      ? 'home.teams.detail.members.remove.messageWithImpact'
-      : 'home.teams.detail.members.remove.message';
+      ? 'workspace.teams.detail.members.remove.messageWithImpact'
+      : 'workspace.teams.detail.members.remove.message';
     const message = this.translationService.translate(messageKey, {
       name: member.name,
       count: impact.length,
     });
 
     this.openConfirmation(
-      'home.teams.detail.members.remove.title',
+      'workspace.teams.detail.members.remove.title',
       message,
-      'home.teams.detail.members.remove.confirm',
+      'workspace.teams.detail.members.remove.confirm',
       'error',
       () => this.executeRemoveMember(member),
     );
@@ -251,14 +251,14 @@ export class TeamDetailComponent implements OnInit {
     if (!email || this.processing()) return;
 
     const message = this.translationService.translate(
-      'home.teams.detail.members.lead.message',
+      'workspace.teams.detail.members.lead.message',
       { name: member.name },
     );
 
     this.openConfirmation(
-      'home.teams.detail.members.lead.title',
+      'workspace.teams.detail.members.lead.title',
       message,
-      'home.teams.detail.members.lead.confirm',
+      'workspace.teams.detail.members.lead.confirm',
       'primary',
       () => this.executeAssignLead(email),
     );
@@ -282,14 +282,14 @@ export class TeamDetailComponent implements OnInit {
 
   leaveTeam(): void {
     if (this.processing()) return;
-    const message = this.translationService.translate('home.teams.detail.leave.message', {
+    const message = this.translationService.translate('workspace.teams.detail.leave.message', {
       team: this.team.name,
     });
 
     this.openConfirmation(
-      'home.teams.detail.leave.title',
+      'workspace.teams.detail.leave.title',
       message,
-      'home.teams.detail.leave.confirm',
+      'workspace.teams.detail.leave.confirm',
       'error',
       () => this.executeLeaveTeam(),
     );
@@ -349,17 +349,17 @@ export class TeamDetailComponent implements OnInit {
 
   private confirmProjectUnlink(project: ProjectSummaryOutput, impactCount: number): void {
     const messageKey = impactCount > 0
-      ? 'home.teams.detail.projects.unlink.messageWithImpact'
-      : 'home.teams.detail.projects.unlink.message';
+      ? 'workspace.teams.detail.projects.unlink.messageWithImpact'
+      : 'workspace.teams.detail.projects.unlink.message';
     const message = this.translationService.translate(messageKey, {
       project: project.name,
       count: impactCount,
     });
 
     this.openConfirmation(
-      'home.teams.detail.projects.unlink.title',
+      'workspace.teams.detail.projects.unlink.title',
       message,
-      'home.teams.detail.projects.unlink.confirm',
+      'workspace.teams.detail.projects.unlink.confirm',
       'error',
       () => this.executeUnlinkProject(project),
     );

@@ -1,4 +1,5 @@
-import { Component, Input, Output, EventEmitter, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '../../../../../../shared/pipes/translate.pipe';
 import { IconComponent } from '../../../../../../shared/components/icon/icon.component';
@@ -7,6 +8,7 @@ import { ApiAdapterService } from '../../../../../../shared/services/api/api-ada
 import { CompanyManagementApiService } from '../../../../services/company-management.api.service';
 import { CompanyTimeEntryOutput } from '../../../../models/company-management.model';
 import { PageWrapper } from '../../../../../../shared/types';
+import { AuthTokenService } from '../../../../../auth/services/auth-token.service';
 
 @Component({
   selector: 'app-time-entries-section',
@@ -17,9 +19,16 @@ import { PageWrapper } from '../../../../../../shared/types';
 export class TimeEntriesSectionComponent implements OnInit {
   private companyApi = inject(CompanyManagementApiService);
   private apiAdapter = inject(ApiAdapterService);
+  private authTokenService = inject(AuthTokenService);
+  private router = inject(Router);
 
-  @Input() companyId: string | null = null;
-  @Output() back = new EventEmitter<void>();
+  private get companyId(): string | null {
+    return this.authTokenService.currentUser()?.companyId ?? null;
+  }
+
+  navigateBack(): void {
+    this.router.navigate(['/workspace']);
+  }
 
   readonly entries = signal<CompanyTimeEntryOutput[]>([]);
   readonly page = signal<PageWrapper<CompanyTimeEntryOutput> | null>(null);

@@ -1,11 +1,11 @@
 <div class="section">
   <div class="section__header">
-    <button type="button" class="section__back" (click)="back.emit()" [attr.aria-label]="'home.section.back' | translate">
+    <button type="button" class="section__back" (click)="navigateBack()" [attr.aria-label]="'workspace.section.back' | translate">
       <app-icon name="arrows/back" size="0.875rem" />
-      <span>{{ 'home.section.back' | translate }}</span>
+      <span>{{ 'workspace.section.back' | translate }}</span>
     </button>
     <div class="section__heading">
-      <h2 class="section__title">{{ 'home.timeEntries.title' | translate }}</h2>
+      <h2 class="section__title">{{ 'workspace.timeEntries.title' | translate }}</h2>
     </div>
   </div>
 
@@ -23,7 +23,7 @@
     } @else if (entries().length === 0) {
       <div class="section__empty">
         <app-icon name="objects/clock" size="2rem" />
-        <p>{{ 'home.timeEntries.empty' | translate }}</p>
+        <p>{{ 'workspace.timeEntries.empty' | translate }}</p>
       </div>
     } @else {
       <div class="entry-list">
@@ -40,7 +40,7 @@
               @if (entry.running) {
                 <span class="entry-row__running">
                   <span class="entry-row__running-dot"></span>
-                  {{ 'home.timeEntries.running' | translate }}
+                  {{ 'workspace.timeEntries.running' | translate }}
                 </span>
               }
               <span class="entry-row__duration">{{ formatDuration(entry.durationSeconds) }}</span>

@@ -17,6 +17,7 @@ import { ConfirmationDialogConfiguration } from '../../../../shared/types/dialog
 import { DocumentsValidators } from '../../../../shared/validators/documents.validators';
 import { ApiErrorResponse, PageWrapper } from '../../../../shared/types';
 import { AuthTokenService } from '../../../auth/services/auth-token.service';
+import { resolvePostLoginRoute } from '../../../../shared/utils/role-redirect.util';
 import { AuthService } from '../../../auth/services/auth.service';
 import { OnboardingApiService } from '../../../onboarding/services/api/onboarding.api.service';
 import { CompanyInvitationApiService } from '../../../onboarding/services/api/company-invitation.api.service';
@@ -422,7 +423,8 @@ export class OnboardingModalComponent implements OnInit {
 
   private finishOnboarding(): void {
     this.tokenService.loadCurrentUser();
-    this.router.navigate(['/home']);
+    const user = this.tokenService.currentUser();
+    this.router.navigate([user ? resolvePostLoginRoute(user) : '/tracker']);
   }
 
   private handleError(error: ApiErrorResponse, fallbackKey: string): void {

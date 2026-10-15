@@ -1,4 +1,5 @@
-import { Component, Input, Output, EventEmitter, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '../../../../../../shared/pipes/translate.pipe';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
@@ -36,9 +37,19 @@ export class TeamsSectionComponent implements OnInit {
   private dialogService = inject(DialogService);
   private authTokenService = inject(AuthTokenService);
 
-  @Input() companyId: string | null = null;
-  @Input() companyRole: CompanyRole | null = null;
-  @Output() back = new EventEmitter<void>();
+  private router = inject(Router);
+
+  protected get companyId(): string | null {
+    return this.authTokenService.currentUser()?.companyId ?? null;
+  }
+
+  protected get companyRole(): CompanyRole | null {
+    return this.authTokenService.currentUser()?.companyRole ?? null;
+  }
+
+  navigateBack(): void {
+    this.router.navigate(['/workspace']);
+  }
 
   readonly teams = signal<TeamSummaryOutput[]>([]);
   readonly page = signal<PageWrapper<TeamSummaryOutput> | null>(null);

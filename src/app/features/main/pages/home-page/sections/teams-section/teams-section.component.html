@@ -1,16 +1,16 @@
 <div class="section">
   @if (!selectedTeam()) {
     <div class="section__header">
-      <button type="button" class="section__back" (click)="back.emit()" [attr.aria-label]="'home.section.back' | translate">
+      <button type="button" class="section__back" (click)="navigateBack()" [attr.aria-label]="'workspace.section.back' | translate">
         <app-icon name="arrows/back" size="0.875rem" />
-        <span>{{ 'home.section.back' | translate }}</span>
+        <span>{{ 'workspace.section.back' | translate }}</span>
       </button>
       <div class="section__heading">
-        <h2 class="section__title">{{ 'home.teams.title' | translate }}</h2>
+        <h2 class="section__title">{{ 'workspace.teams.title' | translate }}</h2>
         @if (canManage()) {
           <div class="section__actions">
             <app-button
-              [text]="'home.teams.create' | translate"
+              [text]="'workspace.teams.create' | translate"
               color="primary"
               [rounded]="true"
               [icon]="{ iconName: 'actions/add', position: 'left', color: '#FFF' }"
@@ -68,7 +68,7 @@
     } @else if (teams().length === 0) {
       <div class="section__empty">
         <app-icon name="objects/layers" size="2rem" />
-        <p>{{ 'home.teams.empty' | translate }}</p>
+        <p>{{ 'workspace.teams.empty' | translate }}</p>
       </div>
     } @else {
       <div class="team-list">
@@ -89,13 +89,13 @@
                 <span class="team-row__meta">Lead: {{ team.leadName }}</span>
               }
             </div>
-            <span class="team-row__count">{{ team.memberCount }} {{ 'home.teams.members' | translate }}</span>
+            <span class="team-row__count">{{ team.memberCount }} {{ 'workspace.teams.members' | translate }}</span>
             @if (canManage()) {
               <button
                 type="button"
                 class="team-row__edit"
-                [attr.aria-label]="'home.teams.edit' | translate"
-                [attr.title]="'home.teams.edit' | translate"
+                [attr.aria-label]="'workspace.teams.edit' | translate"
+                [attr.title]="'workspace.teams.edit' | translate"
                 [disabled]="editingTeamId() === team.id"
                 (click)="$event.stopPropagation(); openEditDialog(team)"
               >

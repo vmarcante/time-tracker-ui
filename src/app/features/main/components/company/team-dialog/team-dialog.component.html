@@ -3,16 +3,16 @@
     <section class="team-dialog__header">
       <h2 class="team-dialog__title">
         @if (isEdit()) {
-          {{ 'home.teams.dialog.title.edit' | translate }}
+          {{ 'workspace.teams.dialog.title.edit' | translate }}
         } @else {
-          {{ 'home.teams.dialog.title.create' | translate }}
+          {{ 'workspace.teams.dialog.title.create' | translate }}
         }
       </h2>
       <p class="team-dialog__subtitle">
         @if (isEdit()) {
-          {{ 'home.teams.dialog.subtitle.edit' | translate }}
+          {{ 'workspace.teams.dialog.subtitle.edit' | translate }}
         } @else {
-          {{ 'home.teams.dialog.subtitle.create' | translate }}
+          {{ 'workspace.teams.dialog.subtitle.create' | translate }}
         }
       </p>
     </section>
@@ -21,16 +21,16 @@
       <app-text-input
         [control]="nameControl"
         [labelIcon]="'objects/layers'"
-        [label]="'home.teams.dialog.name.label' | translate"
-        [placeholder]="'home.teams.dialog.name.placeholder' | translate"
+        [label]="'workspace.teams.dialog.name.label' | translate"
+        [placeholder]="'workspace.teams.dialog.name.placeholder' | translate"
         [required]="true"
       />
       <app-textarea-input
         [control]="descriptionControl"
         [labelIcon]="'objects/text-file'"
-        [label]="'home.teams.dialog.description.label' | translate"
-        [placeholder]="'home.teams.dialog.description.placeholder' | translate"
-        [hint]="'home.teams.dialog.description.hint' | translate"
+        [label]="'workspace.teams.dialog.description.label' | translate"
+        [placeholder]="'workspace.teams.dialog.description.placeholder' | translate"
+        [hint]="'workspace.teams.dialog.description.hint' | translate"
         [rows]="3"
         [showCounter]="false"
       />
@@ -48,7 +48,7 @@
         type="button"
         color="primary"
         [rounded]="true"
-        [text]="(isEdit() ? 'home.teams.dialog.submit.edit' : 'home.teams.dialog.submit.create') | translate"
+        [text]="(isEdit() ? 'workspace.teams.dialog.submit.edit' : 'workspace.teams.dialog.submit.create') | translate"
         [icon]="{ iconName: 'status/check', svgIcon: true, color: '#FFF', position: 'right' }"
         (buttonClick)="confirm()"
       />

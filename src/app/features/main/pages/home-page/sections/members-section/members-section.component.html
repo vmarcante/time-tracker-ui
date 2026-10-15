@@ -1,15 +1,15 @@
 <div class="section">
   <div class="section__header">
-    <button type="button" class="section__back" (click)="back.emit()" [attr.aria-label]="'home.section.back' | translate">
+    <button type="button" class="section__back" (click)="navigateBack()" [attr.aria-label]="'workspace.section.back' | translate">
       <app-icon name="arrows/back" size="0.875rem" />
-      <span>{{ 'home.section.back' | translate }}</span>
+      <span>{{ 'workspace.section.back' | translate }}</span>
     </button>
     <div class="section__heading">
-      <h2 class="section__title">{{ 'home.members.title' | translate }}</h2>
+      <h2 class="section__title">{{ 'workspace.members.title' | translate }}</h2>
       @if (canManage()) {
         <div class="section__actions">
           <app-button
-            [text]="'home.members.invite' | translate"
+            [text]="'workspace.members.invite' | translate"
             color="primary"
             [rounded]="true"
             [icon]="{ iconName: 'actions/add', position: 'left', color: '#FFF' }"
@@ -34,7 +34,7 @@
     } @else if (members().length === 0) {
       <div class="section__empty">
         <app-icon name="objects/person" size="2rem" />
-        <p>{{ 'home.members.empty' | translate }}</p>
+        <p>{{ 'workspace.members.empty' | translate }}</p>
       </div>
     } @else {
       <div class="member-list">
@@ -46,7 +46,7 @@
             <div class="member-row__info">
               <span class="member-row__name">{{ member.name }}</span>
               <span class="member-row__role member-row__role--{{ member.role | lowercase }}">
-                {{ 'home.members.role.' + member.role | translate }}
+                {{ 'workspace.members.role.' + member.role | translate }}
               </span>
             </div>
           </div>

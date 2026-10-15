@@ -1,0 +1,44 @@
+<div class="workspace-nav">
+  <!-- Cabeçalho da empresa -->
+  <div class="workspace-nav__header">
+    <div class="workspace-nav__company-icon">
+      <app-icon name="objects/building" size="1.25rem" />
+    </div>
+    <div class="workspace-nav__header-info">
+      <span class="workspace-nav__company-label">{{ 'workspace.overview.company' | translate }}</span>
+      <span class="workspace-nav__company-name">{{ companyName() }}</span>
+    </div>
+  </div>
+
+  <!-- Lista de navegação -->
+  <nav class="workspace-nav__list" [attr.aria-label]="'workspace.overview.company' | translate">
+    @if (loading()) {
+      @for (s of [1, 2, 3, 4, 5]; track s) {
+        <div class="workspace-nav__item workspace-nav__item--skeleton" aria-hidden="true">
+          <div class="workspace-nav__skeleton-icon"></div>
+          <div class="workspace-nav__skeleton-label"></div>
+        </div>
+      }
+    } @else {
+      @for (item of navItems(); track item.route) {
+        <a
+          class="workspace-nav__item"
+          [routerLink]="item.route"
+          routerLinkActive="workspace-nav__item--active"
+          [class.workspace-nav__item--alert]="item.badgeText() !== null"
+          [attr.aria-current]="null"
+        >
+          <div class="workspace-nav__item-icon">
+            <app-icon [name]="item.icon" size="1rem" />
+          </div>
+          <span class="workspace-nav__item-label">{{ item.labelKey | translate }}</span>
+          @if (item.badgeText() !== null) {
+            <span class="workspace-nav__item-count workspace-nav__item-count--alert">
+              {{ item.badgeText() }}
+            </span>
+          }
+        </a>
+      }
+    }
+  </nav>
+</div>

@@ -1,0 +1,17 @@
+<div class="workspace-layout">
+  <app-layout-header></app-layout-header>
+
+  <div class="workspace-layout__body">
+    <aside class="workspace-layout__sidebar">
+      <app-workspace-sidebar />
+    </aside>
+
+    <div class="workspace-layout__divider" aria-hidden="true"></div>
+
+    <main class="workspace-layout__content">
+      <router-outlet />
+    </main>
+  </div>
+
+  <app-layout-footer></app-layout-footer>
+</div>

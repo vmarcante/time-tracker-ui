@@ -9,6 +9,7 @@ import { TextInputComponent } from '../../../../shared/components/inputs/text/te
 import { IntegerInputComponent } from '../../../../shared/components/inputs/integer/integer-input.component';
 import { SelectInputComponent } from '../../../../shared/components/inputs/select/select-input.component';
 import { AuthTokenService } from '../../../auth/services/auth-token.service';
+import { resolvePostLoginRoute } from '../../../../shared/utils/role-redirect.util';
 import { PersonApiService } from '../../../auth/services/api/person.api.service';
 import { ApiAdapterService } from '../../../../shared/services/api/api-adapter.service';
 import { LanguageService } from '../../../../shared/services/language.service';
@@ -97,7 +98,8 @@ export class SettingsPageComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/home']);
+    const user = this.authTokenService.currentUser();
+    this.router.navigate([user ? resolvePostLoginRoute(user) : '/tracker']);
   }
 
   save(): void {

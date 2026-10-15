@@ -12,6 +12,7 @@ import { ApiAdapterService } from '../../../../shared/services';
 import { AuthService } from '../../services/auth.service';
 import { AuthTokenService } from '../../services/auth-token.service';
 import { LoginInput } from '../../models';
+import { resolvePostLoginRoute } from '../../../../shared/utils/role-redirect.util';
 import { RegisterFormComponent } from '../register/form/register-form.component';
 import { PasswordResetRequestComponent } from '../password-reset/request/password-reset-request.component';
 import { LoginMobileDialogComponent } from './mobile/login-mobile-dialog.component';
@@ -112,7 +113,8 @@ export class LoginModalComponent {
       return;
     }
 
-    this.router.navigate(['/home']);
+    const user = this.tokenService.currentUser();
+    this.router.navigate([user ? resolvePostLoginRoute(user) : '/tracker']);
   }
 
   openForgotPasswordDialog(): void {
