@@ -5,6 +5,7 @@ import { CompanyRole } from '../../auth/models';
 import {
   CompanyMemberOutput,
   CompanyMenuOverviewOutput,
+  CompanyOverviewOutput,
   CompanyTimeEntryOutput,
   CreateProjectInput,
   CreateProjectOutput,
@@ -41,6 +42,10 @@ export class CompanyManagementApiService {
 
   menuOverview(companyId: string): ApiResponse<CompanyMenuOverviewOutput> {
     return this.httpService.get(`/companies/${companyId}/menu-overview`);
+  }
+
+  overview(companyId: string): ApiResponse<CompanyOverviewOutput> {
+    return this.httpService.get(`/companies/${companyId}/overview`);
   }
 
   listPending(
@@ -221,6 +226,16 @@ export class CompanyManagementApiService {
     size = 10,
   ): ApiResponse<PageWrapper<ProjectSummaryOutput>> {
     return this.httpService.get(`/companies/${companyId}/projects`, { params: { page, size } });
+  }
+
+  listMyProjects(
+    companyId: string,
+    page = 1,
+    size = 50,
+  ): ApiResponse<PageWrapper<ProjectSummaryOutput>> {
+    return this.httpService.get(`/companies/${companyId}/projects/mine`, {
+      params: { page, size },
+    });
   }
 
   findProject(companyId: string, projectId: string): ApiResponse<ProjectDetailOutput> {

@@ -1,0 +1,54 @@
+@if (isAuthenticated()) {
+  <div class="timer-widget">
+    @if (timer.running(); as running) {
+      <div class="timer-widget__pill" [class.timer-widget__pill--busy]="timer.busy()">
+        <span class="timer-widget__pulse" aria-hidden="true"></span>
+        <button
+          type="button"
+          class="timer-widget__entry"
+          (click)="openEntry()"
+          [attr.aria-label]="'tracker.timer.openEntry' | translate"
+        >
+          <span class="timer-widget__elapsed">{{ formattedElapsed() }}</span>
+          <span class="timer-widget__entry-name">{{ running.entryName }}</span>
+        </button>
+        <button
+          type="button"
+          class="timer-widget__stop"
+          (click)="stopTimer()"
+          [disabled]="timer.busy()"
+          [attr.aria-label]="'tracker.timer.stop' | translate"
+        >
+          <app-icon name="actions/stop" size="0.75rem" />
+        </button>
+      </div>
+    } @else {
+      <app-popover
+        #pickerPopover
+        [options]="{
+          position: 'bottom',
+          width: '280px',
+          closeOnClickOutside: true,
+          closeOnEscape: true,
+          showArrow: true,
+        }"
+        [triggerTemplate]="startTrigger"
+        [contentTemplate]="pickerContent"
+      />
+      <ng-template #startTrigger>
+        <button
+          type="button"
+          class="timer-widget__start"
+          [disabled]="timer.busy()"
+          (click)="pickerPopover.toggle()"
+          [attr.aria-label]="'tracker.timer.start' | translate"
+        >
+          <app-icon name="actions/play" size="0.875rem" />
+        </button>
+      </ng-template>
+      <ng-template #pickerContent>
+        <app-project-picker (select)="onProjectSelected($event)" />
+      </ng-template>
+    }
+  </div>
+}

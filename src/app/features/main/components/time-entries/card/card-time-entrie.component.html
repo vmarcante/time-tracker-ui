@@ -10,9 +10,9 @@
 
     <div class="time-entrie__details">
       <span class="time-entrie__scope">
-        {{ entry().project.name }}
-        @if (entry().project.client; as client) {
-          <span class="time-entrie__scope-client">{{ client.name }}</span>
+        {{ entry().projectName }}
+        @if (entry().clientName; as clientName) {
+          <span class="time-entrie__scope-client">{{ clientName }}</span>
         }
       </span>
     </div>
@@ -20,7 +20,7 @@
     @if (tags().length > 0) {
       <ul class="time-entrie__tags" aria-label="Tags">
         @for (tag of visibleTags(); track tag.id) {
-          <li class="time-entrie__tag" [style.background-color]="tag.color ?? 'var(--color-primary-200)'">
+          <li class="time-entrie__tag" [style.background-color]="tag.color">
             {{ tag.name }}
           </li>
         }
@@ -33,14 +33,16 @@
 
   <div class="time-entrie__actions" [class.time-entrie__actions--stacked]="showDate()">
     <div class="time-entrie__datetime" [class.time-entrie__datetime--stacked]="showDate()">
-      @if (showDate()) {
-        <span class="time-entrie__date">{{ entry().start | date:'shortDate' }}</span>
+      @if (showDate() && entry().startTime) {
+        <span class="time-entrie__date">{{ entry().startTime | date:'shortDate' }}</span>
       }
-      <time class="time-entrie__time" [attr.datetime]="entry().start | date:'yyyy-MM-ddTHH:mm'">
+      <time class="time-entrie__time" [attr.datetime]="entry().startTime">
         @if (isRunning()) {
           {{ formattedElapsed() }}
+        } @else if (entry().startTime && entry().endTime) {
+          {{ entry().startTime | date:'HH:mm' }} - {{ entry().endTime | date:'HH:mm' }}
         } @else {
-          {{ entry().start | date:'HH:mm' }} - {{ entry().end | date:'HH:mm' }}
+          {{ formattedElapsed() }}
         }
       </time>
     </div>
@@ -51,7 +53,7 @@
       [rounded]="true"
       [color]="'secondary'"
       [customClass]="'time-entrie__details-button'"
-      [hoverTitle]="'Ver detalhes'"
+      [hoverTitle]="'tracker.entries.details' | translate"
       (buttonClick)="openDetails()"
     />
 

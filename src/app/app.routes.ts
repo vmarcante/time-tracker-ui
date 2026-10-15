@@ -67,7 +67,15 @@ export const routes: Routes = [
           ),
         canActivate: [authGuard, companyMemberGuard, translationContextGuard('workspace')],
         children: [
-          { path: '', redirectTo: 'members', pathMatch: 'full' },
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/workspace/pages/overview/workspace-overview.component').then(
+                (m) => m.WorkspaceOverviewComponent,
+              ),
+            canActivate: [companyRoleGuard(['OWNER', 'ADMIN', 'MANAGER'])],
+            pathMatch: 'full',
+          },
           {
             path: 'members',
             loadComponent: () =>

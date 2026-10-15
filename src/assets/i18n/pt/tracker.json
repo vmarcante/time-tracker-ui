@@ -12,6 +12,27 @@
     },
     "myEntries": {
       "title": "Minhas marcações"
+    },
+    "entries": {
+      "allProjects": "Todos os projetos",
+      "filterProject": "Filtrar por projeto",
+      "clearFilter": "Limpar filtro",
+      "empty": "Nenhuma marcação encontrada",
+      "noSessions": "Sem sessões",
+      "details": "Ver detalhes"
+    },
+    "timer": {
+      "start": "Iniciar timer",
+      "stop": "Parar timer",
+      "openEntry": "Abrir marcação em andamento"
+    },
+    "projectPicker": {
+      "personal": "Projetos pessoais",
+      "company": "Projetos da empresa",
+      "empty": "Nenhum projeto disponível",
+      "newProject": "Novo projeto pessoal",
+      "projectName": "Nome do projeto",
+      "clientName": "Nome do cliente"
     }
   }
 }

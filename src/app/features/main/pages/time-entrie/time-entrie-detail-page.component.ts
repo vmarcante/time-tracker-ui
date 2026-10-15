@@ -1,41 +1,110 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
-import { TimeEntry, TimeEntrySession } from '../../../../shared/types';
-import type { ButtonIcon } from '../../../../shared/types';
+import { ActivatedRoute } from '@angular/router';
+import type { ButtonIcon, InputValue } from '../../../../shared/types';
 import { DateUtil } from '../../../../shared/utils/date-util';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
 import { TextareaInputComponent } from '../../../../shared/components/inputs/textarea/textarea-input.component';
+import { TextInputComponent } from '../../../../shared/components/inputs/text/text-input.component';
+import { PopoverComponent } from '../../../../shared/components/popover/popover.component';
+import { IconComponent } from '../../../../shared/components/icon/icon.component';
+import { ConfirmationDialogComponent } from '../../../../shared/components/dialogs/confirmation/confirmation-dialog.component';
+import { DialogService } from '../../../../shared/services/dialog.service';
+import { TranslationService } from '../../../../shared/services/translation.service';
+import { ApiAdapterService } from '../../../../shared/services/api/api-adapter.service';
 import { TimeEntrieSessionsComponent } from '../../components/time-entries/sessions/time-entrie-sessions.component';
+import { TrackerApiService } from '../../../tracker/services/tracker.api.service';
+import { TimerService } from '../../../tracker/services/timer.service';
+import {
+  SessionView,
+  TagOutput,
+  TimeEntryDetailOutput,
+  toSessionView,
+} from '../../../tracker/models/tracker.model';
+
+const DEFAULT_TAG_COLOR = '#6366F1';
+
+const TAG_COLORS = [
+  '#6366F1',
+  '#8B5CF6',
+  '#EC4899',
+  '#EF4444',
+  '#F97316',
+  '#F59E0B',
+  '#10B981',
+  '#14B8A6',
+  '#0EA5E9',
+  '#64748B',
+];
 
 @Component({
   selector: 'app-time-entrie-detail-page',
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, ButtonComponent, TextareaInputComponent, TimeEntrieSessionsComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    TranslatePipe,
+    ButtonComponent,
+    TextareaInputComponent,
+    TextInputComponent,
+    PopoverComponent,
+    IconComponent,
+    TimeEntrieSessionsComponent,
+  ],
   templateUrl: './time-entrie-detail-page.component.html',
   styleUrl: './time-entrie-detail-page.component.scss',
 })
 export class TimeEntrieDetailPageComponent implements OnInit {
-  private router = inject(Router);
   private route = inject(ActivatedRoute);
   private location = inject(Location);
   private dateUtil = inject(DateUtil);
+  private trackerApi = inject(TrackerApiService);
+  private apiAdapter = inject(ApiAdapterService);
+  private dialogService = inject(DialogService);
+  private translationService = inject(TranslationService);
+  protected timer = inject(TimerService);
 
-  readonly entry = signal<TimeEntry | null>(null);
-  readonly selectedSession = signal<TimeEntrySession | null>(null);
+  readonly entry = signal<TimeEntryDetailOutput | null>(null);
+  readonly loading = signal(true);
+  readonly notFound = signal(false);
+  readonly saving = signal(false);
+
+  readonly selectedSession = signal<SessionView | null>(null);
   readonly isEditingSession = signal<boolean>(false);
   readonly descriptionControl = new FormControl<string>('');
+
+  readonly allTags = signal<TagOutput[]>([]);
+  readonly tagsLoading = signal(false);
+  readonly selectedTagIds = signal<Set<string>>(new Set());
+  readonly newTagName = new FormControl<string>('');
+  readonly tagSearchTerm = signal('');
+  readonly newTagColor = signal<string>(DEFAULT_TAG_COLOR);
+  readonly tagColors = TAG_COLORS;
+
+  readonly filteredTags = computed<TagOutput[]>(() => {
+    const term = this.tagSearchTerm().trim().toLowerCase();
+    const tags = this.allTags();
+    return term ? tags.filter((tag) => tag.name.toLowerCase().includes(term)) : tags;
+  });
+
+  readonly canCreateTag = computed<boolean>(() => {
+    const term = this.tagSearchTerm().trim().toLowerCase();
+    return term.length > 0 && !this.allTags().some((tag) => tag.name.toLowerCase() === term);
+  });
+
+  readonly sessionViews = computed<SessionView[]>(() =>
+    (this.entry()?.sessions ?? []).map((session) => toSessionView(session)),
+  );
 
   readonly sessionDuration = computed<string>(() => {
     const session = this.selectedSession();
     if (!session) {
       return '';
     }
-    const totalSeconds = Math.floor(
-      (new Date(session.end).getTime() - new Date(session.start).getTime()) / 1000,
-    );
-    return this.dateUtil.formatDuration(totalSeconds);
+    const endMs = session.running ? Date.now() : new Date(session.end).getTime();
+    const totalSeconds = Math.floor((endMs - new Date(session.start).getTime()) / 1000);
+    return this.dateUtil.formatDuration(Math.max(0, totalSeconds));
   });
 
   protected readonly backIcon: ButtonIcon = {
@@ -44,15 +113,46 @@ export class TimeEntrieDetailPageComponent implements OnInit {
     color: 'var(--color-text-secondary)',
   };
 
-  ngOnInit(): void {
-    const state = this.router.getCurrentNavigation()?.extras?.state as { entry?: TimeEntry } | undefined;
-    const stateEntry = state?.entry;
+  private tagsPopover = viewChild<PopoverComponent>('tagsPopover');
 
-    if (stateEntry) {
-      this.entry.set(stateEntry);
-    } else {
-      const id = this.route.snapshot.paramMap.get('id');
-      this.entry.set(this.findMockById(id));
+  ngOnInit(): void {
+    this.timer.init();
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) {
+      this.loading.set(false);
+      this.notFound.set(true);
+      return;
+    }
+    this.loadEntry(id);
+  }
+
+  private loadEntry(id: string): void {
+    this.loading.set(true);
+    this.apiAdapter.executeRequest(this.trackerApi.findEntry(id), {
+      ignoreLoading: true,
+      onSuccess: (response) => {
+        this.entry.set(response.data);
+        this.timer.syncFromDetail(response.data);
+        this.loading.set(false);
+      },
+      onError: () => {
+        this.loading.set(false);
+        this.notFound.set(true);
+      },
+    });
+  }
+
+  /** Mescla um detail retornado pelo backend (mutations retornam o entry completo). */
+  private applyDetail(detail: TimeEntryDetailOutput): void {
+    this.entry.set(detail);
+    this.timer.syncFromDetail(detail);
+    const selected = this.selectedSession();
+    if (selected) {
+      const refreshed = detail.sessions.find((s) => s.id === selected.id);
+      this.selectedSession.set(refreshed ? toSessionView(refreshed) : null);
+      if (!refreshed) {
+        this.isEditingSession.set(false);
+      }
     }
   }
 
@@ -60,7 +160,7 @@ export class TimeEntrieDetailPageComponent implements OnInit {
     this.location.back();
   }
 
-  protected onSessionClick(session: TimeEntrySession): void {
+  protected onSessionClick(session: SessionView): void {
     this.selectedSession.set(session);
     this.isEditingSession.set(false);
     this.descriptionControl.setValue(session.description ?? '');
@@ -78,55 +178,76 @@ export class TimeEntrieDetailPageComponent implements OnInit {
 
   protected saveSessionDescription(): void {
     const selected = this.selectedSession();
-    if (!selected) {
+    const entry = this.entry();
+    if (!selected || !entry || this.saving()) {
       return;
     }
 
-    const description = this.descriptionControl.value ?? '';
+    this.saving.set(true);
+    this.apiAdapter.executeRequest(
+      this.trackerApi.updateSession(entry.id, selected.id, {
+        startTime: selected.start,
+        endTime: selected.running ? null : selected.end,
+        description: this.descriptionControl.value ?? '',
+      }),
+      {
+        ignoreLoading: true,
+        onSuccess: (response) => {
+          this.applyDetail(response.data);
+          this.isEditingSession.set(false);
+          this.saving.set(false);
+        },
+        onError: () => this.saving.set(false),
+      },
+    );
+  }
 
-    this.entry.update((current) => {
-      if (!current) {
-        return current;
-      }
+  protected deleteSession(): void {
+    const selected = this.selectedSession();
+    const entry = this.entry();
+    if (!selected || !entry || this.saving()) {
+      return;
+    }
 
-      const updatedSessions = (current.sessions ?? []).map((session) => {
-        if (session.start === selected.start && session.end === selected.end) {
-          return { ...session, description };
-        }
-        return session;
-      });
-
-      return { ...current, sessions: updatedSessions };
+    this.saving.set(true);
+    this.apiAdapter.executeRequest(this.trackerApi.deleteSession(entry.id, selected.id), {
+      ignoreLoading: true,
+      onSuccess: (response) => {
+        this.closeSessionPanel();
+        this.applyDetail(response.data);
+        this.saving.set(false);
+      },
+      onError: () => this.saving.set(false),
     });
-
-    this.selectedSession.update((s) => (s ? { ...s, description } : null));
-    this.isEditingSession.set(false);
   }
 
   protected onHourClick(isoTime: string): void {
-    this.entry.update((current) => {
-      if (!current) {
-        return current;
-      }
+    const entry = this.entry();
+    if (!entry || this.saving()) {
+      return;
+    }
 
-      const end = this.dateUtil.addMinutes(isoTime, 5);
-
-      const hasOverlap = (current.sessions ?? []).some((session) => {
-        return this.dateUtil.sessionsOverlap(isoTime, end, session.start, session.end);
-      });
-
-      if (hasOverlap) {
-        return current;
-      }
-
-      return {
-        ...current,
-        sessions: [
-          ...(current.sessions ?? []),
-          { id: current.id, start: isoTime, end },
-        ],
-      };
+    const end = this.dateUtil.addMinutes(isoTime, 15);
+    const hasOverlap = entry.sessions.some((session) => {
+      const sessionEnd = session.endTime ?? new Date().toISOString();
+      return this.dateUtil.sessionsOverlap(isoTime, end, session.startTime, sessionEnd);
     });
+    if (hasOverlap) {
+      return;
+    }
+
+    this.saving.set(true);
+    this.apiAdapter.executeRequest(
+      this.trackerApi.createSession(entry.id, { startTime: isoTime, endTime: end }),
+      {
+        ignoreLoading: true,
+        onSuccess: (response) => {
+          this.applyDetail(response.data);
+          this.saving.set(false);
+        },
+        onError: () => this.saving.set(false),
+      },
+    );
   }
 
   protected onDayChange(): void {
@@ -135,131 +256,175 @@ export class TimeEntrieDetailPageComponent implements OnInit {
     this.descriptionControl.setValue('');
   }
 
-  protected onSessionResize(event: { original: TimeEntrySession; updated: TimeEntrySession }): void {
-    const isSelectedSession =
-      this.selectedSession()?.start === event.original.start &&
-      this.selectedSession()?.end === event.original.end;
+  protected onSessionResize(event: { original: SessionView; updated: SessionView }): void {
+    const entry = this.entry();
+    if (!entry || this.saving()) {
+      return;
+    }
 
-    this.entry.update((current) => {
-      if (!current) {
-        return current;
-      }
+    this.saving.set(true);
+    this.apiAdapter.executeRequest(
+      this.trackerApi.updateSession(entry.id, event.original.id, {
+        startTime: event.updated.start,
+        endTime: event.original.running ? null : event.updated.end,
+        description: event.original.description ?? null,
+      }),
+      {
+        ignoreLoading: true,
+        onSuccess: (response) => {
+          this.applyDetail(response.data);
+          this.saving.set(false);
+        },
+        onError: () => this.saving.set(false),
+      },
+    );
+  }
 
-      const updatedSessions = (current.sessions ?? []).map((session) => {
-        if (session.start === event.original.start && session.end === event.original.end) {
-          return event.updated;
-        }
-        return session;
+  protected confirmDeleteEntry(): void {
+    const entry = this.entry();
+    if (!entry) {
+      return;
+    }
+
+    this.dialogService.openDialog<ConfirmationDialogComponent, { confirm?: boolean }>(
+      ConfirmationDialogComponent,
+      {
+        width: '480px',
+        data: {
+          title: this.translationService.translate('timeEntry.deleteTitle'),
+          message: this.translationService.translate('timeEntry.deleteMessage'),
+          closeable: true,
+          buttons: {
+            cancel: {
+              show: true,
+              text: this.translationService.translate('common.cancel'),
+              order: 1,
+              name: 'cancel',
+              color: 'outline-white',
+            },
+            confirmation: {
+              show: true,
+              text: this.translationService.translate('common.delete'),
+              order: 2,
+              name: 'confirm',
+              color: 'error',
+            },
+          },
+        },
+        closeCallback: (result) => {
+          if (!result?.confirm) return;
+          this.apiAdapter.executeRequest(this.trackerApi.deactivateEntry(entry.id), {
+            onSuccess: () => this.location.back(),
+          });
+        },
+      },
+    );
+  }
+
+  protected openTagsPopover(): void {
+    this.selectedTagIds.set(new Set((this.entry()?.tags ?? []).map((tag) => tag.id)));
+    this.newTagName.setValue('');
+    this.tagSearchTerm.set('');
+    this.tagsPopover()?.toggle();
+    if (this.allTags().length === 0 && !this.tagsLoading()) {
+      this.tagsLoading.set(true);
+      this.apiAdapter.executeRequest(this.trackerApi.listTags(), {
+        ignoreLoading: true,
+        onSuccess: (response) => {
+          this.allTags.set(response.data);
+          this.tagsLoading.set(false);
+        },
+        onError: () => this.tagsLoading.set(false),
       });
-
-      return { ...current, sessions: updatedSessions };
-    });
-
-    if (isSelectedSession) {
-      this.selectedSession.set(event.updated);
-      this.descriptionControl.setValue(event.updated.description ?? '');
     }
   }
 
-  private findMockById(id: string | null): TimeEntry | null {
-    return this.mocks.find((item) => item.id === id) ?? null;
+  protected toggleTag(tagId: string): void {
+    this.selectedTagIds.update((ids) => {
+      const next = new Set(ids);
+      if (next.has(tagId)) {
+        next.delete(tagId);
+      } else {
+        next.add(tagId);
+      }
+      return next;
+    });
   }
 
-  private readonly mocks: TimeEntry[] = [
-    {
-      id: '1',
-      name: 'Desenvolvimento de Artigo',
-      description: 'Tarefa destinada ao desenvolvimento do artigo de aplicação Time Tracker',
-      project: { id: '1', name: 'Time Tracker', client: { id: '1', name: 'UNINTER' } },
-      start: this.dateUtil.buildDate(8, 0, -3),
-      end: this.dateUtil.buildDate(23, 0, -3),
-      tags: [
-        { id: '1', name: 'Frontend' },
-        { id: '2', name: 'Design' },
-      ],
-      sessions: [
-        { id: '1', start: this.dateUtil.buildDate(8, 0, -3), end: this.dateUtil.buildDate(9, 30, -3) },
-        { id: '2', start: this.dateUtil.buildDate(9, 45, -3), end: this.dateUtil.buildDate(11, 0, -3) },
-      ],
-    },
-    {
-      id: '2',
-      name: 'Button component',
-      description: 'Refactor shared button',
-      project: { id: '1', name: 'Website redesign', client: { id: '1', name: 'Acme Corp' } },
-      start: this.dateUtil.buildDate(13, 0, -3),
-      end: this.dateUtil.buildDate(15, 30, -3),
-      tags: [{ id: '3', name: 'Refactor' }],
-      sessions: [
-        { id: '3', start: this.dateUtil.buildDate(13, 0, -3), end: this.dateUtil.buildDate(14, 0, -3) },
-        { id: '4', start: this.dateUtil.buildDate(14, 15, -3), end: this.dateUtil.buildDate(15, 30, -3) },
-      ],
-    },
-    {
-      id: '3',
-      name: 'DS review',
-      description: 'Review design system tokens',
-      project: { id: '2', name: 'Client meeting' },
-      start: this.dateUtil.buildDate(16, 0, -3),
-      end: this.dateUtil.buildDate(17, 0, -3),
-      sessions: [
-        { id: '5', start: this.dateUtil.buildDate(16, 0, -3), end: this.dateUtil.buildDate(16, 30, -3) },
-        { id: '6', start: this.dateUtil.buildDate(16, 30, -3), end: this.dateUtil.buildDate(17, 0, -3) },
-      ],
-    },
-    {
-      id: '4',
-      name: 'Auth API',
-      description: 'Login and token endpoints',
-      project: { id: '3', name: 'Backend API', client: { id: '2', name: 'Wayne Enterprises' } },
-      start: this.dateUtil.buildDate(9, 0, -2),
-      end: this.dateUtil.buildDate(12, 0, -2),
-      tags: [
-        { id: '4', name: 'Backend' },
-        { id: '5', name: 'API' },
-      ],
-      sessions: [
-        { id: '7', start: this.dateUtil.buildDate(9, 0, -2), end: this.dateUtil.buildDate(10, 30, -2) },
-        { id: '8', start: this.dateUtil.buildDate(10, 45, -2), end: this.dateUtil.buildDate(12, 0, -2) },
-      ],
-    },
-    {
-      id: '5',
-      name: 'User migration',
-      description: 'Migrate users to new schema',
-      project: { id: '3', name: 'Backend API', client: { id: '2', name: 'Wayne Enterprises' } },
-      start: this.dateUtil.buildDate(14, 0, -2),
-      end: this.dateUtil.buildDate(16, 0, -2),
-      sessions: [
-        { id: '9', start: this.dateUtil.buildDate(14, 0, -2), end: this.dateUtil.buildDate(15, 0, -2) },
-        { id: '10', start: this.dateUtil.buildDate(15, 15, -2), end: this.dateUtil.buildDate(16, 0, -2) },
-      ],
-    },
-    {
-      id: '6',
-      name: 'Code review PR42',
-      description: 'Review landing changes',
-      project: { id: '4', name: 'Code review' },
-      start: this.dateUtil.buildDate(10, 0, -1),
-      end: this.dateUtil.buildDate(10, 45, -1),
-      tags: [{ id: '6', name: 'PR' }],
-      sessions: [
-        { id: '11', start: this.dateUtil.buildDate(10, 0, -1), end: this.dateUtil.buildDate(10, 20, -1) },
-        { id: '12', start: this.dateUtil.buildDate(10, 25, -1), end: this.dateUtil.buildDate(10, 45, -1) },
-      ],
-    },
-    {
-      id: '7',
-      name: 'Sprint retro',
-      description: 'Retrospective meeting',
-      project: { id: '5', name: 'Sprint planning' },
-      start: this.dateUtil.buildDate(11, 0),
-      end: this.dateUtil.buildDate(12, 0),
-      tags: [{ id: '7', name: 'Meeting' }],
-      sessions: [
-        { id: '13', start: new Date().toISOString(), end: new Date().toISOString() },
-        { id: '14', start: new Date().toISOString(), end: new Date().toISOString() },
-      ],
-    },
-  ];
+  protected isTagSelected(tagId: string): boolean {
+    return this.selectedTagIds().has(tagId);
+  }
+
+  protected onTagSearchChange(value: InputValue): void {
+    this.tagSearchTerm.set(value == null ? '' : String(value));
+  }
+
+  protected onTagSearchEnter(): void {
+    const term = this.tagSearchTerm().trim().toLowerCase();
+    if (!term) {
+      return;
+    }
+
+    const exactMatch = this.allTags().find((tag) => tag.name.toLowerCase() === term);
+    if (exactMatch) {
+      this.toggleTag(exactMatch.id);
+      this.newTagName.setValue('');
+      this.tagSearchTerm.set('');
+      return;
+    }
+
+    this.createTag();
+  }
+
+  protected createTag(): void {
+    const name = (this.newTagName.value ?? '').trim();
+    if (!name || this.saving()) {
+      return;
+    }
+
+    this.saving.set(true);
+    this.apiAdapter.executeRequest(this.trackerApi.createTag({ name, color: this.newTagColor() }), {
+      ignoreLoading: true,
+      onSuccess: (response) => {
+        this.allTags.update((tags) => [...tags, response.data]);
+        this.toggleTag(response.data.id);
+        this.newTagName.setValue('');
+        this.tagSearchTerm.set('');
+        this.saving.set(false);
+        if (!this.tagsPopover()?.isOpen) {
+          this.syncTags();
+        }
+      },
+      onError: () => this.saving.set(false),
+    });
+  }
+
+  protected onTagsPopoverClosed(): void {
+    this.syncTags();
+  }
+
+  private syncTags(): void {
+    const entry = this.entry();
+    if (!entry) {
+      return;
+    }
+
+    const selected = this.selectedTagIds();
+    const current = new Set(entry.tags.map((tag) => tag.id));
+    const unchanged =
+      current.size === selected.size && [...selected].every((id) => current.has(id));
+    if (unchanged) {
+      return;
+    }
+
+    this.saving.set(true);
+    this.apiAdapter.executeRequest(this.trackerApi.setEntryTags(entry.id, [...selected]), {
+      ignoreLoading: true,
+      onSuccess: (response) => {
+        this.applyDetail(response.data);
+        this.saving.set(false);
+      },
+      onError: () => this.saving.set(false),
+    });
+  }
 }

@@ -14,6 +14,18 @@
     "addDescription": "Adicionar descrição",
     "editDescription": "Editar descrição",
     "describeSession": "Descreva esta sessão...",
-    "noDescription": "Sem descrição"
+    "noDescription": "Sem descrição",
+    "running": "Em andamento",
+    "now": "agora",
+    "delete": "Excluir marcação",
+    "deleteTitle": "Excluir marcação",
+    "deleteMessage": "Tem certeza que deseja excluir esta marcação? Todas as sessões serão removidas.",
+    "deleteSession": "Excluir sessão",
+    "editTags": "Editar tags",
+    "newTagName": "Nome da nova tag",
+    "searchOrCreateTag": "Buscar ou criar tag...",
+    "noTagsFound": "Nenhuma tag encontrada",
+    "tagColor": "Cor da tag",
+    "createTag": "Criar"
   }
 }

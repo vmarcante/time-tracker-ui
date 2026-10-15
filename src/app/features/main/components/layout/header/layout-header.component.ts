@@ -19,6 +19,7 @@ import { UserMenuComponent } from '../../../../auth/components/user-menu/user-me
 import { PopoverComponent } from '../../../../../shared/components/popover/popover.component';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
 import { MobileMenuComponent } from '../../../../../shared/components/mobile-menu/mobile-menu.component';
+import { TimerWidgetComponent } from '../../../../tracker/components/timer-widget/timer-widget.component';
 import { MenuToggleComponent } from '../../../../../shared/components/menu-toggle/menu-toggle.component';
 import { MobileMenuLink, MobileMenuTheme } from '../../../../../shared/types';
 import { ConfirmationDialogComponent } from '../../../../../shared/components/dialogs/confirmation/confirmation-dialog.component';
@@ -45,6 +46,7 @@ import { ConfirmationDialogConfiguration } from '../../../../../shared/types';
     ButtonComponent,
     MobileMenuComponent,
     MenuToggleComponent,
+    TimerWidgetComponent,
   ],
 })
 export class LayoutHeaderComponent implements OnInit, OnDestroy {

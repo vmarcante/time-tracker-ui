@@ -14,6 +14,18 @@
     "addDescription": "Add description",
     "editDescription": "Edit description",
     "describeSession": "Describe this session...",
-    "noDescription": "No description"
+    "noDescription": "No description",
+    "running": "Running",
+    "now": "now",
+    "delete": "Delete entry",
+    "deleteTitle": "Delete time entry",
+    "deleteMessage": "Are you sure you want to delete this entry? All sessions will be removed.",
+    "deleteSession": "Delete session",
+    "editTags": "Edit tags",
+    "newTagName": "New tag name",
+    "searchOrCreateTag": "Search or create tag...",
+    "noTagsFound": "No tags found",
+    "tagColor": "Tag color",
+    "createTag": "Create"
   }
 }

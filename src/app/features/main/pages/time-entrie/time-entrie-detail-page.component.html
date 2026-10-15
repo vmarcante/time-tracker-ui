@@ -1,42 +1,67 @@
-@if (entry(); as item) {
+@if (loading()) {
+  <div class="time-entrie-detail">
+    <div class="time-entrie-detail__loading">
+      <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--title" aria-hidden="true"></div>
+      <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--meta" aria-hidden="true"></div>
+      <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--timeline" aria-hidden="true"></div>
+    </div>
+  </div>
+} @else if (entry(); as item) {
   <div class="time-entrie-detail">
     <article class="time-entrie-detail__panel" aria-labelledby="detail-title">
       <div class="time-entrie-detail__body">
         <div class="time-entrie-detail__info">
-          <app-button
-            [icon]="backIcon"
-            [size]="{ small: true }"
-            [rounded]="true"
-            [color]="'secondary'"
-            [customClass]="'time-entrie-detail__back'"
-            [hoverTitle]="'common.back' | translate"
-            (buttonClick)="close()"
-          />
+          <div class="time-entrie-detail__topbar">
+            <app-button
+              [icon]="backIcon"
+              [size]="{ small: true }"
+              [rounded]="true"
+              [color]="'secondary'"
+              [customClass]="'time-entrie-detail__back'"
+              [hoverTitle]="'common.back' | translate"
+              (buttonClick)="close()"
+            />
+            <app-button
+              [icon]="{ iconName: 'objects/trash', iconOnly: true, color: 'var(--color-error)' }"
+              [size]="{ small: true }"
+              [rounded]="true"
+              [color]="'secondary'"
+              [hoverTitle]="'timeEntry.delete' | translate"
+              (buttonClick)="confirmDeleteEntry()"
+            />
+          </div>
           <h1 id="detail-title" class="time-entrie-detail__name">{{ item.name }}</h1>
 
           <div class="time-entrie-detail__meta">
             <span class="time-entrie-detail__meta-item">
               <span class="time-entrie-detail__meta-label">{{ 'timeEntry.project' | translate }}</span>
-              <span class="time-entrie-detail__meta-value">{{ item.project.name }}</span>
+              <span class="time-entrie-detail__meta-value">{{ item.projectName }}</span>
             </span>
-            @if (item.project.client; as client) {
+            @if (item.clientName; as clientName) {
               <span class="time-entrie-detail__meta-divider" aria-hidden="true"></span>
               <span class="time-entrie-detail__meta-item">
                 <span class="time-entrie-detail__meta-label">{{ 'timeEntry.client' | translate }}</span>
-                <span class="time-entrie-detail__meta-value">{{ client.name }}</span>
+                <span class="time-entrie-detail__meta-value">{{ clientName }}</span>
               </span>
             }
           </div>
 
           <dl class="time-entrie-detail__details">
-            <div class="time-entrie-detail__field">
-              <dt class="time-entrie-detail__label">{{ 'timeEntry.timeRange' | translate }}</dt>
-              <dd class="time-entrie-detail__value">
-                <time>{{ item.start | date: 'short' }}</time>
-                <span class="time-entrie-detail__value-separator" aria-hidden="true">–</span>
-                <time>{{ item.end | date: 'short' }}</time>
-              </dd>
-            </div>
+            @if (item.startTime) {
+              <div class="time-entrie-detail__field">
+                <dt class="time-entrie-detail__label">{{ 'timeEntry.timeRange' | translate }}</dt>
+                <dd class="time-entrie-detail__value">
+                  <time>{{ item.startTime | date: 'short' }}</time>
+                  @if (item.endTime) {
+                    <span class="time-entrie-detail__value-separator" aria-hidden="true">–</span>
+                    <time>{{ item.endTime | date: 'short' }}</time>
+                  } @else if (item.running) {
+                    <span class="time-entrie-detail__value-separator" aria-hidden="true">–</span>
+                    <span class="time-entrie-detail__value--running">{{ 'timeEntry.running' | translate }}</span>
+                  }
+                </dd>
+              </div>
+            }
 
             @if (item.description) {
               <div class="time-entrie-detail__field time-entrie-detail__field--block">
@@ -46,28 +71,121 @@
             }
           </dl>
 
-          @if (item.tags && item.tags.length > 0) {
-            <div class="time-entrie-detail__tags-section">
-              <span class="time-entrie-detail__tags-label">{{ 'timeEntry.tags' | translate }}</span>
-              <ul class="time-entrie-detail__tags" [attr.aria-label]="'timeEntry.tags' | translate">
-                @for (tag of item.tags; track tag.id) {
-                  <li
-                    class="time-entrie-detail__tag"
-                    [style.background-color]="tag.color ?? 'var(--color-primary-200)'"
+          <div class="time-entrie-detail__tags-section">
+            <span class="time-entrie-detail__tags-label">{{ 'timeEntry.tags' | translate }}</span>
+            <ul class="time-entrie-detail__tags" [attr.aria-label]="'timeEntry.tags' | translate">
+              @for (tag of item.tags; track tag.id) {
+                <li
+                  class="time-entrie-detail__tag"
+                  [style.background-color]="tag.color"
+                >
+                  {{ tag.name }}
+                </li>
+              }
+              <li>
+                <app-popover
+                  #tagsPopover
+                  [options]="{
+                    position: 'bottom',
+                    width: '280px',
+                    closeOnClickOutside: true,
+                    closeOnEscape: true,
+                    showArrow: true,
+                  }"
+                  [triggerTemplate]="tagsTrigger"
+                  [contentTemplate]="tagsContent"
+                  (closed)="onTagsPopoverClosed()"
+                />
+                <ng-template #tagsTrigger>
+                  <button
+                    type="button"
+                    class="time-entrie-detail__tag time-entrie-detail__tag--edit"
+                    (click)="openTagsPopover()"
+                    [attr.aria-label]="'timeEntry.editTags' | translate"
                   >
-                    {{ tag.name }}
-                  </li>
-                }
-              </ul>
-            </div>
-          }
+                    <app-icon name="actions/edit" size="0.75rem" />
+                    <span>{{ 'timeEntry.editTags' | translate }}</span>
+                  </button>
+                </ng-template>
+                <ng-template #tagsContent>
+                  <div class="tags-picker">
+                    <div (keydown.enter)="onTagSearchEnter()">
+                      <app-text-input
+                        [control]="newTagName"
+                        [showLabel]="false"
+                        [placeholder]="'timeEntry.searchOrCreateTag' | translate"
+                        [maxLength]="40"
+                        [hideHint]="true"
+                        [hideError]="true"
+                        (onValueChange)="onTagSearchChange($event)"
+                      />
+                    </div>
+                    @if (tagsLoading()) {
+                      <p class="tags-picker__hint">{{ 'common.loading' | translate }}</p>
+                    } @else {
+                      @if (filteredTags().length > 0) {
+                        <ul class="tags-picker__list">
+                          @for (tag of filteredTags(); track tag.id) {
+                            <li>
+                              <button
+                                type="button"
+                                class="tags-picker__item"
+                                [class.tags-picker__item--selected]="isTagSelected(tag.id)"
+                                (click)="toggleTag(tag.id)"
+                              >
+                                <span
+                                  class="tags-picker__dot"
+                                  [style.background-color]="tag.color"
+                                  aria-hidden="true"
+                                ></span>
+                                <span class="tags-picker__name">{{ tag.name }}</span>
+                                @if (isTagSelected(tag.id)) {
+                                  <app-icon name="status/check" size="0.75rem" />
+                                }
+                              </button>
+                            </li>
+                          }
+                        </ul>
+                      } @else if (!canCreateTag()) {
+                        <p class="tags-picker__hint">{{ 'timeEntry.noTagsFound' | translate }}</p>
+                      }
+                      @if (canCreateTag()) {
+                        <div class="tags-picker__create">
+                          <button
+                            type="button"
+                            class="tags-picker__item tags-picker__create-row"
+                            (click)="createTag()"
+                          >
+                            <app-icon name="actions/add" size="0.75rem" />
+                            <span class="tags-picker__name">
+                              {{ 'timeEntry.createTag' | translate }} "{{ newTagName.value }}"
+                            </span>
+                          </button>
+                          <div class="tags-picker__colors" role="radiogroup" [attr.aria-label]="'timeEntry.tagColor' | translate">
+                            @for (color of tagColors; track color) {
+                              <button
+                                type="button"
+                                class="tags-picker__swatch"
+                                [class.tags-picker__swatch--selected]="newTagColor() === color"
+                                [style.background-color]="color"
+                                [attr.aria-label]="color"
+                                (click)="newTagColor.set(color)"
+                              ></button>
+                            }
+                          </div>
+                        </div>
+                      }
+                    }
+                  </div>
+                </ng-template>
+              </li>
+            </ul>
+          </div>
         </div>
 
         <div class="time-entrie-detail__sessions">
           <app-time-entrie-sessions
-            [sessions]="item.sessions ?? []"
-            [entryStart]="item.start"
-            [entryEnd]="item.end"
+            [sessions]="sessionViews()"
             [selectedSession]="selectedSession()"
             (hourClick)="onHourClick($event)"
             (sessionClick)="onSessionClick($event)"
@@ -84,20 +202,30 @@
                   {{ session.start | date: 'EEEE, d MMMM' }}
                 </time>
                 <h3 class="time-entrie-detail__session-panel-title">
-                  {{ session.start | date:'HH:mm' }} – {{ session.end | date:'HH:mm' }}
+                  {{ session.start | date:'HH:mm' }} – {{ session.running ? ('timeEntry.now' | translate) : (session.end | date:'HH:mm') }}
                 </h3>
                 <span class="time-entrie-detail__session-panel-duration-inline" [attr.aria-label]="'timeEntry.duration' | translate">
                   {{ sessionDuration() }}
                 </span>
               </div>
-              <app-button
-                [icon]="{ iconName: 'actions/close', iconOnly: true, color: 'var(--color-text-secondary)' }"
-                [size]="{ small: true }"
-                [rounded]="true"
-                [color]="'secondary'"
-                [hoverTitle]="'common.close' | translate"
-                (buttonClick)="closeSessionPanel()"
-              />
+              <div class="time-entrie-detail__session-panel-actions">
+                <app-button
+                  [icon]="{ iconName: 'objects/trash', iconOnly: true, color: 'var(--color-error)' }"
+                  [size]="{ small: true }"
+                  [rounded]="true"
+                  [color]="'secondary'"
+                  [hoverTitle]="'timeEntry.deleteSession' | translate"
+                  (buttonClick)="deleteSession()"
+                />
+                <app-button
+                  [icon]="{ iconName: 'actions/close', iconOnly: true, color: 'var(--color-text-secondary)' }"
+                  [size]="{ small: true }"
+                  [rounded]="true"
+                  [color]="'secondary'"
+                  [hoverTitle]="'common.close' | translate"
+                  (buttonClick)="closeSessionPanel()"
+                />
+              </div>
             </header>
 
             <div class="time-entrie-detail__session-panel-body">
@@ -140,13 +268,16 @@
                   <app-button
                     [text]="'common.cancel' | translate"
                     [color]="'secondary'"
+                    [rounded]="true"
                     [size]="{ small: true }"
                     (buttonClick)="isEditingSession.set(false)"
                   />
                   <app-button
                     [text]="'common.save' | translate"
                     [color]="'primary'"
+                    [rounded]="true"
                     [size]="{ small: true }"
+                    [loading]="saving()"
                     (buttonClick)="saveSessionDescription()"
                   />
                 </footer>

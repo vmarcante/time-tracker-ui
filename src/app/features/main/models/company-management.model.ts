@@ -179,6 +179,16 @@ export interface CompanyMenuOverviewOutput {
   pendingMembershipsCount: number;
 }
 
+export interface CompanyOverviewOutput {
+  membersCount: number;
+  pendingMembershipsCount: number;
+  teamsCount: number;
+  projectsCount: number;
+  recentMembers: CompanyMemberOutput[];
+  pendingRequests: CompanyMemberOutput[];
+  recentProjects: ProjectSummaryOutput[];
+}
+
 export type PersonInviteLookupStatus = 'NOT_FOUND' | 'AVAILABLE' | 'IN_THIS_COMPANY' | 'IN_ANOTHER_COMPANY';
 
 export interface PersonInviteLookupOutput {

@@ -1,8 +1,10 @@
 import {
   Component,
   ElementRef,
+  EventEmitter,
   HostListener,
   Input,
+  Output,
   inject,
   TemplateRef,
   AfterViewInit,
@@ -33,6 +35,8 @@ export class PopoverComponent implements AfterViewInit, OnDestroy {
   @Input() triggerTemplate: TemplateRef<any> | null = null;
   @Input() contentTemplate: TemplateRef<any> | null = null;
 
+  @Output() closed = new EventEmitter<void>();
+
   isOpen = false;
   calculatedPosition: PopoverPosition = 'bottom';
   arrowOffset: string = '1.5rem';
@@ -58,9 +62,10 @@ export class PopoverComponent implements AfterViewInit, OnDestroy {
   }
 
   toggle(): void {
-    this.isOpen = !this.isOpen;
     if (this.isOpen) {
-      setTimeout(() => this.updatePosition(), 0);
+      this.close();
+    } else {
+      this.open();
     }
   }
 
@@ -70,7 +75,11 @@ export class PopoverComponent implements AfterViewInit, OnDestroy {
   }
 
   close(): void {
+    if (!this.isOpen) {
+      return;
+    }
     this.isOpen = false;
+    this.closed.emit();
   }
 
   private updatePosition(): void {

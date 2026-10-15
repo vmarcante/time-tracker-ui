@@ -1,0 +1,116 @@
+.timer-widget {
+  display: flex;
+  align-items: center;
+
+  &__pill {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 6px 6px 6px var(--spacing-md);
+    border-radius: var(--radius-pill);
+    background-color: var(--color-primary-50);
+    border: 1px solid var(--color-primary-300);
+    transition: opacity var(--transition-fast);
+
+    &--busy {
+      opacity: 0.7;
+    }
+  }
+
+  &__pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--color-success);
+    flex-shrink: 0;
+    animation: timer-pulse 1.6s ease-in-out infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+
+  &__entry {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    min-width: 0;
+    max-width: 240px;
+  }
+
+  &__elapsed {
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary-700);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+
+  &__entry-name {
+    font-size: 0.8125rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__stop {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--color-error);
+    color: #fff;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background-color var(--transition-fast);
+
+    &:hover:not(:disabled) {
+      filter: brightness(0.9);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+  }
+
+  &__start {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    background-color: var(--color-background-card);
+    color: var(--color-success);
+    cursor: pointer;
+    transition:
+      border-color var(--transition-fast),
+      background-color var(--transition-fast);
+
+    &:hover:not(:disabled) {
+      border-color: var(--color-success);
+      background-color: var(--color-primary-50);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+  }
+}
+
+@keyframes timer-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}

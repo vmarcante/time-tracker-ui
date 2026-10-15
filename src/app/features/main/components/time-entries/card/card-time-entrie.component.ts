@@ -1,35 +1,40 @@
-import { Component, computed, inject, input, OnDestroy, OnInit, output, signal } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
-import { TimeEntry } from '../../../../../shared/types';
+import { TranslatePipe } from '../../../../../shared/pipes/translate.pipe';
 import type { ButtonIcon } from '../../../../../shared/types';
+import {
+  TimeEntryDetailOutput,
+  TimeEntrySummaryOutput,
+} from '../../../../tracker/models/tracker.model';
+import { TimerService } from '../../../../tracker/services/timer.service';
 
 @Component({
   selector: 'app-card-time-entrie',
-  imports: [CommonModule, ButtonComponent],
+  imports: [CommonModule, ButtonComponent, TranslatePipe],
   templateUrl: './card-time-entrie.component.html',
   styleUrl: './card-time-entrie.component.scss',
 })
-export class CardTimeEntrieComponent implements OnInit, OnDestroy {
+export class CardTimeEntrieComponent {
   private router = inject(Router);
+  protected timer = inject(TimerService);
 
-  readonly entry = input.required<TimeEntry>();
+  readonly entry = input.required<TimeEntrySummaryOutput>();
   readonly compact = input<boolean>(false);
   readonly showDate = input<boolean>(true);
-  readonly runningChange = output<boolean>();
-  readonly timeChange = output<TimeEntry>();
+  readonly entryChanged = output<TimeEntryDetailOutput>();
 
-  readonly isRunning = signal(false);
-  readonly elapsed = signal(0);
-  readonly formattedElapsed = computed(() => this.formatElapsed(this.elapsed()));
+  readonly isRunning = computed(() => this.timer.runningEntryId() === this.entry().id);
   readonly tags = computed(() => this.entry().tags ?? []);
   readonly visibleTags = computed(() => this.tags().slice(0, 3));
   readonly extraTagsCount = computed(() => Math.max(0, this.tags().length - 3));
 
-  private intervalId?: number;
-  private runningStartAt = 0;
-  private accumulated = 0;
+  /** Rodando usa o mesmo elapsedSeconds do TimerService — idêntico ao widget do header. */
+  readonly elapsed = computed(() =>
+    this.isRunning() ? this.timer.elapsedSeconds() : this.entry().durationSeconds,
+  );
+  readonly formattedElapsed = computed(() => this.formatElapsed(this.elapsed()));
 
   protected readonly playIcon: ButtonIcon = {
     iconName: 'actions/play',
@@ -50,70 +55,19 @@ export class CardTimeEntrieComponent implements OnInit, OnDestroy {
   };
 
   protected openDetails(): void {
-    this.router.navigate(['/entries', this.entry().id], { state: { entry: this.entry() } });
-  }
-
-  ngOnInit(): void {
-    this.accumulated = this.calculateRecordedElapsed();
-    this.elapsed.set(this.accumulated);
+    this.router.navigate(['/tracker/entries', this.entry().id]);
   }
 
   protected toggleRunning(): void {
-    const running = !this.isRunning();
-    this.isRunning.set(running);
-
-    if (running) {
-      this.runningStartAt = Date.now();
-      this.intervalId = window.setInterval(() => {
-        this.elapsed.set(this.accumulated + Math.floor((Date.now() - this.runningStartAt) / 1000));
-      }, 1000);
+    if (this.isRunning()) {
+      this.timer.stop((detail) => this.entryChanged.emit(detail));
     } else {
-      window.clearInterval(this.intervalId);
-      this.intervalId = undefined;
-      this.accumulated = this.elapsed();
-      this.emitUpdatedEntry();
+      this.timer.start({ entryId: this.entry().id }, (detail) => this.entryChanged.emit(detail));
     }
-
-    this.runningChange.emit(running);
-  }
-
-  ngOnDestroy(): void {
-    window.clearInterval(this.intervalId);
-  }
-
-  private calculateRecordedElapsed(): number {
-    const start = new Date(this.entry().start).getTime();
-    const end = new Date(this.entry().end).getTime();
-
-    if (Number.isNaN(start) || Number.isNaN(end) || end <= start) {
-      return 0;
-    }
-
-    return Math.floor((end - start) / 1000);
-  }
-
-  private emitUpdatedEntry(): void {
-    const end = new Date().toISOString();
-    const start = this.entry().start || this.calculateStartFromElapsed(end);
-
-    this.timeChange.emit({
-      ...this.entry(),
-      start,
-      end,
-    });
-  }
-
-  private calculateStartFromElapsed(end: string): string {
-    const endTime = new Date(end).getTime();
-    return new Date(endTime - this.elapsed() * 1000).toISOString();
   }
 
   private formatElapsed(totalSeconds: number): string {
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-
     const pad = (value: number): string => value.toString().padStart(2, '0');
-    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    return `${pad(Math.floor(totalSeconds / 3600))}:${pad(Math.floor((totalSeconds % 3600) / 60))}:${pad(totalSeconds % 60)}`;
   }
 }

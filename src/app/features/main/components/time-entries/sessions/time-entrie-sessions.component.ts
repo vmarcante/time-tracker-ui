@@ -12,7 +12,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TimeEntrySession } from '../../../../../shared/types';
+import { SessionView } from '../../../../tracker/models/tracker.model';
 import { AvailableMonth, AvailableYear, DateUtil } from '../../../../../shared/utils/date-util';
 
 interface TimelineSegment {
@@ -21,7 +21,7 @@ interface TimelineSegment {
   start: string;
   end: string;
   duration: string;
-  session: TimeEntrySession;
+  session: SessionView;
   col: number;
   totalCols: number;
 }
@@ -47,13 +47,11 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 })
 export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDestroy {
   // --- Inputs / Outputs ---
-  readonly sessions = input.required<TimeEntrySession[]>();
-  readonly entryStart = input.required<string>();
-  readonly entryEnd = input.required<string>();
-  readonly selectedSession = input<TimeEntrySession | null>(null);
+  readonly sessions = input.required<SessionView[]>();
+  readonly selectedSession = input<SessionView | null>(null);
   readonly hourClick = output<string>();
-  readonly sessionClick = output<TimeEntrySession>();
-  readonly sessionResize = output<{ original: TimeEntrySession; updated: TimeEntrySession }>();
+  readonly sessionClick = output<SessionView>();
+  readonly sessionResize = output<{ original: SessionView; updated: SessionView }>();
   readonly dayChange = output<Date>();
 
   // --- Component state ---
@@ -134,14 +132,17 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
     return day.getTime();
   });
 
-  readonly filteredSessions = computed<TimeEntrySession[]>(() => {
+  readonly filteredSessions = computed<SessionView[]>(() => {
     const dayStart = this.dayStart();
     const dayEnd = dayStart + DAY_MS;
-    return this.sessions().filter((session) => {
-      const start = new Date(session.start).getTime();
-      const end = new Date(session.end).getTime();
-      return !Number.isNaN(start) && !Number.isNaN(end) && start < dayEnd && end > dayStart;
-    });
+    const nowIso = this.now().toISOString();
+    return this.sessions()
+      .map((session) => (session.running ? { ...session, end: nowIso } : session))
+      .filter((session) => {
+        const start = new Date(session.start).getTime();
+        const end = new Date(session.end).getTime();
+        return !Number.isNaN(start) && !Number.isNaN(end) && start < dayEnd && end > dayStart;
+      });
   });
 
   readonly totalDuration = computed<number>(() =>
@@ -465,7 +466,7 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
     });
   }
 
-  private hasSessionInDay(day: DayOption, sessions: TimeEntrySession[]): boolean {
+  private hasSessionInDay(day: DayOption, sessions: SessionView[]): boolean {
     const dayStart = day.day.getTime();
     const dayEnd = dayStart + DAY_MS;
     return sessions.some((session) => {
@@ -541,19 +542,14 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
     this.hourClick.emit(date.toISOString());
   }
 
-  protected onSessionClick(session: TimeEntrySession, event: MouseEvent): void {
+  protected onSessionClick(session: SessionView, event: MouseEvent): void {
     event.stopPropagation();
     this.sessionClick.emit(session);
   }
 
-  protected isSelectedSession(session: TimeEntrySession): boolean {
+  protected isSelectedSession(session: SessionView): boolean {
     const selected = this.selectedSession();
-    return (
-      selected !== null &&
-      selected !== undefined &&
-      selected.start === session.start &&
-      selected.end === session.end
-    );
+    return selected != null && selected.id === session.id;
   }
 
   // --- Drag & Resize ---
@@ -608,7 +604,7 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
         const dayStart = this.dayStart();
         const newStartMs = dayStart + (override.top / 100) * DAY_MS;
         const newEndMs = dayStart + ((override.top + override.height) / 100) * DAY_MS;
-        const updated: TimeEntrySession = {
+        const updated: SessionView = {
           ...originalSegment.session,
           start: new Date(newStartMs).toISOString(),
           end: new Date(newEndMs).toISOString(),

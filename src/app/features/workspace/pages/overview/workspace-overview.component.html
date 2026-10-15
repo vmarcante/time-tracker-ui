@@ -1,0 +1,180 @@
+<div class="section">
+  <div class="section__header">
+    <div class="section__heading">
+      <h2 class="section__title">{{ 'workspace.overview.title' | translate }}</h2>
+    </div>
+  </div>
+
+  <!-- Contadores -->
+  <div class="overview-cards">
+    @if (loading()) {
+      @for (s of [1, 2, 3, 4]; track s) {
+        <div class="overview-card overview-card--skeleton" aria-hidden="true">
+          <div class="overview-card__skeleton-icon"></div>
+          <div class="overview-card__skeleton-info">
+            <div class="overview-card__line-skeleton overview-card__line-skeleton--count"></div>
+            <div class="overview-card__line-skeleton overview-card__line-skeleton--label"></div>
+            <div class="overview-card__line-skeleton overview-card__line-skeleton--hint"></div>
+          </div>
+        </div>
+      }
+    } @else {
+      @for (card of cards(); track card.labelKey) {
+        @if (card.route) {
+          <a
+            class="overview-card"
+            [class.overview-card--alert]="card.alert()"
+            [routerLink]="card.route"
+            [attr.aria-label]="card.ariaKey | translate"
+          >
+            <div class="overview-card__icon">
+              <app-icon [name]="card.icon" size="1.25rem" />
+            </div>
+            <div class="overview-card__info">
+              <span class="overview-card__count">{{ card.count() }}</span>
+              <span class="overview-card__label">{{ card.labelKey | translate }}</span>
+              <span class="overview-card__hint">{{ card.hintKey | translate }}</span>
+            </div>
+          </a>
+        } @else {
+          <div
+            class="overview-card overview-card--static"
+            [attr.aria-label]="card.ariaKey | translate"
+          >
+            <div class="overview-card__icon">
+              <app-icon [name]="card.icon" size="1.25rem" />
+            </div>
+            <div class="overview-card__info">
+              <span class="overview-card__count">{{ card.count() }}</span>
+              <span class="overview-card__label">{{ card.labelKey | translate }}</span>
+              <span class="overview-card__hint">{{ card.hintKey | translate }}</span>
+            </div>
+          </div>
+        }
+      }
+    }
+  </div>
+
+  <!-- Recentes -->
+  <div class="overview-grid">
+    <!-- Solicitações pendentes -->
+    <section class="overview-panel">
+      <div class="overview-panel__head">
+        <h3 class="overview-panel__title">{{ 'workspace.overview.recent.pendingRequests' | translate }}</h3>
+        <a class="overview-panel__link" routerLink="/workspace/requests">
+          {{ 'workspace.overview.recent.viewAll' | translate }}
+        </a>
+      </div>
+      <div class="overview-panel__body">
+        @if (loading()) {
+          @for (s of [1, 2, 3]; track s) {
+            <div class="overview-row overview-row--skeleton" aria-hidden="true">
+              <div class="overview-row__avatar-skeleton"></div>
+              <div class="overview-row__info-skeleton">
+                <div class="overview-row__line-skeleton overview-row__line-skeleton--name"></div>
+                <div class="overview-row__line-skeleton overview-row__line-skeleton--meta"></div>
+              </div>
+            </div>
+          }
+        } @else if (!overview()?.pendingRequests?.length) {
+          <p class="overview-panel__empty">{{ 'workspace.overview.recent.empty' | translate }}</p>
+        } @else {
+          @for (member of overview()?.pendingRequests; track member.membershipId) {
+            <a class="overview-row" routerLink="/workspace/requests">
+              <span class="overview-row__avatar" aria-hidden="true">
+                {{ member.name.charAt(0).toUpperCase() }}
+              </span>
+              <span class="overview-row__info">
+                <span class="overview-row__name">{{ member.name }}</span>
+                <span class="overview-row__meta">
+                  {{ 'workspace.requests.since' | translate }} {{ member.createdAt | date:'dd/MM/yyyy' }}
+                </span>
+              </span>
+              <app-icon name="arrows/chevron-right" size="0.875rem" class="overview-row__chevron" />
+            </a>
+          }
+        }
+      </div>
+    </section>
+
+    <!-- Membros recentes -->
+    <section class="overview-panel">
+      <div class="overview-panel__head">
+        <h3 class="overview-panel__title">{{ 'workspace.overview.recent.members' | translate }}</h3>
+        @if (canSeeMembers) {
+          <a class="overview-panel__link" routerLink="/workspace/members">
+            {{ 'workspace.overview.recent.viewAll' | translate }}
+          </a>
+        }
+      </div>
+      <div class="overview-panel__body">
+        @if (loading()) {
+          @for (s of [1, 2, 3]; track s) {
+            <div class="overview-row overview-row--skeleton" aria-hidden="true">
+              <div class="overview-row__avatar-skeleton"></div>
+              <div class="overview-row__info-skeleton">
+                <div class="overview-row__line-skeleton overview-row__line-skeleton--name"></div>
+                <div class="overview-row__line-skeleton overview-row__line-skeleton--meta"></div>
+              </div>
+            </div>
+          }
+        } @else if (!overview()?.recentMembers?.length) {
+          <p class="overview-panel__empty">{{ 'workspace.overview.recent.empty' | translate }}</p>
+        } @else {
+          @for (member of overview()?.recentMembers; track member.membershipId) {
+            <div class="overview-row overview-row--static">
+              <span class="overview-row__avatar" aria-hidden="true">
+                {{ member.name.charAt(0).toUpperCase() }}
+              </span>
+              <span class="overview-row__info">
+                <span class="overview-row__name">{{ member.name }}</span>
+                <span class="overview-row__meta">{{ roleLabel(member.role) | translate }}</span>
+              </span>
+            </div>
+          }
+        }
+      </div>
+    </section>
+
+    <!-- Projetos recentes -->
+    <section class="overview-panel">
+      <div class="overview-panel__head">
+        <h3 class="overview-panel__title">{{ 'workspace.overview.recent.projects' | translate }}</h3>
+        <a class="overview-panel__link" routerLink="/workspace/projects">
+          {{ 'workspace.overview.recent.viewAll' | translate }}
+        </a>
+      </div>
+      <div class="overview-panel__body">
+        @if (loading()) {
+          @for (s of [1, 2, 3]; track s) {
+            <div class="overview-row overview-row--skeleton" aria-hidden="true">
+              <div class="overview-row__avatar-skeleton"></div>
+              <div class="overview-row__info-skeleton">
+                <div class="overview-row__line-skeleton overview-row__line-skeleton--name"></div>
+                <div class="overview-row__line-skeleton overview-row__line-skeleton--meta"></div>
+              </div>
+            </div>
+          }
+        } @else if (!overview()?.recentProjects?.length) {
+          <p class="overview-panel__empty">{{ 'workspace.overview.recent.empty' | translate }}</p>
+        } @else {
+          @for (project of overview()?.recentProjects; track project.id) {
+            <a class="overview-row" routerLink="/workspace/projects">
+              <span class="overview-row__avatar overview-row__avatar--project" aria-hidden="true">
+                <app-icon name="objects/folder" size="0.875rem" />
+              </span>
+              <span class="overview-row__info">
+                <span class="overview-row__name">{{ project.name }}</span>
+                <span class="overview-row__meta">
+                  {{ project.clientName || '—' }} ·
+                  {{ 'workspace.overview.recent.projectMeta' | translate:{ teams: project.teamCount, members: project.memberCount } }}
+                </span>
+              </span>
+              <app-icon name="arrows/chevron-right" size="0.875rem" class="overview-row__chevron" />
+            </a>
+          }
+        }
+      </div>
+    </section>
+  </div>
+</div>

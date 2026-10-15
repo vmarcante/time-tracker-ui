@@ -1,7 +1,16 @@
 {
   "workspace": {
     "overview": {
+      "title": "Overview",
       "company": "Company",
+      "recent": {
+        "pendingRequests": "Pending requests",
+        "members": "Recent members",
+        "projects": "Recent projects",
+        "viewAll": "View all",
+        "empty": "No recent items",
+        "projectMeta": "{{teams}} teams · {{members}} members"
+      },
       "requests": {
         "label": "Requests",
         "pendingBadge": "Pending: {{count}}",

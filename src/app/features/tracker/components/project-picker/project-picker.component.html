@@ -1,0 +1,77 @@
+<div class="project-picker">
+  @if (loading()) {
+    @for (s of [1, 2, 3]; track s) {
+      <div class="project-picker__skeleton" aria-hidden="true"></div>
+    }
+  } @else {
+    @if (groups().length === 0 && !showCreate()) {
+      <p class="project-picker__empty">{{ 'tracker.projectPicker.empty' | translate }}</p>
+    }
+
+    @for (group of groups(); track group.labelKey) {
+      <div class="project-picker__group">
+        <span class="project-picker__group-label">{{ group.labelKey | translate }}</span>
+        @for (project of group.projects; track project.id) {
+          <button
+            type="button"
+            class="project-picker__item"
+            (click)="onSelect(project)"
+          >
+            <app-icon name="objects/folder" size="0.875rem" class="project-picker__item-icon" />
+            <span class="project-picker__item-name">{{ project.name }}</span>
+            @if (project.clientName) {
+              <span class="project-picker__item-client">{{ project.clientName }}</span>
+            }
+          </button>
+        }
+      </div>
+    }
+
+    <div class="project-picker__create">
+      @if (!showCreate()) {
+        <button
+          type="button"
+          class="project-picker__item project-picker__item--create"
+          (click)="toggleCreate()"
+        >
+          <app-icon name="actions/add" size="0.875rem" class="project-picker__item-icon" />
+          <span class="project-picker__item-name">{{ 'tracker.projectPicker.newProject' | translate }}</span>
+        </button>
+      } @else {
+        <div class="project-picker__form">
+          <span class="project-picker__group-label">{{ 'tracker.projectPicker.newProject' | translate }}</span>
+          <app-text-input
+            [control]="newProjectName"
+            [showLabel]="false"
+            [placeholder]="'tracker.projectPicker.projectName' | translate"
+            [maxLength]="200"
+          />
+          <app-text-input
+            [control]="newClientName"
+            [showLabel]="false"
+            [placeholder]="'tracker.projectPicker.clientName' | translate"
+            [maxLength]="200"
+          />
+          <div class="project-picker__form-actions">
+            <app-button
+              [text]="'common.cancel' | translate"
+              [color]="'secondary'"
+              [rounded]="true"
+              [size]="{ small: true }"
+              (buttonClick)="toggleCreate()"
+            />
+            <app-button
+              [text]="'common.save' | translate"
+              [color]="'primary'"
+              [rounded]="true"
+              [size]="{ small: true }"
+              [disabled]="!canCreate()"
+              [loading]="creating()"
+              (buttonClick)="createPersonalProject()"
+            />
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

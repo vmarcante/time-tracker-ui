@@ -42,6 +42,11 @@
     }
   }
 
+  &__timer {
+    margin-left: auto;
+    margin-right: var(--spacing-md);
+  }
+
   &--mobile-menu-open {
     backdrop-filter: none !important;
 

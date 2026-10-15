@@ -1,11 +1,17 @@
 <div class="recent-entries">
-  @for (group of groupedEntries(); track group.date) {
+  @for (group of groupedEntries(); track group.date || 'no-date') {
     <div
       class="recent-entries__group"
       [class.recent-entries__group--single]="group.entries.length === 1"
     >
       @if (group.entries.length > 1) {
-        <h3 class="recent-entries__date">{{ group.date | date: 'mediumDate' }}</h3>
+        <h3 class="recent-entries__date">
+          @if (group.date) {
+            {{ group.date | date: 'mediumDate' }}
+          } @else {
+            {{ 'tracker.entries.noSessions' | translate }}
+          }
+        </h3>
       }
       <ul class="recent-entries__list">
         @for (entry of group.entries; track entry.id) {
@@ -14,6 +20,7 @@
               [entry]="entry"
               [compact]="true"
               [showDate]="group.entries.length === 1"
+              (entryChanged)="entryChanged.emit($event)"
             />
           </li>
         }

@@ -12,6 +12,27 @@
     },
     "myEntries": {
       "title": "My time entries"
+    },
+    "entries": {
+      "allProjects": "All projects",
+      "filterProject": "Filter by project",
+      "clearFilter": "Clear filter",
+      "empty": "No time entries found",
+      "noSessions": "No sessions",
+      "details": "View details"
+    },
+    "timer": {
+      "start": "Start timer",
+      "stop": "Stop timer",
+      "openEntry": "Open running entry"
+    },
+    "projectPicker": {
+      "personal": "Personal projects",
+      "company": "Company projects",
+      "empty": "No projects available",
+      "newProject": "New personal project",
+      "projectName": "Project name",
+      "clientName": "Client name"
     }
   }
 }

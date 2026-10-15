@@ -1,4 +1,68 @@
-<div class="tracker-entries">
-  <h2 class="tracker-entries__title">{{ 'tracker.myEntries.title' | translate }}</h2>
-  <app-recent-time-entries />
+<div class="section">
+  <div class="section__header">
+    <div class="section__heading">
+      <h2 class="section__title">{{ 'tracker.myEntries.title' | translate }}</h2>
+      <div class="section__actions">
+        <app-select-input
+          class="tracker-entries__filter"
+          [control]="projectFilterControl"
+          [options]="projectOptions()"
+          [showLabel]="false"
+          [placeholder]="'tracker.entries.filterProject' | translate"
+          (onValueChange)="onFilterChange($event)"
+        />
+        <app-popover
+          #startPicker
+          [options]="{
+            position: 'bottom',
+            width: '280px',
+            closeOnClickOutside: true,
+            closeOnEscape: true,
+            showArrow: true,
+          }"
+          [triggerTemplate]="startTrigger"
+          [contentTemplate]="pickerContentStart"
+        />
+        <ng-template #startTrigger>
+          <app-button
+            [text]="'tracker.quickActions.newTimeEntry' | translate"
+            [icon]="{ iconName: 'actions/add', position: 'left', color: '#FFF' }"
+            [color]="'primary'"
+            [rounded]="true"
+            [loading]="timer.busy()"
+            (buttonClick)="startPicker.toggle()"
+          />
+        </ng-template>
+        <ng-template #pickerContentStart>
+          <app-project-picker (select)="onProjectStart($event)" />
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="tracker-entries__loading">
+      @for (s of [1, 2, 3]; track s) {
+        <div class="tracker-entries__skeleton-card" aria-hidden="true"></div>
+      }
+    </div>
+  } @else if (empty()) {
+    <div class="section__empty">
+      <app-icon name="objects/clock" size="2rem" />
+      <p>{{ 'tracker.entries.empty' | translate }}</p>
+    </div>
+  } @else {
+    <app-recent-time-entries
+      [entries]="entries()"
+      (entryChanged)="onEntryChanged($event)"
+    />
+
+    <app-pagination
+      [page]="currentPage()"
+      [totalPages]="page()?.totalPages ?? 0"
+      [totalElements]="page()?.totalElements ?? null"
+      [loading]="loading()"
+      (pageChange)="loadPage($event)"
+    />
+  }
 </div>

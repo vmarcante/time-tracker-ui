@@ -1,6 +1,12 @@
 <div class="workspace-nav">
   <!-- Cabeçalho da empresa -->
-  <div class="workspace-nav__header">
+  <a
+    class="workspace-nav__header"
+    routerLink="/workspace"
+    routerLinkActive="workspace-nav__header--active"
+    [routerLinkActiveOptions]="{ exact: true }"
+    [attr.aria-label]="'workspace.overview.title' | translate"
+  >
     <div class="workspace-nav__company-icon">
       <app-icon name="objects/building" size="1.25rem" />
     </div>
@@ -8,7 +14,7 @@
       <span class="workspace-nav__company-label">{{ 'workspace.overview.company' | translate }}</span>
       <span class="workspace-nav__company-name">{{ companyName() }}</span>
     </div>
-  </div>
+  </a>
 
   <!-- Lista de navegação -->
   <nav class="workspace-nav__list" [attr.aria-label]="'workspace.overview.company' | translate">
