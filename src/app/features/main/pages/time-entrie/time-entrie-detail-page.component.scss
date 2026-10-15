@@ -358,6 +358,13 @@
         color: var(--color-primary-700);
       }
     }
+
+    &--icon-only {
+      justify-content: center;
+      padding: var(--spacing-xs);
+      width: 1.75rem;
+      height: 1.75rem;
+    }
   }
 
   &__loading {

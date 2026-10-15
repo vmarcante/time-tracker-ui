@@ -1,5 +1,5 @@
 import { Injectable, inject, DestroyRef, DOCUMENT } from '@angular/core';
-import { Observable, Subject, of, tap } from 'rxjs';
+import { Observable, Subject, finalize, map, of, shareReplay, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { AuthTokenService } from './auth-token.service';
@@ -20,6 +20,7 @@ export class AuthService {
   private destroyRef = inject(DestroyRef);
   private document = inject(DOCUMENT);
   private refreshTimeoutId: number | null = null;
+  private refreshInFlight$: Observable<AuthenticationOutput> | null = null;
 
   private readonly _sessionEnded$ = new Subject<void>();
 
@@ -61,10 +62,28 @@ export class AuthService {
     }, delay);
   }
 
+  /**
+   * Refresh em voo único, compartilhado entre o timer, o visibilitychange e o
+   * interceptor. Serializar os refreshes é obrigatório: o backend rotaciona o
+   * refresh token, então duas chamadas concorrentes corrompem a sessão.
+   */
+  refreshTokens(): Observable<AuthenticationOutput> {
+    if (!this.refreshInFlight$) {
+      this.refreshInFlight$ = this.authApiService.refreshToken().pipe(
+        map((response) => response.data),
+        finalize(() => {
+          this.refreshInFlight$ = null;
+        }),
+        shareReplay(1),
+      );
+    }
+    return this.refreshInFlight$;
+  }
+
   private refreshAccessToken(): void {
-    this.authApiService.refreshToken().subscribe({
-      next: (response) => {
-        this.tokenService.updateAccessToken(response.data.accessToken, response.data.accessTokenExpiresIn);
+    this.refreshTokens().subscribe({
+      next: (tokens) => {
+        this.tokenService.updateAccessToken(tokens.accessToken, tokens.accessTokenExpiresIn);
         this.scheduleAccessTokenRefresh();
       },
       error: () => {

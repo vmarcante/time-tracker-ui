@@ -100,11 +100,15 @@
                   <button
                     type="button"
                     class="time-entrie-detail__tag time-entrie-detail__tag--edit"
+                    [class.time-entrie-detail__tag--icon-only]="item.tags.length > 0"
                     (click)="openTagsPopover()"
                     [attr.aria-label]="'timeEntry.editTags' | translate"
+                    [attr.title]="'timeEntry.editTags' | translate"
                   >
                     <app-icon name="actions/edit" size="0.75rem" />
-                    <span>{{ 'timeEntry.editTags' | translate }}</span>
+                    @if (item.tags.length === 0) {
+                      <span>{{ 'timeEntry.editTags' | translate }}</span>
+                    }
                   </button>
                 </ng-template>
                 <ng-template #tagsContent>

@@ -5,7 +5,6 @@ export interface LoginInput {
 
 export interface AuthenticationOutput {
   accessToken: string;
-  refreshToken?: string; // entregue via HttpOnly cookie — não armazenado pelo frontend
   accessTokenExpiresIn: number;
   refreshTokenExpiresIn: number;
   tokenType: string;
