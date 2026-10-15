@@ -59,6 +59,11 @@
           "details": "Details",
           "detailsDescription": "Confirm the person's details or fill in the information for pre-registration. Then, select the role they will have in the company."
         },
+        "info": {
+          "label": "Information",
+          "expand": "Show additional information",
+          "collapse": "Hide information"
+        },
         "email": {
           "label": "E-mail",
           "placeholder": "name@example.com"
@@ -231,7 +236,19 @@
         },
         "subtitle": {
           "create": "Create a project to organize company time entries and teams.",
-          "edit": "Update the project details."
+          "edit": "Update the project details.",
+          "teams": "Optional. Link the project to teams and pick the members of each team."
+        },
+        "steps": {
+          "details": "Project details",
+          "teams": "Teams and members",
+          "detailsDescription": "Provide the name, client and, optionally, the description and period of the project.",
+          "teamsDescription": "Optional. Select the teams linked to the project and, within each team, the members allowed to log time on it. Removing a team unassigns its members."
+        },
+        "info": {
+          "label": "Info",
+          "expand": "Show additional info",
+          "collapse": "Hide info"
         },
         "name": {
           "label": "Project name",
@@ -253,6 +270,16 @@
           "separator": "to",
           "hint": "Optional. Provide the project's expected period.",
           "invalidRange": "End date cannot be earlier than start date."
+        },
+        "teams": {
+          "members": "members",
+          "lead": "Lead",
+          "noMembers": "No approved members in this team.",
+          "empty": "No teams registered in the company."
+        },
+        "actions": {
+          "next": "Next",
+          "previous": "Back"
         },
         "submit": {
           "create": "Create project",

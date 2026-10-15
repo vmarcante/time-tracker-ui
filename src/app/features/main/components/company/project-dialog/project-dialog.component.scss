@@ -1,25 +1,18 @@
-.project-dialog {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-  padding: var(--spacing-xl);
-  min-width: 460px;
-
+// ── Content ───────────────────────────────────────────────────────────────────
+.project-content {
   &__header {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-md);
   }
 
   &__title {
     font-size: 1.125rem;
     font-weight: var(--font-weight-bold);
     color: var(--color-text-primary);
-    margin: 0;
+    margin: 0 0 var(--spacing-xs) 0;
   }
 
   &__subtitle {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     color: var(--color-text-secondary);
     margin: 0;
     line-height: 1.5;
@@ -28,27 +21,108 @@
   &__fields {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-md);
+    flex: 1;
+    overflow-y: auto;
+  }
+}
+
+// ── Left panel ────────────────────────────────────────────────────────────────
+.project-dialog__panel-description {
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  color: var(--color-primary-900);
+  text-align: left;
+  margin: 0;
+}
+
+// ── Fields ────────────────────────────────────────────────────────────────────
+.project-dialog {
+  &__teams {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  &__team {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background-color: var(--color-background-card, #fff);
+    padding: var(--spacing-sm) var(--spacing-md);
+    transition: border-color 0.2s ease;
+
+    &--selected {
+      border-color: var(--color-primary);
+    }
+  }
+
+  &__team-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+  }
+
+  &__team-count {
+    font-size: 0.75rem;
+    color: var(--color-text-tertiary);
+    white-space: nowrap;
+  }
+
+  &__team-members {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    padding-left: var(--spacing-md);
+    border-top: 1px solid var(--color-border);
+  }
+
+  &__member {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+  }
+
+  &__member-badge {
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    color: var(--color-primary);
+    background-color: var(--color-primary-50);
+    border: 1px solid var(--color-primary-300);
+    border-radius: var(--radius-full);
+    padding: 1px 8px;
+    line-height: 1.6;
+  }
+
+  &__team-empty,
+  &__teams-empty {
+    font-size: 0.8125rem;
+    color: var(--color-text-tertiary);
+    margin: 0;
+    font-style: italic;
   }
 
   &__actions {
     display: flex;
     justify-content: flex-end;
     gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+    position: sticky;
+    bottom: 0;
+    background-color: var(--color-background);
+    padding: var(--spacing-xs) 0;
   }
 }
 
-@media (max-width: 560px) {
-  .project-dialog {
-    min-width: unset;
-    padding: var(--spacing-md);
+// ── Mobile ────────────────────────────────────────────────────────────────────
+@media (max-width: 720px) {
+  .project-dialog__actions {
+    flex-direction: column-reverse;
 
-    &__actions {
-      flex-direction: column-reverse;
-
-      app-button {
-        width: 100%;
-      }
+    app-button {
+      width: 100%;
     }
   }
 }

@@ -11,6 +11,7 @@ import { CompanyManagementApiService } from '../../../../services/company-manage
 import {
   ProjectDetailOutput,
   ProjectSummaryOutput,
+  ProjectTeamMembersInput,
 } from '../../../../models/company-management.model';
 import { CompanyRole } from '../../../../../auth/models';
 import { PageWrapper } from '../../../../../../shared/types';
@@ -64,19 +65,16 @@ export class ProjectsSectionComponent implements OnInit {
   loadPage(pageNumber: number): void {
     if (!this.companyId) return;
     this.loading.set(true);
-    this.apiAdapter.executeRequest(
-      this.companyApi.listProjects(this.companyId, pageNumber, 10),
-      {
-        ignoreLoading: true,
-        onSuccess: (response) => {
-          this.page.set(response.data);
-          this.projects.set(response.data.content);
-          this.currentPage.set(pageNumber);
-          this.loading.set(false);
-        },
-        onError: () => this.loading.set(false),
+    this.apiAdapter.executeRequest(this.companyApi.listProjects(this.companyId, pageNumber, 10), {
+      ignoreLoading: true,
+      onSuccess: (response) => {
+        this.page.set(response.data);
+        this.projects.set(response.data.content);
+        this.currentPage.set(pageNumber);
+        this.loading.set(false);
       },
-    );
+      onError: () => this.loading.set(false),
+    });
   }
 
   openCreateDialog(): void {
@@ -100,40 +98,91 @@ export class ProjectsSectionComponent implements OnInit {
     });
   }
 
-  private openProjectDialog(project: ProjectDetailOutput | null): void {
-    if (!this.companyId) return;
+  private async openProjectDialog(project: ProjectDetailOutput | null): Promise<void> {
     const companyId = this.companyId;
+    if (!companyId) return;
 
-    this.dialogService.openDialog<ProjectDialogComponent, ProjectDialogResult>(
-      ProjectDialogComponent,
-      {
-        autoAdjustSize: true,
-        data: { project },
-        closeCallback: (result) => {
-          if (!result?.confirmed) return;
-          this.saving.set(true);
+    try {
+      const teamsResponse = await this.apiAdapter.executeRequestWithPromise(
+        this.companyApi.listTeamsWithMembers(companyId),
+        { ignoreLoading: true },
+      );
 
-          const input = {
-            name: result.name,
-            clientName: result.clientName,
-            description: result.description,
-            startDate: result.startDate,
-            endDate: result.endDate,
-          };
-          const request = project
-            ? this.companyApi.updateProject(companyId, project.id, input)
-            : this.companyApi.createProject(companyId, input);
+      let linkedTeams: ProjectTeamMembersInput[] = [];
+      if (project) {
+        const [linkedResponse, membersResponse] = await this.apiAdapter.executeForkJoinWithPromise(
+          [
+            this.companyApi.listProjectTeams(companyId, project.id, 1, 100),
+            this.companyApi.listProjectMembers(companyId, project.id, 1, 100),
+          ],
+          { ignoreLoading: true },
+        );
 
-          this.apiAdapter.executeRequest(request, {
-            ignoreLoading: true,
-            onSuccess: () => {
-              this.saving.set(false);
-              this.loadPage(this.currentPage());
-            },
-            onError: () => this.saving.set(false),
-          });
+        const memberIdsByTeam = new Map<string, string[]>();
+        for (const assignment of membersResponse.content) {
+          const list = memberIdsByTeam.get(assignment.teamId) ?? [];
+          list.push(assignment.userId);
+          memberIdsByTeam.set(assignment.teamId, list);
+        }
+
+        linkedTeams = linkedResponse.content.map((team) => ({
+          teamId: team.id,
+          memberIds: memberIdsByTeam.get(team.id) ?? [],
+        }));
+      }
+
+      this.dialogService.openDialog<ProjectDialogComponent, ProjectDialogResult>(
+        ProjectDialogComponent,
+        {
+          width: 'min(680px, 95vw)',
+          panelClass: ['stepped-dialog-panel'],
+          data: { project, teams: teamsResponse.data, linkedTeams },
+          closeCallback: (result) => {
+            if (result?.confirmed) {
+              void this.saveProject(companyId, project, result);
+            }
+          },
         },
-      },
-    );
+      );
+    } catch {
+      this.editingProjectId.set(null);
+    }
+  }
+
+  private async saveProject(
+    companyId: string,
+    project: ProjectDetailOutput | null,
+    result: ProjectDialogResult,
+  ): Promise<void> {
+    this.saving.set(true);
+
+    const input = {
+      name: result.name,
+      clientName: result.clientName,
+      description: result.description,
+      startDate: result.startDate,
+      endDate: result.endDate,
+      teams: result.teams,
+    };
+
+    try {
+      if (project) {
+        await this.apiAdapter.executeRequestWithPromise(
+          this.companyApi.updateProject(companyId, project.id, input),
+          { ignoreLoading: true },
+        );
+      } else {
+        await this.apiAdapter.executeRequestWithPromise(
+          this.companyApi.createProject(companyId, input),
+          { ignoreLoading: true },
+        );
+      }
+
+      this.loadPage(this.currentPage());
+    } catch {
+      // error already surfaced by the request layer
+    } finally {
+      this.saving.set(false);
+    }
   }
 }

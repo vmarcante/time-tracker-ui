@@ -59,6 +59,11 @@
           "details": "Detalhes",
           "detailsDescription": "Confirme os dados da pessoa encontrada ou preencha as informações para o pré-cadastro. Depois, selecione o papel que ela terá na empresa."
         },
+        "info": {
+          "label": "Informações",
+          "expand": "Ver informações adicionais",
+          "collapse": "Ocultar informações"
+        },
         "email": {
           "label": "E-mail",
           "placeholder": "nome@exemplo.com"
@@ -231,7 +236,19 @@
         },
         "subtitle": {
           "create": "Crie um projeto para organizar os lançamentos e times da empresa.",
-          "edit": "Atualize os dados do projeto."
+          "edit": "Atualize os dados do projeto.",
+          "teams": "Opcional. Vincule o projeto a times e escolha os membros de cada time."
+        },
+        "steps": {
+          "details": "Dados do projeto",
+          "teams": "Times e membros",
+          "detailsDescription": "Informe o nome, o cliente e, opcionalmente, a descrição e o período do projeto.",
+          "teamsDescription": "Opcional. Selecione os times vinculados ao projeto e, dentro de cada time, os membros que poderão lançar horas nele. Remover um time desvincula os membros designados."
+        },
+        "info": {
+          "label": "Informações",
+          "expand": "Ver informações adicionais",
+          "collapse": "Ocultar informações"
         },
         "name": {
           "label": "Nome do projeto",
@@ -253,6 +270,16 @@
           "separator": "até",
           "hint": "Opcional. Informe o período previsto do projeto.",
           "invalidRange": "A data de fim não pode ser anterior à data de início."
+        },
+        "teams": {
+          "members": "membros",
+          "lead": "Líder",
+          "noMembers": "Nenhum membro aprovado neste time.",
+          "empty": "Nenhum time cadastrado na empresa."
+        },
+        "actions": {
+          "next": "Avançar",
+          "previous": "Voltar"
         },
         "submit": {
           "create": "Criar projeto",

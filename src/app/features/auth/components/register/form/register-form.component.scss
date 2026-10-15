@@ -4,92 +4,28 @@
   max-width: 100%;
 }
 
-.register-layout {
-  display: flex;
-  position: relative;
+// Layout customization — the stepped-panel-layout exposes CSS vars on its host
+app-stepped-panel-layout {
+  --spl-min-height: 100%;
+  --spl-panel-padding: var(--spacing-xl);
+  --spl-panel-box-min-height: 400px;
+  --spl-progress-min-height: 200px;
+  --spl-content-padding: var(--spacing-lg);
+}
+
+// ── Left panel ────────────────────────────────────────────────────────────────
+.register-panel__description {
   width: 100%;
-  min-height: 100%;
-  background-color: var(--color-background);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl);
-  overflow: hidden;
-  max-width: 100%;
+  max-width: 340px;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--color-primary-900);
+  text-align: left;
+  margin: 0;
+  hyphens: none;
 }
 
-.register-progress {
-  position: absolute;
-  left: 45%;
-  top: 0;
-  bottom: 0;
-  transform: translateX(-50%);
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.register-step-progress {
-  position: relative;
-  min-height: 200px;
-  max-height: 80%;
-  pointer-events: auto;
-}
-
-.register-image {
-  flex: 0 0 45%;
-  min-width: 0;
-  max-width: 45%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--color-primary-100);
-  padding: var(--spacing-xl);
-
-  &__steps {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    min-height: 400px;
-    max-width: 340px;
-    padding: var(--spacing-xl);
-    border: 2px dashed var(--color-primary-300);
-    border-radius: var(--radius-lg);
-    background-color: var(--color-primary-50);
-  }
-
-  &__steps-text {
-    width: 100%;
-    font-size: 1rem;
-    line-height: 1.7;
-    color: var(--color-primary-900);
-    text-align: left;
-    margin: 0;
-    hyphens: none;
-  }
-}
-
-.register-card {
-  flex: 0 0 55%;
-  min-width: 0;
-  max-width: 55%;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--color-background);
-  padding: var(--spacing-lg);
-  overflow-x: hidden;
-  overflow-y: auto;
-  box-sizing: border-box;
-}
-
-.register-card * {
-  box-sizing: border-box;
-  max-width: 100%;
-}
-
+// ── Content ───────────────────────────────────────────────────────────────────
 .register-conclusion {
   display: flex;
   flex-direction: column;
@@ -177,7 +113,6 @@
 .form-step {
   display: flex;
   flex-direction: column;
-  // gap: var(--spacing-md);
   animation: fadeIn 0.3s ease-in-out;
 
   &--password {
@@ -316,53 +251,10 @@
   margin-top: var(--spacing-sm);
 }
 
-@media (max-width: 720px) {
-  .register-image {
-    flex: 0 0 35%;
-    min-width: 200px;
-  }
-
-  .register-card {
-    flex: 0 0 65%;
-  }
-}
-
 @media (max-width: 768px) {
-  .register-layout {
-    flex-direction: column;
-    flex: 1;
-    min-height: auto;
-  }
-
-  .register-image {
-    display: none;
-  }
-
-  .register-progress {
-    position: static;
-    left: auto;
-    top: auto;
-    bottom: auto;
-    transform: none;
-    width: 100%;
-    padding: var(--spacing-md) var(--spacing-lg) 0;
-    pointer-events: auto;
-    flex-shrink: 0;
-  }
-
-  .register-step-progress {
-    min-height: auto;
-    max-height: none;
-  }
-
-  .register-card {
-    max-width: 100%;
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    padding-bottom: 140px;
-    padding-left: var(--spacing-lg);
-    padding-right: var(--spacing-lg);
+  app-stepped-panel-layout {
+    --spl-content-padding: var(--spacing-lg);
+    --spl-content-padding-mobile: var(--spacing-md) var(--spacing-lg) 140px;
   }
 
   .register-header {
@@ -453,15 +345,5 @@
         flex: 1 1 70%;
       }
     }
-  }
-}
-
-@media (max-width: 640px) {
-  .register-card {
-    padding: var(--spacing-lg);
-  }
-
-  .register-header__title {
-    font-size: 1.5rem;
   }
 }

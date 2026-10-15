@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -12,7 +12,7 @@ import { TextInputComponent } from '../../../../../shared/components/inputs/text
 import { IntegerInputComponent } from '../../../../../shared/components/inputs/integer/integer-input.component';
 import { SelectInputComponent } from '../../../../../shared/components/inputs/select/select-input.component';
 import { DialogShellComponent } from '../../../../../shared/components/dialogs/dialog-shell/dialog-shell.component';
-import { StepProgressComponent } from '../../../../../shared/components/step-progress/step-progress.component';
+import { SteppedPanelLayoutComponent } from '../../../../../shared/components/stepped-panel-layout/stepped-panel-layout.component';
 import { SelectOption } from '../../../../../shared/types/input.types';
 import { ButtonColorType } from '../../../../../shared/types/button.types';
 import { StepProgressConfig } from '../../../../../shared/types/step-progress.types';
@@ -52,7 +52,7 @@ export interface InviteMemberDialogResult {
     IntegerInputComponent,
     SelectInputComponent,
     DialogShellComponent,
-    StepProgressComponent,
+    SteppedPanelLayoutComponent,
     MatProgressSpinner,
   ],
   templateUrl: './invite-member-dialog.component.html',
@@ -66,7 +66,11 @@ export class InviteMemberDialogComponent {
   private companyApi = inject(CompanyManagementApiService);
   private destroyRef = inject(DestroyRef);
 
+  private static readonly DIALOG_WIDTH = 'min(560px, 95vw)';
+  private static readonly DIALOG_WIDTH_INFO = 'min(820px, 95vw)';
+
   readonly currentStep = signal(1);
+  readonly infoOpen = signal(false);
   readonly lookupLoading = signal(false);
   readonly lookupResult = signal<PersonInviteLookupOutput | null>(null);
   readonly inviteError = signal<string>('');
@@ -131,13 +135,17 @@ export class InviteMemberDialogComponent {
       steps: [
         {
           label: this.translationService.translate('workspace.members.inviteDialog.steps.email'),
-          ariaLabel: this.translationService.translate('workspace.members.inviteDialog.steps.email'),
+          ariaLabel: this.translationService.translate(
+            'workspace.members.inviteDialog.steps.email',
+          ),
           disabled: this.isStepDisabled(1),
           buttonColor: this.getStepButtonColor(1, step1Valid),
         },
         {
           label: this.translationService.translate('workspace.members.inviteDialog.steps.details'),
-          ariaLabel: this.translationService.translate('workspace.members.inviteDialog.steps.details'),
+          ariaLabel: this.translationService.translate(
+            'workspace.members.inviteDialog.steps.details',
+          ),
           disabled: this.isStepDisabled(2),
           buttonColor: this.getStepButtonColor(2, this.currentStep() === 2),
         },
@@ -146,6 +154,14 @@ export class InviteMemberDialogComponent {
   });
 
   constructor() {
+    effect(() => {
+      this.dialogRef.updateSize(
+        this.infoOpen()
+          ? InviteMemberDialogComponent.DIALOG_WIDTH_INFO
+          : InviteMemberDialogComponent.DIALOG_WIDTH,
+      );
+    });
+
     this.emailControl.valueChanges
       .pipe(
         distinctUntilChanged(),
@@ -176,9 +192,10 @@ export class InviteMemberDialogComponent {
           this.lookupResult.set(result);
 
           if (result.status === 'IN_THIS_COMPANY' || result.status === 'IN_ANOTHER_COMPANY') {
-            const key = result.status === 'IN_THIS_COMPANY'
-              ? 'workspace.members.inviteDialog.blocked.inThisCompany'
-              : 'workspace.members.inviteDialog.blocked.inAnotherCompany';
+            const key =
+              result.status === 'IN_THIS_COMPANY'
+                ? 'workspace.members.inviteDialog.blocked.inThisCompany'
+                : 'workspace.members.inviteDialog.blocked.inAnotherCompany';
             this.inviteError.set(this.translationService.translate(key));
             InputValidators.insertErrorOnControl(this.emailControl, 'availability', true);
             this.emailControl.markAsTouched();
@@ -190,10 +207,7 @@ export class InviteMemberDialogComponent {
   }
 
   private isStepDisabled(step: number): boolean {
-    return (
-      step > this.currentStep() + 1 ||
-      (step === this.currentStep() + 1 && !this.canProceed())
-    );
+    return step > this.currentStep() + 1 || (step === this.currentStep() + 1 && !this.canProceed());
   }
 
   private getStepButtonColor(step: number, isValid: boolean): ButtonColorType {
@@ -242,7 +256,8 @@ export class InviteMemberDialogComponent {
       this.ageControl.invalid ||
       this.roleControl.invalid ||
       !this.roleControl.value
-    ) return;
+    )
+      return;
 
     const result: InviteMemberDialogResult = {
       confirmed: true,

@@ -11,7 +11,7 @@ import { from, of } from 'rxjs';
 import { TextInputComponent } from '../../../../../shared/components/inputs/text/text-input.component';
 import { IntegerInputComponent } from '../../../../../shared/components/inputs/integer/integer-input.component';
 import { ToggleInputComponent } from '../../../../../shared/components/inputs/toggle/toggle-input.component';
-import { StepProgressComponent } from '../../../../../shared/components/step-progress/step-progress.component';
+import { SteppedPanelLayoutComponent } from '../../../../../shared/components/stepped-panel-layout/stepped-panel-layout.component';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
 import { ProgressBarComponent } from '../../../../../shared/components/progress-bar/progress-bar.component';
 import { StepProgressConfig, ButtonColorType } from '../../../../../shared/types';
@@ -30,7 +30,7 @@ import { ResponsiveService } from '../../../../../shared/services/responsive.ser
     TextInputComponent,
     IntegerInputComponent,
     ToggleInputComponent,
-    StepProgressComponent,
+    SteppedPanelLayoutComponent,
     ButtonComponent,
     ProgressBarComponent,
     DialogShellComponent,
@@ -61,10 +61,6 @@ export class RegisterFormComponent implements OnInit {
   totalSteps = 3;
 
   isRegistering = computed(() => this.apiAdapterService.customLoadings().get('register') ?? false);
-
-  stepProgressOrientation = computed<'horizontal' | 'vertical'>(() =>
-    this.isMobileOrTablet() ? 'horizontal' : 'vertical',
-  );
 
   usernameAvailability = signal<'checking' | 'available' | 'unavailable' | null>(null);
   emailAvailability = signal<'checking' | 'available' | 'unavailable' | null>(null);

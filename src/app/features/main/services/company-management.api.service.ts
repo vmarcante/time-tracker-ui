@@ -18,6 +18,7 @@ import {
   TeamDetailOutput,
   TeamMemberOutput,
   TeamSummaryOutput,
+  TeamWithMembersOutput,
   UpdateProjectInput,
   UpdateTeamInput,
 } from '../models/company-management.model';
@@ -28,7 +29,11 @@ import {
 export class CompanyManagementApiService {
   private httpService = inject(HttpService);
 
-  listMembers(companyId: string, page = 1, size = 10): ApiResponse<PageWrapper<CompanyMemberOutput>> {
+  listMembers(
+    companyId: string,
+    page = 1,
+    size = 10,
+  ): ApiResponse<PageWrapper<CompanyMemberOutput>> {
     return this.httpService.get(`/companies/${companyId}/members`, {
       params: { page, size },
     });
@@ -38,13 +43,21 @@ export class CompanyManagementApiService {
     return this.httpService.get(`/companies/${companyId}/menu-overview`);
   }
 
-  listPending(companyId: string, page = 1, size = 10): ApiResponse<PageWrapper<CompanyMemberOutput>> {
+  listPending(
+    companyId: string,
+    page = 1,
+    size = 10,
+  ): ApiResponse<PageWrapper<CompanyMemberOutput>> {
     return this.httpService.get(`/companies/${companyId}/members/pending`, {
       params: { page, size },
     });
   }
 
-  listResolved(companyId: string, page = 1, size = 10): ApiResponse<PageWrapper<CompanyMemberOutput>> {
+  listResolved(
+    companyId: string,
+    page = 1,
+    size = 10,
+  ): ApiResponse<PageWrapper<CompanyMemberOutput>> {
     return this.httpService.get(`/companies/${companyId}/members/resolved`, {
       params: { page, size },
     });
@@ -100,6 +113,10 @@ export class CompanyManagementApiService {
     return this.httpService.get(`/companies/${companyId}/teams`, { params: { page, size } });
   }
 
+  listTeamsWithMembers(companyId: string): ApiResponse<TeamWithMembersOutput[]> {
+    return this.httpService.get(`/companies/${companyId}/teams/with-members`);
+  }
+
   findTeam(companyId: string, teamId: string): ApiResponse<TeamDetailOutput> {
     return this.httpService.get(`/companies/${companyId}/teams/${teamId}`);
   }
@@ -108,7 +125,11 @@ export class CompanyManagementApiService {
     return this.httpService.post(`/companies/${companyId}/teams`, input);
   }
 
-  updateTeam(companyId: string, teamId: string, input: UpdateTeamInput): ApiResponse<TeamDetailOutput> {
+  updateTeam(
+    companyId: string,
+    teamId: string,
+    input: UpdateTeamInput,
+  ): ApiResponse<TeamDetailOutput> {
     return this.httpService.put(`/companies/${companyId}/teams/${teamId}`, input);
   }
 
@@ -170,9 +191,7 @@ export class CompanyManagementApiService {
   }
 
   unlinkProjectFromTeam(companyId: string, projectId: string, teamId: string): ApiResponse<void> {
-    return this.httpService.delete(
-      `/companies/${companyId}/projects/${projectId}/teams/${teamId}`,
-    );
+    return this.httpService.delete(`/companies/${companyId}/projects/${projectId}/teams/${teamId}`);
   }
 
   projectUnlinkImpact(
@@ -185,12 +204,38 @@ export class CompanyManagementApiService {
     );
   }
 
-  listProjects(companyId: string, page = 1, size = 10): ApiResponse<PageWrapper<ProjectSummaryOutput>> {
+  listProjectTeams(
+    companyId: string,
+    projectId: string,
+    page = 1,
+    size = 100,
+  ): ApiResponse<PageWrapper<TeamSummaryOutput>> {
+    return this.httpService.get(`/companies/${companyId}/projects/${projectId}/teams`, {
+      params: { page, size },
+    });
+  }
+
+  listProjects(
+    companyId: string,
+    page = 1,
+    size = 10,
+  ): ApiResponse<PageWrapper<ProjectSummaryOutput>> {
     return this.httpService.get(`/companies/${companyId}/projects`, { params: { page, size } });
   }
 
   findProject(companyId: string, projectId: string): ApiResponse<ProjectDetailOutput> {
     return this.httpService.get(`/companies/${companyId}/projects/${projectId}`);
+  }
+
+  listProjectMembers(
+    companyId: string,
+    projectId: string,
+    page = 1,
+    size = 100,
+  ): ApiResponse<PageWrapper<ProjectAssignmentOutput>> {
+    return this.httpService.get(`/companies/${companyId}/projects/${projectId}/members`, {
+      params: { page, size },
+    });
   }
 
   createProject(companyId: string, input: CreateProjectInput): ApiResponse<CreateProjectOutput> {
@@ -205,7 +250,11 @@ export class CompanyManagementApiService {
     return this.httpService.put(`/companies/${companyId}/projects/${projectId}`, input);
   }
 
-  listCompanyTimeEntries(companyId: string, page = 1, size = 10): ApiResponse<PageWrapper<CompanyTimeEntryOutput>> {
+  listCompanyTimeEntries(
+    companyId: string,
+    page = 1,
+    size = 10,
+  ): ApiResponse<PageWrapper<CompanyTimeEntryOutput>> {
     return this.httpService.get(`/companies/${companyId}/time-entries`, { params: { page, size } });
   }
 }

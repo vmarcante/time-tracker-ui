@@ -1,0 +1,68 @@
+<div
+  class="spl"
+  [class.spl--info-open]="collapsible() && infoOpen()"
+  [class.spl--collapsible]="collapsible()"
+  [class.spl--no-panel]="!showPanel()"
+  [style.--spl-panel-width]="panelWidth()"
+>
+  @if (showPanel()) {
+    <div class="spl-panel">
+      @if (collapsible()) {
+        <button
+          type="button"
+          class="spl-panel__rail"
+          [attr.aria-label]="infoOpen() ? collapseLabel() : expandLabel()"
+          [attr.title]="infoOpen() ? collapseLabel() : expandLabel()"
+          (click)="toggleInfo()"
+        >
+          <span class="spl-panel__handle">
+            <app-icon
+              [name]="infoOpen() ? 'arrows/chevron-left' : 'arrows/chevron-right'"
+              [size]="20"
+              color="var(--color-primary-700)"
+            />
+          </span>
+          <span class="spl-panel__hint">{{ collapsedLabel() }}</span>
+        </button>
+        @if (infoOpen()) {
+          <div class="spl-panel__content">
+            @if (panelTemplate(); as panelTpl) {
+              <ng-container
+                [ngTemplateOutlet]="panelTpl"
+                [ngTemplateOutletContext]="{ $implicit: currentStep() }"
+              />
+            }
+          </div>
+        }
+      } @else {
+        <div class="spl-panel__content">
+          @if (panelTemplate(); as panelTpl) {
+            <ng-container
+              [ngTemplateOutlet]="panelTpl"
+              [ngTemplateOutletContext]="{ $implicit: currentStep() }"
+            />
+          }
+        </div>
+      }
+    </div>
+  }
+
+  @if (showProgress()) {
+    <div class="spl-progress">
+      <app-step-progress
+        class="spl-step-progress"
+        [config]="config()"
+        [currentStep]="currentStep()"
+        [orientation]="orientation()"
+        [ariaLabel]="stepAriaLabel()"
+        [buttonColor]="stepButtonColor()"
+        [progressBarColor]="progressBarColor()"
+        (stepClick)="onStepClick($event)"
+      />
+    </div>
+  }
+
+  <div class="spl-content">
+    <ng-content />
+  </div>
+</div>

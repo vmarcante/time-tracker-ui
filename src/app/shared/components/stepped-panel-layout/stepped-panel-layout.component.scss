@@ -1,0 +1,209 @@
+// Customizable via CSS custom properties on the host element:
+//   --spl-panel-width        (input `panelWidth` binds inline; default 38%)
+//   --spl-collapsed-width    (default 48px)
+//   --spl-panel-padding      (default --spacing-lg)
+//   --spl-panel-box-min-height (default 200px)
+//   --spl-progress-min-height  (default 120px)
+//   --spl-content-padding    (default --spacing-md --spacing-lg)
+//   --spl-min-height         (default 320px)
+.spl {
+  display: flex;
+  position: relative;
+  width: 100%;
+  min-height: var(--spl-min-height, 320px);
+  background-color: var(--color-background);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+}
+
+// ── Left panel ────────────────────────────────────────────────────────────────
+.spl-panel {
+  position: relative;
+  flex: 0 0 var(--spl-panel-width, 38%);
+  min-width: 0;
+  max-width: var(--spl-panel-width, 38%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-primary-100);
+  padding: var(--spl-panel-padding, var(--spacing-lg));
+
+  // Collapsed — full-height rail
+  .spl--collapsible & {
+    flex: 0 0 var(--spl-collapsed-width, 48px);
+    max-width: var(--spl-collapsed-width, 48px);
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 0;
+    transition:
+      flex-basis 0.3s ease,
+      max-width 0.3s ease;
+  }
+
+  .spl--collapsible.spl--info-open & {
+    flex-basis: var(--spl-panel-width, 38%);
+    max-width: var(--spl-panel-width, 38%);
+  }
+
+  // Permanent rail — "Informações" label stays docked on the left edge
+  // and travels with the expansion; clicking it toggles the panel.
+  &__rail {
+    flex: 0 0 var(--spl-collapsed-width, 48px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-lg);
+    align-self: stretch;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: var(--spacing-md) 0;
+
+    &:hover .spl-panel__handle {
+      transform: translateX(2px);
+    }
+  }
+
+  &__handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+  }
+
+  &__hint {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 0.8125rem;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.05em;
+    color: var(--color-primary-700);
+    white-space: nowrap;
+  }
+
+  &__content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    min-height: var(--spl-panel-box-min-height, 200px);
+    padding: var(--spacing-md);
+    border: 2px dashed var(--color-primary-300);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-primary-50);
+    animation: spl-panel-fade 0.25s ease both;
+
+    // Expanded collapsible — flush with panel edges; the dashed line becomes
+    // only the divider between the rail and the content
+    .spl--collapsible.spl--info-open & {
+      flex: 1 1 auto;
+      width: auto;
+      height: auto;
+      align-self: stretch;
+      margin: 0;
+      border: none;
+      border-left: 2px dashed var(--color-primary-300);
+      border-right: 1px solid var(--color-border);
+      border-radius: 0;
+      padding: var(--spacing-md) var(--spacing-lg);
+      animation-delay: 0.1s;
+    }
+  }
+}
+
+@keyframes spl-panel-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// ── Vertical step progress — sits at panel boundary ───────────────────────────
+.spl-progress {
+  position: absolute;
+  left: var(--spl-panel-width, 38%);
+  top: 0;
+  bottom: 0;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+
+  .spl--collapsible & {
+    left: var(--spl-collapsed-width, 48px);
+    transition: left 0.3s ease;
+  }
+
+  .spl--collapsible.spl--info-open & {
+    left: var(--spl-panel-width, 38%);
+  }
+
+  .spl--no-panel & {
+    left: var(--spacing-md);
+    transform: none;
+  }
+}
+
+.spl-step-progress {
+  position: relative;
+  min-height: var(--spl-progress-min-height, 120px);
+  max-height: 80%;
+  pointer-events: auto;
+}
+
+// ── Right content ─────────────────────────────────────────────────────────────
+.spl-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-background);
+  padding: var(--spl-content-padding, var(--spacing-md) var(--spacing-lg));
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+// ── Mobile ────────────────────────────────────────────────────────────────────
+@media (max-width: 768px) {
+  .spl {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .spl-panel {
+    display: none;
+  }
+
+  .spl-progress {
+    position: static;
+    left: auto;
+    top: auto;
+    bottom: auto;
+    transform: none;
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md) 0;
+    pointer-events: auto;
+    flex-shrink: 0;
+  }
+
+  .spl-step-progress {
+    min-height: auto;
+    max-height: none;
+  }
+
+  .spl-content {
+    flex: 1;
+    max-width: 100%;
+    padding: var(--spl-content-padding-mobile, var(--spacing-md));
+  }
+}

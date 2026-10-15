@@ -83,7 +83,8 @@ export class MembersSectionComponent implements OnInit {
     this.dialogService.openDialog<InviteMemberDialogComponent, InviteMemberDialogResult>(
       InviteMemberDialogComponent,
       {
-        autoAdjustSize: true,
+        width: 'min(560px, 95vw)',
+        panelClass: ['stepped-dialog-panel'],
         data: { companyId, companyRole: this.companyRole },
         closeCallback: (result) => {
           if (!result?.confirmed) return;

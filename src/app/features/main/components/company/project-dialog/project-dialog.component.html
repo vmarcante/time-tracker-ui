@@ -1,73 +1,176 @@
 <app-dialog-shell>
-  <div class="project-dialog">
-    <section class="project-dialog__header">
-      <h2 class="project-dialog__title">
+  <app-stepped-panel-layout
+    [config]="stepProgressConfig"
+    [currentStep]="currentStep()"
+    [panelTemplate]="panelTpl"
+    [collapsible]="true"
+    panelWidth="min(260px, 28%)"
+    [(infoOpen)]="infoOpen"
+    [collapsedLabel]="'workspace.projects.dialog.info.label' | translate"
+    [expandLabel]="'workspace.projects.dialog.info.expand' | translate"
+    [collapseLabel]="'workspace.projects.dialog.info.collapse' | translate"
+    (stepClick)="goToStep($event)"
+  >
+    <ng-template #panelTpl let-step>
+      <p class="project-dialog__panel-description">
+        @if (step === 1) {
+          {{ 'workspace.projects.dialog.steps.detailsDescription' | translate }}
+        } @else {
+          {{ 'workspace.projects.dialog.steps.teamsDescription' | translate }}
+        }
+      </p>
+    </ng-template>
+
+    <div class="project-content__header">
+      <h2 class="project-content__title">
         @if (isEdit()) {
           {{ 'workspace.projects.dialog.title.edit' | translate }}
         } @else {
           {{ 'workspace.projects.dialog.title.create' | translate }}
         }
       </h2>
-      <p class="project-dialog__subtitle">
-        @if (isEdit()) {
-          {{ 'workspace.projects.dialog.subtitle.edit' | translate }}
+      <p class="project-content__subtitle">
+        @if (currentStep() === 1) {
+          @if (isEdit()) {
+            {{ 'workspace.projects.dialog.subtitle.edit' | translate }}
+          } @else {
+            {{ 'workspace.projects.dialog.subtitle.create' | translate }}
+          }
         } @else {
-          {{ 'workspace.projects.dialog.subtitle.create' | translate }}
+          {{ 'workspace.projects.dialog.subtitle.teams' | translate }}
         }
       </p>
-    </section>
-
-    <div class="project-dialog__fields">
-      <app-text-input
-        [control]="nameControl"
-        [labelIcon]="'objects/folder'"
-        [label]="'workspace.projects.dialog.name.label' | translate"
-        [placeholder]="'workspace.projects.dialog.name.placeholder' | translate"
-        [required]="true"
-      />
-      <app-text-input
-        [control]="clientNameControl"
-        [labelIcon]="'objects/person'"
-        [label]="'workspace.projects.dialog.clientName.label' | translate"
-        [placeholder]="'workspace.projects.dialog.clientName.placeholder' | translate"
-        [required]="true"
-      />
-      <app-textarea-input
-        [control]="descriptionControl"
-        [labelIcon]="'objects/text-file'"
-        [label]="'workspace.projects.dialog.description.label' | translate"
-        [placeholder]="'workspace.projects.dialog.description.placeholder' | translate"
-        [hint]="'workspace.projects.dialog.description.hint' | translate"
-        [rows]="3"
-        [showCounter]="false"
-      />
-      <app-daterange-input
-        [formGroup]="datesGroup"
-        [label]="'workspace.projects.dialog.dates.label' | translate"
-        [startLabel]="'workspace.projects.dialog.dates.start' | translate"
-        [endLabel]="'workspace.projects.dialog.dates.end' | translate"
-        [separator]="'workspace.projects.dialog.dates.separator' | translate"
-        [hint]="'workspace.projects.dialog.dates.hint' | translate"
-        [errorMessages]="dateErrorMessages"
-      />
     </div>
 
+    <div class="project-content__fields">
+      <!-- Step 1: project data -->
+      @if (currentStep() === 1) {
+        <app-text-input
+          [control]="nameControl"
+          [labelIcon]="'objects/folder'"
+          [label]="'workspace.projects.dialog.name.label' | translate"
+          [placeholder]="'workspace.projects.dialog.name.placeholder' | translate"
+          [required]="true"
+        />
+        <app-text-input
+          [control]="clientNameControl"
+          [labelIcon]="'objects/person'"
+          [label]="'workspace.projects.dialog.clientName.label' | translate"
+          [placeholder]="'workspace.projects.dialog.clientName.placeholder' | translate"
+          [required]="true"
+        />
+        <app-textarea-input
+          [control]="descriptionControl"
+          [labelIcon]="'objects/text-file'"
+          [label]="'workspace.projects.dialog.description.label' | translate"
+          [placeholder]="'workspace.projects.dialog.description.placeholder' | translate"
+          [hint]="'workspace.projects.dialog.description.hint' | translate"
+          [rows]="3"
+          [showCounter]="false"
+        />
+        <app-daterange-input
+          [formGroup]="datesGroup"
+          [label]="'workspace.projects.dialog.dates.label' | translate"
+          [startLabel]="'workspace.projects.dialog.dates.start' | translate"
+          [endLabel]="'workspace.projects.dialog.dates.end' | translate"
+          [separator]="'workspace.projects.dialog.dates.separator' | translate"
+          [hint]="'workspace.projects.dialog.dates.hint' | translate"
+          [errorMessages]="dateErrorMessages"
+        />
+      }
+
+      <!-- Step 2: teams + members -->
+      @if (currentStep() === 2) {
+        <div class="project-dialog__teams">
+          @for (team of data.teams; track team.id) {
+            <div
+              class="project-dialog__team"
+              [class.project-dialog__team--selected]="isTeamSelected(team.id)"
+            >
+              <div class="project-dialog__team-header">
+                <app-checkbox-input
+                  [control]="teamControlOf(team.id)"
+                  [label]="team.name"
+                  (onValueChange)="onTeamToggle(team, $event)"
+                />
+                <span class="project-dialog__team-count">
+                  {{ team.members.length }}
+                  {{ 'workspace.projects.dialog.teams.members' | translate }}
+                </span>
+              </div>
+
+              @if (isTeamSelected(team.id)) {
+                <div class="project-dialog__team-members">
+                  @for (member of team.members; track member.userId) {
+                    <div class="project-dialog__member">
+                      <app-checkbox-input
+                        [control]="memberControlOf(team.id, member.userId)"
+                        [label]="member.name"
+                      />
+                      @if (member.role === 'LEAD') {
+                        <span class="project-dialog__member-badge">
+                          {{ 'workspace.projects.dialog.teams.lead' | translate }}
+                        </span>
+                      }
+                    </div>
+                  } @empty {
+                    <p class="project-dialog__team-empty">
+                      {{ 'workspace.projects.dialog.teams.noMembers' | translate }}
+                    </p>
+                  }
+                </div>
+              }
+            </div>
+          } @empty {
+            <p class="project-dialog__teams-empty">
+              {{ 'workspace.projects.dialog.teams.empty' | translate }}
+            </p>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Actions -->
     <div class="project-dialog__actions">
-      <app-button
-        type="button"
-        color="outline-white"
-        [rounded]="true"
-        [text]="'common.dialog.cancel' | translate"
-        (buttonClick)="cancel()"
-      />
-      <app-button
-        type="button"
-        color="primary"
-        [rounded]="true"
-        [text]="(isEdit() ? 'workspace.projects.dialog.submit.edit' : 'workspace.projects.dialog.submit.create') | translate"
-        [icon]="{ iconName: 'status/check', svgIcon: true, color: '#FFF', position: 'right' }"
-        (buttonClick)="confirm()"
-      />
+      @if (currentStep() === 1) {
+        <app-button
+          type="button"
+          color="outline-white"
+          [rounded]="true"
+          [text]="'common.dialog.cancel' | translate"
+          (buttonClick)="cancel()"
+        />
+        <app-button
+          type="button"
+          color="primary"
+          [rounded]="true"
+          [text]="'workspace.projects.dialog.actions.next' | translate"
+          [icon]="{ iconName: 'arrows/next', svgIcon: true, color: '#FFF', position: 'right' }"
+          (buttonClick)="nextStep()"
+        />
+      } @else {
+        <app-button
+          type="button"
+          color="outline-white"
+          [rounded]="true"
+          [text]="'workspace.projects.dialog.actions.previous' | translate"
+          [icon]="{ iconName: 'arrows/back', svgIcon: true, position: 'left' }"
+          (buttonClick)="previousStep()"
+        />
+        <app-button
+          type="button"
+          color="primary"
+          [rounded]="true"
+          [text]="
+            (isEdit()
+              ? 'workspace.projects.dialog.submit.edit'
+              : 'workspace.projects.dialog.submit.create'
+            ) | translate
+          "
+          [icon]="{ iconName: 'status/check', svgIcon: true, color: '#FFF', position: 'right' }"
+          (buttonClick)="confirm()"
+        />
+      }
     </div>
-  </div>
+  </app-stepped-panel-layout>
 </app-dialog-shell>

@@ -25,6 +25,7 @@ export interface ForkJoinRequestOptions<T extends readonly unknown[]> {
   errorMessage?: string;
   customLoadingName?: string;
   subscriptionName?: string;
+  ignoreLoading?: boolean;
   onSuccessForkJoin?: (responses: T) => void;
   onError?: (error: ApiErrorResponse) => void;
 }

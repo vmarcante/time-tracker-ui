@@ -105,12 +105,24 @@ export interface ProjectDetailOutput {
   updatedAt: string;
 }
 
+export interface TeamWithMembersOutput {
+  id: string;
+  name: string;
+  members: TeamMemberOutput[];
+}
+
+export interface ProjectTeamMembersInput {
+  teamId: string;
+  memberIds: string[];
+}
+
 export interface CreateProjectInput {
   name: string;
   clientName: string;
   description: string | null;
   startDate: string | null;
   endDate: string | null;
+  teams?: ProjectTeamMembersInput[];
 }
 
 export interface UpdateProjectInput {
@@ -119,6 +131,7 @@ export interface UpdateProjectInput {
   description: string | null;
   startDate: string | null;
   endDate: string | null;
+  teams?: ProjectTeamMembersInput[];
 }
 
 export interface CreateProjectOutput {

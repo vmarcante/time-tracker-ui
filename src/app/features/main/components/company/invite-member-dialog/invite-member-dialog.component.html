@@ -1,185 +1,173 @@
 <app-dialog-shell>
-  <div class="invite-layout">
+  <app-stepped-panel-layout
+    [config]="stepProgressConfig()"
+    [currentStep]="currentStep()"
+    [panelTemplate]="panelTpl"
+    [collapsible]="true"
+    panelWidth="min(260px, 32%)"
+    [(infoOpen)]="infoOpen"
+    [collapsedLabel]="'workspace.members.inviteDialog.info.label' | translate"
+    [expandLabel]="'workspace.members.inviteDialog.info.expand' | translate"
+    [collapseLabel]="'workspace.members.inviteDialog.info.collapse' | translate"
+    (stepClick)="goToStep($event)"
+  >
+    <ng-template #panelTpl let-step>
+      <p class="invite-dialog__panel-description">
+        @if (step === 1) {
+          {{ 'workspace.members.inviteDialog.steps.emailDescription' | translate }}
+        } @else {
+          {{ 'workspace.members.inviteDialog.steps.detailsDescription' | translate }}
+        }
+      </p>
+    </ng-template>
 
-    <!-- Left panel — step description -->
-    <div class="invite-panel">
-      <div class="invite-panel__content">
-        <p class="invite-panel__description">
-          @if (currentStep() === 1) {
-            {{ 'workspace.members.inviteDialog.steps.emailDescription' | translate }}
-          } @else {
-            {{ 'workspace.members.inviteDialog.steps.detailsDescription' | translate }}
-          }
-        </p>
-      </div>
-    </div>
-
-    <!-- Vertical step progress — positioned at panel boundary -->
-    <div class="invite-progress">
-      <app-step-progress
-        class="invite-step-progress"
-        [config]="stepProgressConfig()"
-        [currentStep]="currentStep()"
-        orientation="vertical"
-        (stepClick)="goToStep($event)"
-      />
-    </div>
-
-    <!-- Right panel — content -->
-    <div class="invite-content">
-
-      <div class="invite-content__header">
-        <h1 class="invite-content__title">
-          {{ 'workspace.members.inviteDialog.title' | translate }}
-        </h1>
-        <p class="invite-content__subtitle">
-          @if (currentStep() === 1) {
-            {{ 'workspace.members.inviteDialog.subtitle.step1' | translate }}
-          } @else {
-            {{ 'workspace.members.inviteDialog.subtitle.step2' | translate }}
-          }
-        </p>
-      </div>
-
-      <div class="invite-content__fields">
-
-        <!-- Step 1: Email -->
+    <div class="invite-content__header">
+      <h1 class="invite-content__title">
+        {{ 'workspace.members.inviteDialog.title' | translate }}
+      </h1>
+      <p class="invite-content__subtitle">
         @if (currentStep() === 1) {
-          <div class="invite-dialog__email-row">
-            <app-text-input
-              class="invite-dialog__email-input"
-              inputType="email"
-              [control]="emailControl"
-              [labelIcon]="'objects/envelope'"
-              [label]="'workspace.members.inviteDialog.email.label' | translate"
-              [placeholder]="'workspace.members.inviteDialog.email.placeholder' | translate"
-              [required]="true"
-              [errorMessages]="{ availability: inviteError() }"
-            />
-            <div class="invite-dialog__lookup-indicator">
-              @if (lookupLoading()) {
-                <mat-progress-spinner [diameter]="18" [strokeWidth]="2" mode="indeterminate" />
-              }
+          {{ 'workspace.members.inviteDialog.subtitle.step1' | translate }}
+        } @else {
+          {{ 'workspace.members.inviteDialog.subtitle.step2' | translate }}
+        }
+      </p>
+    </div>
+
+    <div class="invite-content__fields">
+      <!-- Step 1: Email -->
+      @if (currentStep() === 1) {
+        <div class="invite-dialog__email-row">
+          <app-text-input
+            class="invite-dialog__email-input"
+            inputType="email"
+            [control]="emailControl"
+            [labelIcon]="'objects/envelope'"
+            [label]="'workspace.members.inviteDialog.email.label' | translate"
+            [placeholder]="'workspace.members.inviteDialog.email.placeholder' | translate"
+            [required]="true"
+            [errorMessages]="{ availability: inviteError() }"
+          />
+          <div class="invite-dialog__lookup-indicator">
+            @if (lookupLoading()) {
+              <mat-progress-spinner [diameter]="18" [strokeWidth]="2" mode="indeterminate" />
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Step 2: Result + role -->
+      @if (currentStep() === 2) {
+        @if (isAvailable()) {
+          <div class="invite-dialog__person-card">
+            <div class="invite-dialog__person-avatar">
+              {{ lookupResult()?.name?.charAt(0)?.toUpperCase() }}
+            </div>
+            <div class="invite-dialog__person-info">
+              <span class="invite-dialog__person-name">{{ lookupResult()?.name }}</span>
+              <span class="invite-dialog__person-email">{{ emailControl.value }}</span>
             </div>
           </div>
         }
 
-        <!-- Step 2: Result + role -->
-        @if (currentStep() === 2) {
-
-          @if (isAvailable()) {
-            <div class="invite-dialog__person-card">
-              <div class="invite-dialog__person-avatar">
-                {{ lookupResult()?.name?.charAt(0)?.toUpperCase() }}
-              </div>
-              <div class="invite-dialog__person-info">
-                <span class="invite-dialog__person-name">{{ lookupResult()?.name }}</span>
-                <span class="invite-dialog__person-email">{{ emailControl.value }}</span>
-              </div>
-            </div>
-          }
-
-          @if (isNotFound()) {
-            <app-text-input
-              [control]="nameControl"
-              [labelIcon]="'objects/person'"
-              [label]="'workspace.members.inviteDialog.name.label' | translate"
-              [placeholder]="'workspace.members.inviteDialog.name.placeholder' | translate"
-              [required]="true"
-            />
-
-            <div class="invite-dialog__row">
-              <app-text-input
-                class="invite-dialog__field--phone"
-                inputType="tel"
-                [control]="phoneControl"
-                [labelIcon]="'objects/phone'"
-                [label]="'workspace.members.inviteDialog.phone.label' | translate"
-                [placeholder]="'workspace.members.inviteDialog.phone.placeholder' | translate"
-              />
-
-              <app-integer-input
-                class="invite-dialog__field--age"
-                [control]="ageControl"
-                [labelIcon]="'objects/calendar'"
-                [label]="'workspace.members.inviteDialog.age.label' | translate"
-                [placeholder]="'workspace.members.inviteDialog.age.placeholder' | translate"
-              />
-            </div>
-          }
-
-          <app-select-input
-            [control]="roleControl"
-            [labelIcon]="'objects/shield'"
-            [label]="'workspace.members.inviteDialog.role.label' | translate"
-            [placeholder]="'workspace.members.inviteDialog.role.placeholder' | translate"
-            [options]="roleOptions()"
+        @if (isNotFound()) {
+          <app-text-input
+            [control]="nameControl"
+            [labelIcon]="'objects/person'"
+            [label]="'workspace.members.inviteDialog.name.label' | translate"
+            [placeholder]="'workspace.members.inviteDialog.name.placeholder' | translate"
             [required]="true"
           />
 
-          @if (isNotFound()) {
-            <p class="invite-dialog__pre-register-note">
-              {{ 'workspace.members.inviteDialog.preRegisterNote' | translate }}
-            </p>
-          }
+          <div class="invite-dialog__row">
+            <app-text-input
+              class="invite-dialog__field--phone"
+              inputType="tel"
+              [control]="phoneControl"
+              [labelIcon]="'objects/phone'"
+              [label]="'workspace.members.inviteDialog.phone.label' | translate"
+              [placeholder]="'workspace.members.inviteDialog.phone.placeholder' | translate"
+            />
+
+            <app-integer-input
+              class="invite-dialog__field--age"
+              [control]="ageControl"
+              [labelIcon]="'objects/calendar'"
+              [label]="'workspace.members.inviteDialog.age.label' | translate"
+              [placeholder]="'workspace.members.inviteDialog.age.placeholder' | translate"
+            />
+          </div>
         }
 
-      </div>
+        <app-select-input
+          [control]="roleControl"
+          [labelIcon]="'objects/shield'"
+          [label]="'workspace.members.inviteDialog.role.label' | translate"
+          [placeholder]="'workspace.members.inviteDialog.role.placeholder' | translate"
+          [options]="roleOptions()"
+          [required]="true"
+        />
 
-      <!-- Actions -->
-      <div class="invite-dialog__actions">
-        @if (currentStep() === 1) {
-          <app-button
-            type="button"
-            color="secondary"
-            [rounded]="true"
-            [size]="{ fullWidth: true }"
-            [text]="'workspace.members.inviteDialog.cancel' | translate"
-            (buttonClick)="cancel()"
-          />
+        @if (isNotFound()) {
+          <p class="invite-dialog__pre-register-note">
+            {{ 'workspace.members.inviteDialog.preRegisterNote' | translate }}
+          </p>
+        }
+      }
+    </div>
+
+    <!-- Actions -->
+    <div class="invite-dialog__actions">
+      @if (currentStep() === 1) {
+        <app-button
+          type="button"
+          color="secondary"
+          [rounded]="true"
+          [size]="{ fullWidth: true }"
+          [text]="'workspace.members.inviteDialog.cancel' | translate"
+          (buttonClick)="cancel()"
+        />
+        <app-button
+          type="button"
+          color="primary"
+          [rounded]="true"
+          [size]="{ fullWidth: true }"
+          [text]="'workspace.members.inviteDialog.next' | translate"
+          [icon]="{ iconName: 'arrows/next', svgIcon: true, color: '#FFF', position: 'right' }"
+          [disabled]="!canProceed()"
+          (buttonClick)="nextStep()"
+        />
+      } @else {
+        <app-button
+          type="button"
+          color="secondary"
+          [rounded]="true"
+          [size]="{ fullWidth: true }"
+          [text]="'workspace.members.inviteDialog.previous' | translate"
+          [icon]="{ iconName: 'arrows/back', svgIcon: true, position: 'left' }"
+          (buttonClick)="previousStep()"
+        />
+        @if (isAvailable()) {
           <app-button
             type="button"
             color="primary"
             [rounded]="true"
             [size]="{ fullWidth: true }"
-            [text]="'workspace.members.inviteDialog.next' | translate"
-            [icon]="{ iconName: 'arrows/next', svgIcon: true, color: '#FFF', position: 'right' }"
-            [disabled]="!canProceed()"
-            (buttonClick)="nextStep()"
+            [text]="'workspace.members.inviteDialog.sendInvite' | translate"
+            (buttonClick)="confirmInvite()"
           />
-        } @else {
+        }
+        @if (isNotFound()) {
           <app-button
             type="button"
-            color="secondary"
+            color="primary"
             [rounded]="true"
             [size]="{ fullWidth: true }"
-            [text]="'workspace.members.inviteDialog.previous' | translate"
-            [icon]="{ iconName: 'arrows/back', svgIcon: true, position: 'left' }"
-            (buttonClick)="previousStep()"
+            [text]="'workspace.members.inviteDialog.registerAndInvite' | translate"
+            (buttonClick)="confirmPreRegister()"
           />
-          @if (isAvailable()) {
-            <app-button
-              type="button"
-              color="primary"
-              [rounded]="true"
-              [size]="{ fullWidth: true }"
-              [text]="'workspace.members.inviteDialog.sendInvite' | translate"
-              (buttonClick)="confirmInvite()"
-            />
-          }
-          @if (isNotFound()) {
-            <app-button
-              type="button"
-              color="primary"
-              [rounded]="true"
-              [size]="{ fullWidth: true }"
-              [text]="'workspace.members.inviteDialog.registerAndInvite' | translate"
-              (buttonClick)="confirmPreRegister()"
-            />
-          }
         }
-      </div>
-
+      }
     </div>
-  </div>
+  </app-stepped-panel-layout>
 </app-dialog-shell>

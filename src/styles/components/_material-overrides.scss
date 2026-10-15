@@ -118,13 +118,13 @@ textarea.mat-mdc-input-element {
     padding: 0 !important;
     margin: 0 !important;
   }
-  
+
   .mdc-notched-outline__leading {
     width: 0 !important;
     min-width: 0 !important;
     border: none !important;
   }
-  
+
   .mdc-notched-outline__notch {
     border-left: 1px solid !important;
     border-right: none !important;
@@ -133,7 +133,7 @@ textarea.mat-mdc-input-element {
     padding: 0 !important;
     max-width: 0 !important;
   }
-  
+
   .mdc-notched-outline__trailing {
     border-left: none !important;
   }
@@ -165,11 +165,21 @@ textarea.mat-mdc-input-element {
 // ANGULAR MATERIAL SELECT OVERRIDES
 // ============================================
 
-// Trigger: altura e padding iguais ao text-input
+// Trigger: altura, padding e fundo iguais ao text-input
 .mat-mdc-select-trigger {
   height: var(--input-height) !important;
   padding: 0 var(--input-padding-horizontal) !important;
   box-sizing: border-box !important;
+  background-color: var(--color-background-input) !important;
+}
+
+.mat-mdc-form-field.mat-focused .mat-mdc-select-trigger {
+  background-color: var(--color-background-input-focus) !important;
+}
+
+.mat-mdc-form-field.mat-form-field-disabled .mat-mdc-select-trigger {
+  background-color: var(--color-background-input-disabled) !important;
+  cursor: not-allowed !important;
 }
 
 .mat-mdc-select-value {
@@ -325,12 +335,16 @@ textarea.mat-mdc-input-element {
   font-size: var(--font-size-input) !important;
   color: var(--color-text-primary) !important;
   border-radius: var(--radius-md) !important;
-  transition: background-color var(--transition-fast), color var(--transition-fast);
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
 }
 
 // Hover em dia disponível
 .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover
-  > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical) {
+  > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected):not(
+    .mat-calendar-body-comparison-identical
+  ) {
   background-color: var(--color-surface) !important;
 }
 
@@ -450,6 +464,13 @@ textarea.mat-mdc-input-element {
       min-height: 100%;
     }
   }
+}
+
+// ============================================
+// STEPPED PANEL DIALOGS — largura anima quando o painel de info expande
+// ============================================
+.cdk-overlay-pane.stepped-dialog-panel {
+  transition: width 0.3s ease;
 }
 
 // ============================================
