@@ -1,4 +1,4 @@
-import { inject } from '@angular/core';
+import { inject, untracked } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthTokenService } from '../services/auth-token.service';
 import { resolvePostLoginRoute } from '../../../shared/utils/role-redirect.util';
@@ -7,7 +7,7 @@ export const authGuard: CanActivateFn = (route, state) => {
   const tokenService = inject(AuthTokenService);
   const router = inject(Router);
 
-  if (tokenService.isAuthenticated()) {
+  if (untracked(() => tokenService.isAuthenticated())) {
     return true;
   }
 
@@ -16,22 +16,20 @@ export const authGuard: CanActivateFn = (route, state) => {
   return false;
 };
 
-export const publicGuard: CanActivateFn = (route, state) => {
+export const publicGuard: CanActivateFn = () => {
   const tokenService = inject(AuthTokenService);
   const router = inject(Router);
 
-  if (!tokenService.isAuthenticated()) {
+  if (!untracked(() => tokenService.isAuthenticated())) {
     return true;
   }
 
   const returnUrl = tokenService.getReturnUrl();
   if (returnUrl) {
     tokenService.clearReturnUrl();
-    router.navigate([returnUrl]);
-    return false;
+    return router.createUrlTree([returnUrl]);
   }
 
-  const user = tokenService.currentUser();
-  router.navigate([user ? resolvePostLoginRoute(user) : '/tracker']);
-  return false;
+  const user = untracked(() => tokenService.currentUser());
+  return router.createUrlTree([user ? resolvePostLoginRoute(user) : '/tracker']);
 };

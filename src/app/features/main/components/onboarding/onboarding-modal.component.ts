@@ -422,9 +422,9 @@ export class OnboardingModalComponent implements OnInit {
   }
 
   private finishOnboarding(): void {
-    this.tokenService.loadCurrentUser();
-    const user = this.tokenService.currentUser();
-    this.router.navigate([user ? resolvePostLoginRoute(user) : '/tracker']);
+    this.tokenService.reloadCurrentUser().then((user) => {
+      this.router.navigate([user ? resolvePostLoginRoute(user) : '/tracker']);
+    });
   }
 
   private handleError(error: ApiErrorResponse, fallbackKey: string): void {

@@ -22,6 +22,8 @@ export class AuthTokenService {
   private apiAdapterService = inject(ApiAdapterService);
   private destroyRef = inject(DestroyRef);
 
+  private userLoadPromise: Promise<CurrentUserOutput | null> | null = null;
+
   readonly isAuthenticated = computed(() => !!this.accessToken() && !this.isAccessTokenExpired());
   readonly currentUser = signal<CurrentUserOutput | null>(null);
   readonly currentUserLoading = signal(false);
@@ -65,22 +67,50 @@ export class AuthTokenService {
     this.loadCurrentUser();
   }
 
-  loadCurrentUser(): void {
+  /**
+   * Waits for the in-flight /me request or returns the already-loaded user.
+   * Use this when you need currentUser to be populated (e.g., post-login routing).
+   * For forcing a fresh fetch, use reloadCurrentUser().
+   */
+  loadCurrentUser(): Promise<CurrentUserOutput | null> {
+    const existing = this.currentUser();
+    if (existing) return Promise.resolve(existing);
+    return this.userLoadPromise ?? this.fetchCurrentUser();
+  }
+
+  /**
+   * Forces a fresh /me request regardless of current state.
+   * Use when user data may have changed server-side (e.g., after onboarding, profile save).
+   */
+  reloadCurrentUser(): Promise<CurrentUserOutput | null> {
+    return this.fetchCurrentUser();
+  }
+
+  private fetchCurrentUser(): Promise<CurrentUserOutput | null> {
     this.currentUserLoading.set(true);
-    const request = this.personApiService.getCurrentUser();
-    const subscription = this.apiAdapterService.executeRequest(request, {
-      ignoreLoading: true,
-      onSuccess: (response) => {
-        this.currentUser.set(response.data);
-        this.currentUserLoading.set(false);
-      },
-      onError: () => {
-        this.currentUser.set(null);
-        this.currentUserLoading.set(false);
-      },
+
+    const promise = new Promise<CurrentUserOutput | null>((resolve) => {
+      const request = this.personApiService.getCurrentUser();
+      const subscription = this.apiAdapterService.executeRequest(request, {
+        ignoreLoading: true,
+        onSuccess: (response) => {
+          this.currentUser.set(response.data);
+          this.currentUserLoading.set(false);
+          if (this.userLoadPromise === promise) this.userLoadPromise = null;
+          resolve(response.data);
+        },
+        onError: () => {
+          this.currentUser.set(null);
+          this.currentUserLoading.set(false);
+          if (this.userLoadPromise === promise) this.userLoadPromise = null;
+          resolve(null);
+        },
+      });
+      this.destroyRef.onDestroy(() => subscription.unsubscribe());
     });
 
-    this.destroyRef.onDestroy(() => subscription.unsubscribe());
+    this.userLoadPromise = promise;
+    return promise;
   }
 
   updateAccessToken(accessToken: string, accessTokenExpiresIn: number): void {

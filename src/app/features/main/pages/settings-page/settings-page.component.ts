@@ -159,7 +159,7 @@ export class SettingsPageComponent implements OnInit {
   private finishSave(): void {
     this.saving.set(false);
     this.saveSuccess.set(true);
-    this.authTokenService.loadCurrentUser();
+    this.authTokenService.reloadCurrentUser();
     setTimeout(() => this.saveSuccess.set(false), 3000);
   }
 }

@@ -27,6 +27,25 @@
     }
 
   </div>
+  @if (isAuthenticated() && canAccessWorkspace()) {
+    <nav class="header-context-nav" [attr.aria-label]="'header.navAriaLabel' | translate">
+      <a
+        class="header-context-nav__link"
+        routerLink="/tracker"
+        routerLinkActive="header-context-nav__link--active"
+      >
+        {{ 'header.navigation.tracker' | translate }}
+      </a>
+      <a
+        class="header-context-nav__link"
+        routerLink="/workspace"
+        routerLinkActive="header-context-nav__link--active"
+      >
+        {{ 'header.navigation.workspace' | translate }}
+      </a>
+    </nav>
+  }
+
   <div class="layout-wrapper__header__auth">
     <div class="header-auth-container">
       @if (userLoading()) {

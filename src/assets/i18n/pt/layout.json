@@ -9,7 +9,9 @@
     },
     "navigation": {
       "resources": "Recursos",
-      "dashboard": "Dashboard"
+      "dashboard": "Dashboard",
+      "tracker": "Tracker",
+      "workspace": "Workspace"
     },
     "mobileMenu": {
       "ariaLabel": "Menu de navegação mobile",

@@ -5,7 +5,7 @@ import { companyMemberGuard } from './shared/guards/company-member.guard';
 import { companyRoleGuard } from './shared/guards/company-role.guard';
 
 export const routes: Routes = [
-  // Landing + Settings — base layout wrapper
+  // LayoutWrapperComponent persists across all authenticated/landing routes.
   {
     path: '',
     loadComponent: () =>
@@ -13,6 +13,7 @@ export const routes: Routes = [
         (m) => m.LayoutWrapperComponent,
       ),
     children: [
+      // Landing page
       {
         path: '',
         loadComponent: () =>
@@ -21,6 +22,7 @@ export const routes: Routes = [
           ),
         canActivate: [publicGuard],
       },
+      // Settings
       {
         path: 'settings',
         loadComponent: () =>
@@ -29,86 +31,84 @@ export const routes: Routes = [
           ),
         canActivate: [authGuard, translationContextGuard('profile')],
       },
-    ],
-  },
-
-  // Tracker context — personal time tracking
-  {
-    path: 'tracker',
-    loadComponent: () =>
-      import('./features/tracker/layout/tracker-layout.component').then(
-        (m) => m.TrackerLayoutComponent,
-      ),
-    canActivate: [authGuard, translationContextGuard('tracker')],
-    children: [
-      { path: '', redirectTo: 'entries', pathMatch: 'full' },
+      // Tracker context — personal time tracking
       {
-        path: 'entries',
+        path: 'tracker',
         loadComponent: () =>
-          import('./features/tracker/pages/entries/tracker-entries-page.component').then(
-            (m) => m.TrackerEntriesPageComponent,
+          import('./features/tracker/layout/tracker-layout.component').then(
+            (m) => m.TrackerLayoutComponent,
           ),
+        canActivate: [authGuard, translationContextGuard('tracker')],
+        children: [
+          { path: '', redirectTo: 'entries', pathMatch: 'full' },
+          {
+            path: 'entries',
+            loadComponent: () =>
+              import('./features/tracker/pages/entries/tracker-entries-page.component').then(
+                (m) => m.TrackerEntriesPageComponent,
+              ),
+          },
+          {
+            path: 'entries/:id',
+            loadComponent: () =>
+              import('./features/main/pages/time-entrie/time-entrie-detail-page.component').then(
+                (m) => m.TimeEntrieDetailPageComponent,
+              ),
+            canActivate: [translationContextGuard('timeEntry')],
+          },
+        ],
       },
+      // Workspace context — company management
       {
-        path: 'entries/:id',
+        path: 'workspace',
         loadComponent: () =>
-          import('./features/main/pages/time-entrie/time-entrie-detail-page.component').then(
-            (m) => m.TimeEntrieDetailPageComponent,
+          import('./features/workspace/layout/workspace-layout.component').then(
+            (m) => m.WorkspaceLayoutComponent,
           ),
-        canActivate: [translationContextGuard('timeEntry')],
-      },
-    ],
-  },
-
-  // Workspace context — company management
-  {
-    path: 'workspace',
-    loadComponent: () =>
-      import('./features/workspace/layout/workspace-layout.component').then(
-        (m) => m.WorkspaceLayoutComponent,
-      ),
-    canActivate: [authGuard, companyMemberGuard, translationContextGuard('workspace')],
-    children: [
-      { path: '', redirectTo: 'members', pathMatch: 'full' },
-      {
-        path: 'members',
-        loadComponent: () =>
-          import('./features/main/pages/home-page/sections/members-section/members-section.component').then(
-            (m) => m.MembersSectionComponent,
-          ),
-        canActivate: [companyRoleGuard(['OWNER', 'ADMIN'])],
-      },
-      {
-        path: 'requests',
-        loadComponent: () =>
-          import('./features/main/pages/home-page/sections/requests-section/requests-section.component').then(
-            (m) => m.RequestsSectionComponent,
-          ),
-        canActivate: [companyRoleGuard(['OWNER', 'ADMIN', 'MANAGER'])],
-      },
-      {
-        path: 'teams',
-        loadComponent: () =>
-          import('./features/main/pages/home-page/sections/teams-section/teams-section.component').then(
-            (m) => m.TeamsSectionComponent,
-          ),
-        canActivate: [companyRoleGuard(['OWNER', 'ADMIN', 'MANAGER'])],
-      },
-      {
-        path: 'projects',
-        loadComponent: () =>
-          import('./features/main/pages/home-page/sections/projects-section/projects-section.component').then(
-            (m) => m.ProjectsSectionComponent,
-          ),
-        canActivate: [companyRoleGuard(['OWNER', 'ADMIN', 'MANAGER'])],
-      },
-      {
-        path: 'time-entries',
-        loadComponent: () =>
-          import('./features/main/pages/home-page/sections/time-entries-section/time-entries-section.component').then(
-            (m) => m.TimeEntriesSectionComponent,
-          ),
-        canActivate: [companyRoleGuard(['OWNER', 'ADMIN', 'MANAGER'])],
+        canActivate: [authGuard, companyMemberGuard, translationContextGuard('workspace')],
+        children: [
+          { path: '', redirectTo: 'members', pathMatch: 'full' },
+          {
+            path: 'members',
+            loadComponent: () =>
+              import('./features/main/pages/home-page/sections/members-section/members-section.component').then(
+                (m) => m.MembersSectionComponent,
+              ),
+            canActivate: [companyRoleGuard(['OWNER', 'ADMIN'])],
+          },
+          {
+            path: 'requests',
+            loadComponent: () =>
+              import('./features/main/pages/home-page/sections/requests-section/requests-section.component').then(
+                (m) => m.RequestsSectionComponent,
+              ),
+            canActivate: [companyRoleGuard(['OWNER', 'ADMIN', 'MANAGER'])],
+          },
+          {
+            path: 'teams',
+            loadComponent: () =>
+              import('./features/main/pages/home-page/sections/teams-section/teams-section.component').then(
+                (m) => m.TeamsSectionComponent,
+              ),
+            canActivate: [companyRoleGuard(['OWNER', 'ADMIN', 'MANAGER'])],
+          },
+          {
+            path: 'projects',
+            loadComponent: () =>
+              import('./features/main/pages/home-page/sections/projects-section/projects-section.component').then(
+                (m) => m.ProjectsSectionComponent,
+              ),
+            canActivate: [companyRoleGuard(['OWNER', 'ADMIN', 'MANAGER'])],
+          },
+          {
+            path: 'time-entries',
+            loadComponent: () =>
+              import('./features/main/pages/home-page/sections/time-entries-section/time-entries-section.component').then(
+                (m) => m.TimeEntriesSectionComponent,
+              ),
+            canActivate: [companyRoleGuard(['OWNER', 'ADMIN', 'MANAGER'])],
+          },
+        ],
       },
     ],
   },

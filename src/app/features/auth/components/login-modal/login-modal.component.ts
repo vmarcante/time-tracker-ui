@@ -113,8 +113,9 @@ export class LoginModalComponent {
       return;
     }
 
-    const user = this.tokenService.currentUser();
-    this.router.navigate([user ? resolvePostLoginRoute(user) : '/tracker']);
+    this.tokenService.loadCurrentUser().then((user) => {
+      this.router.navigate([user ? resolvePostLoginRoute(user) : '/tracker']);
+    });
   }
 
   openForgotPasswordDialog(): void {

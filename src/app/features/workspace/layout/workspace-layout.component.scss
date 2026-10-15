@@ -1,9 +1,12 @@
-.workspace-layout {
-  &__body {
-    display: flex;
-    min-height: calc(100vh - var(--header-height, 4rem) - var(--footer-height, 3rem));
-  }
+// WorkspaceLayoutComponent renders directly inside layout-wrapper__content (display: flex, flex-direction: column).
+// The host element (app-workspace-layout) needs to fill that flex container and lay out horizontally.
+:host {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
 
+.workspace-layout {
   &__sidebar {
     width: 220px;
     flex-shrink: 0;
@@ -11,12 +14,6 @@
     top: 0;
     height: calc(100vh - var(--header-height, 4rem) - var(--footer-height, 3rem));
     overflow-y: auto;
-  }
-
-  &__divider {
-    width: 1px;
-    background-color: var(--color-border);
-    flex-shrink: 0;
   }
 
   &__content {

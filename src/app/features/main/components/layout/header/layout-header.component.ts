@@ -10,7 +10,7 @@ import {
   computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslatePipe } from '../../../../../shared/pipes/translate.pipe';
 import { TranslationService } from '../../../../../shared/services/translation.service';
@@ -37,6 +37,7 @@ import { ConfirmationDialogConfiguration } from '../../../../../shared/types';
   imports: [
     CommonModule,
     RouterLink,
+    RouterLinkActive,
     TranslatePipe,
     LoginModalComponent,
     UserMenuComponent,
@@ -62,6 +63,13 @@ export class LayoutHeaderComponent implements OnInit, OnDestroy {
   isAuthenticated = this.authTokenService.isAuthenticated;
   currentUser = this.authTokenService.currentUser;
   userLoading = this.authTokenService.currentUserLoading;
+
+  readonly canAccessWorkspace = computed(() => {
+    const user = this.currentUser();
+    if (!user || user.affiliation !== 'COMPANY') return false;
+    const managerRoles = ['OWNER', 'ADMIN', 'MANAGER'];
+    return managerRoles.includes(user.companyRole ?? '');
+  });
   healthStatus = signal<string | null>(null);
   isHealthDown = computed(() => {
     const status = this.healthStatus();
