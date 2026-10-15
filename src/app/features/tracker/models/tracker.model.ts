@@ -4,6 +4,12 @@ export interface TagOutput {
   color: string;
 }
 
+export interface TimeEntryProjectOutput {
+  id: string;
+  name: string;
+  clientName: string | null;
+}
+
 export interface TimeEntrySessionOutput {
   id: string;
   startTime: string;

@@ -15,7 +15,6 @@ import {
   TeamDialogComponent,
   TeamDialogResult,
 } from '../../../../components/company/team-dialog/team-dialog.component';
-import { TeamDetailComponent } from './team-detail/team-detail.component';
 import { AuthTokenService } from '../../../../../auth/services/auth-token.service';
 
 @Component({
@@ -26,7 +25,6 @@ import { AuthTokenService } from '../../../../../auth/services/auth-token.servic
     ButtonComponent,
     IconComponent,
     PaginationComponent,
-    TeamDetailComponent,
   ],
   templateUrl: './teams-section.component.html',
   styleUrl: './teams-section.component.scss',
@@ -56,11 +54,6 @@ export class TeamsSectionComponent implements OnInit {
   readonly loading = signal(true);
   readonly currentPage = signal(1);
   readonly saving = signal(false);
-  readonly editingTeamId = signal<string | null>(null);
-  readonly selectedTeam = signal<TeamDetailOutput | null>(null);
-  readonly detailLoading = signal(false);
-  readonly openingDetailId = signal<string | null>(null);
-  readonly currentUserId = signal<string | null>(this.authTokenService.currentUser()?.id ?? null);
 
   readonly canManage = (): boolean => {
     const role = this.companyRole;
@@ -90,50 +83,14 @@ export class TeamsSectionComponent implements OnInit {
   }
 
   openDetail(team: TeamSummaryOutput): void {
-    if (!this.companyId || this.detailLoading() || this.editingTeamId()) return;
-
-    const companyId = this.companyId;
-    this.openingDetailId.set(team.id);
-    this.detailLoading.set(true);
-
-    this.apiAdapter.executeRequest(this.companyApi.findTeam(companyId, team.id), {
-      ignoreLoading: true,
-      onSuccess: (response) => {
-        this.openingDetailId.set(null);
-        this.detailLoading.set(false);
-        this.selectedTeam.set(response.data);
-      },
-      onError: () => {
-        this.openingDetailId.set(null);
-        this.detailLoading.set(false);
-      },
+    this.router.navigate(['/workspace/teams/detail'], {
+      state: { teamId: team.id },
     });
-  }
-
-  closeDetail(): void {
-    this.selectedTeam.set(null);
-    this.loadPage(this.currentPage());
   }
 
   openCreateDialog(): void {
     if (!this.companyId || !this.canManage()) return;
     this.openTeamDialog(null);
-  }
-
-  openEditDialog(team: TeamSummaryOutput): void {
-    if (!this.companyId || !this.canManage() || this.editingTeamId()) return;
-
-    const companyId = this.companyId;
-    this.editingTeamId.set(team.id);
-
-    this.apiAdapter.executeRequest(this.companyApi.findTeam(companyId, team.id), {
-      ignoreLoading: true,
-      onSuccess: (response) => {
-        this.editingTeamId.set(null);
-        this.openTeamDialog(response.data);
-      },
-      onError: () => this.editingTeamId.set(null),
-    });
   }
 
   private openTeamDialog(team: TeamDetailOutput | null): void {
@@ -150,9 +107,7 @@ export class TeamsSectionComponent implements OnInit {
           this.saving.set(true);
 
           const input = { name: result.name, description: result.description };
-          const request = team
-            ? this.companyApi.updateTeam(companyId, team.id, input)
-            : this.companyApi.createTeam(companyId, input);
+          const request = this.companyApi.createTeam(companyId, input);
 
           this.apiAdapter.executeRequest(request, {
             ignoreLoading: true,

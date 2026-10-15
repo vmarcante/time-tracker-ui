@@ -1,8 +1,8 @@
 <div class="section">
   <div class="section__header">
-    <button type="button" class="section__back" (click)="back.emit()" [attr.aria-label]="'workspace.section.back' | translate">
+    <button type="button" class="section__back" (click)="back.emit()" [attr.aria-label]="backLabelKey | translate">
       <app-icon name="arrows/back" size="0.875rem" />
-      <span>{{ 'workspace.section.back' | translate }}</span>
+      <span>{{ backLabelKey | translate }}</span>
     </button>
     <div class="section__heading">
       <div class="team-detail__heading">
@@ -20,17 +20,30 @@
           <span>{{ members().length }} {{ 'workspace.teams.members' | translate }}</span>
         </div>
       </div>
-      @if (isMember()) {
+      @if (canManageCompany() || isMember()) {
         <div class="section__actions">
-          <app-button
-            type="button"
-            color="outline-white"
-            [rounded]="true"
-            [text]="'workspace.teams.detail.leave.action' | translate"
-            [icon]="{ iconName: 'actions/logout', position: 'left' }"
-            [disabled]="processing()"
-            (buttonClick)="leaveTeam()"
-          />
+          @if (canManageCompany()) {
+            <app-button
+              type="button"
+              color="secondary"
+              [rounded]="true"
+              [icon]="{ iconName: 'actions/edit', iconOnly: true }"
+              [hoverTitle]="'workspace.teams.edit' | translate"
+              [attr.aria-label]="'workspace.teams.edit' | translate"
+              (buttonClick)="editInfo.emit()"
+            />
+          }
+          @if (isMember()) {
+            <app-button
+              type="button"
+              color="outline-white"
+              [rounded]="true"
+              [text]="'workspace.teams.detail.leave.action' | translate"
+              [icon]="{ iconName: 'actions/logout', position: 'left' }"
+              [disabled]="processing()"
+              (buttonClick)="leaveTeam()"
+            />
+          }
         </div>
       }
     </div>

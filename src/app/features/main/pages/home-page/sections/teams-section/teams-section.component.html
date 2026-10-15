@@ -1,60 +1,26 @@
 <div class="section">
-  @if (!selectedTeam()) {
-    <div class="section__header">
-      <button type="button" class="section__back" (click)="navigateBack()" [attr.aria-label]="'workspace.section.back' | translate">
-        <app-icon name="arrows/back" size="0.875rem" />
-        <span>{{ 'workspace.section.back' | translate }}</span>
-      </button>
-      <div class="section__heading">
-        <h2 class="section__title">{{ 'workspace.teams.title' | translate }}</h2>
-        @if (canManage()) {
-          <div class="section__actions">
-            <app-button
-              [text]="'workspace.teams.create' | translate"
-              color="primary"
-              [rounded]="true"
-              [icon]="{ iconName: 'actions/add', position: 'left', color: '#FFF' }"
-              [loading]="saving()"
-              (buttonClick)="openCreateDialog()"
-            />
-          </div>
-        }
-      </div>
-    </div>
-  }
-
-  @if (detailLoading()) {
-    <div class="section">
-      <div class="section__header">
-        <div class="team-detail-skeleton__back"></div>
-        <div class="team-detail-skeleton__title"></div>
-      </div>
-      @for (g of [1, 2]; track g) {
-        <section class="team-detail-skeleton__group">
-          <div class="team-detail-skeleton__subtitle"></div>
-          <div class="section__body">
-            <div class="section__loading">
-              @for (s of [1, 2, 3]; track s) {
-                <div class="detail-row detail-row--skeleton" aria-hidden="true">
-                  <div class="detail-row__avatar-skeleton"></div>
-                  <div class="detail-row__info-skeleton"></div>
-                </div>
-              }
-            </div>
-          </div>
-        </section>
+  <div class="section__header">
+    <button type="button" class="section__back" (click)="navigateBack()" [attr.aria-label]="'workspace.section.back' | translate">
+      <app-icon name="arrows/back" size="0.875rem" />
+      <span>{{ 'workspace.section.back' | translate }}</span>
+    </button>
+    <div class="section__heading">
+      <h2 class="section__title">{{ 'workspace.teams.title' | translate }}</h2>
+      @if (canManage()) {
+        <div class="section__actions">
+          <app-button
+            [text]="'workspace.teams.create' | translate"
+            color="primary"
+            [rounded]="true"
+            [icon]="{ iconName: 'actions/add', position: 'left', color: '#FFF' }"
+            [loading]="saving()"
+            (buttonClick)="openCreateDialog()"
+          />
+        </div>
       }
     </div>
-  } @else if (selectedTeam(); as team) {
-    <app-team-detail
-      [companyId]="companyId!"
-      [companyRole]="companyRole"
-      [currentUserId]="currentUserId()"
-      [team]="team"
-      (back)="closeDetail()"
-      (changed)="loadPage(currentPage())"
-    />
-  } @else {
+  </div>
+
   <div class="section__body">
     @if (loading()) {
       <div class="section__loading">
@@ -90,18 +56,15 @@
               }
             </div>
             <span class="team-row__count">{{ team.memberCount }} {{ 'workspace.teams.members' | translate }}</span>
-            @if (canManage()) {
-              <button
-                type="button"
-                class="team-row__edit"
-                [attr.aria-label]="'workspace.teams.edit' | translate"
-                [attr.title]="'workspace.teams.edit' | translate"
-                [disabled]="editingTeamId() === team.id"
-                (click)="$event.stopPropagation(); openEditDialog(team)"
-              >
-                <app-icon name="actions/edit" size="1rem" />
-              </button>
-            }
+            <button
+              type="button"
+              class="team-row__edit"
+              [attr.aria-label]="'workspace.teams.detail.open' | translate"
+              [attr.title]="'workspace.teams.detail.open' | translate"
+              (click)="$event.stopPropagation(); openDetail(team)"
+            >
+              <app-icon name="arrows/next" size="1rem" />
+            </button>
           </div>
         }
       </div>
@@ -115,5 +78,4 @@
       />
     }
   </div>
-  }
 </div>

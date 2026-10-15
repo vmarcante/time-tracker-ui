@@ -165,6 +165,10 @@
       "edit": "Editar time",
       "empty": "Nenhum time cadastrado",
       "members": "membros",
+      "page": {
+        "back": "Times",
+        "notFound": "Time não encontrado"
+      },
       "dialog": {
         "title": {
           "create": "Novo time",
@@ -189,6 +193,7 @@
         }
       },
       "detail": {
+        "open": "Ver detalhes do time",
         "leave": {
           "action": "Sair do time",
           "title": "Sair do time",
@@ -238,6 +243,10 @@
       "create": "Novo Projeto",
       "edit": "Editar projeto",
       "empty": "Nenhum projeto cadastrado",
+      "page": {
+        "back": "Projetos",
+        "notFound": "Projeto não encontrado"
+      },
       "dialog": {
         "title": {
           "create": "Novo projeto",

@@ -14,6 +14,7 @@ import {
   TagInput,
   TagOutput,
   TimeEntryDetailOutput,
+  TimeEntryProjectOutput,
   TimeEntrySummaryOutput,
   UpdateTimeEntryInput,
 } from '../models/tracker.model';
@@ -25,15 +26,20 @@ export class TrackerApiService {
   private httpService = inject(HttpService);
 
   listMyEntries(
-    filters: { projectId?: string; from?: string; to?: string } = {},
+    filters: { projectId?: string; tagIds?: string[]; from?: string; to?: string } = {},
     page = 1,
     size = 20,
   ): ApiResponse<PageWrapper<TimeEntrySummaryOutput>> {
     const params: Record<string, string | number> = { page, size };
     if (filters.projectId) params['projectId'] = filters.projectId;
+    if (filters.tagIds?.length) params['tagIds'] = filters.tagIds.join(',');
     if (filters.from) params['from'] = this.toApiDateTime(filters.from);
     if (filters.to) params['to'] = this.toApiDateTime(filters.to);
     return this.httpService.get('/time-entries', { params });
+  }
+
+  listEntryProjects(): ApiResponse<TimeEntryProjectOutput[]> {
+    return this.httpService.get('/time-entries/projects');
   }
 
   findEntry(entryId: string): ApiResponse<TimeEntryDetailOutput> {

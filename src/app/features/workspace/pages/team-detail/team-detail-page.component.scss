@@ -1,0 +1,23 @@
+@use '../../../main/pages/home-page/sections/section-shared' as shared;
+
+.team-page {
+  &__skeleton {
+    height: 320px;
+    border-radius: var(--radius-md);
+    @include shared.skeleton-shimmer;
+  }
+
+  &__empty {
+    padding: var(--spacing-3xl) 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    color: var(--color-text-tertiary);
+
+    p {
+      font-size: 0.875rem;
+      margin: 0;
+    }
+  }
+}

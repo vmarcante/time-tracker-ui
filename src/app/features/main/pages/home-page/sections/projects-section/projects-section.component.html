@@ -32,7 +32,7 @@
     } @else {
       <div class="project-list">
         @for (project of projects(); track project.id) {
-          <div class="project-row">
+          <div class="project-row" role="button" tabindex="0" (click)="openProject(project)" (keydown.enter)="openProject(project)">
             <div class="project-row__icon">
               <app-icon name="objects/folder" size="1.125rem" />
             </div>
@@ -45,18 +45,15 @@
             <span class="project-row__status project-row__status--{{ project.status | lowercase }}">
               {{ 'workspace.projects.status.' + project.status | translate }}
             </span>
-            @if (canManage()) {
-              <button
-                type="button"
-                class="project-row__edit"
-                [attr.aria-label]="'workspace.projects.edit' | translate"
-                [attr.title]="'workspace.projects.edit' | translate"
-                [disabled]="editingProjectId() === project.id"
-                (click)="$event.stopPropagation(); openEditDialog(project)"
-              >
-                <app-icon name="actions/edit" size="1rem" />
-              </button>
-            }
+            <button
+              type="button"
+              class="project-row__edit"
+              [attr.aria-label]="'workspace.projects.edit' | translate"
+              [attr.title]="'workspace.projects.edit' | translate"
+              (click)="$event.stopPropagation(); openProject(project)"
+            >
+              <app-icon name="arrows/next" size="1rem" />
+            </button>
           </div>
         }
       </div>

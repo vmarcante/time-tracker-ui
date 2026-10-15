@@ -101,10 +101,26 @@ export const routes: Routes = [
             canActivate: [companyRoleGuard(['OWNER', 'ADMIN', 'MANAGER'])],
           },
           {
+            path: 'teams/detail',
+            loadComponent: () =>
+              import('./features/workspace/pages/team-detail/team-detail-page.component').then(
+                (m) => m.TeamDetailPageComponent,
+              ),
+            canActivate: [companyRoleGuard(['OWNER', 'ADMIN', 'MANAGER'])],
+          },
+          {
             path: 'projects',
             loadComponent: () =>
               import('./features/main/pages/home-page/sections/projects-section/projects-section.component').then(
                 (m) => m.ProjectsSectionComponent,
+              ),
+            canActivate: [companyRoleGuard(['OWNER', 'ADMIN', 'MANAGER'])],
+          },
+          {
+            path: 'projects/edit',
+            loadComponent: () =>
+              import('./features/workspace/pages/project-edit/project-edit-page.component').then(
+                (m) => m.ProjectEditPageComponent,
               ),
             canActivate: [companyRoleGuard(['OWNER', 'ADMIN', 'MANAGER'])],
           },

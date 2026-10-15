@@ -1,11 +1,83 @@
 @use '../../../main/pages/home-page/sections/section-shared' as *;
 
 .tracker-entries {
+  &__filters {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    padding: var(--spacing-sm) 0 var(--spacing-md);
+  }
+
   &__filter {
     min-width: 240px;
 
     ::ng-deep .mat-select-input-field {
       width: 100%;
+    }
+  }
+
+  &__tag-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    font-family: inherit;
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition:
+      background-color var(--transition-fast),
+      color var(--transition-fast),
+      border-color var(--transition-fast);
+
+    &:hover {
+      background-color: var(--color-surface-hover);
+    }
+
+    &--active {
+      color: var(--color-primary-600);
+      border-color: var(--color-primary-600);
+      background-color: var(--color-primary-50);
+    }
+  }
+
+  &__tag-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 var(--spacing-xs);
+    border-radius: 999px;
+    background: var(--color-primary-600);
+    color: var(--color-surface);
+    font-size: 0.6875rem;
+    font-weight: 600;
+  }
+
+  :host ::ng-deep &__play.btn {
+    width: 3.5rem !important;
+    height: 3.5rem !important;
+    min-width: 3.5rem !important;
+    min-height: 3.5rem !important;
+    padding: 0 !important;
+    justify-content: center;
+
+    .btn__icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.5rem;
+      height: 1.5rem;
+
+      .icon {
+        width: 1.5rem !important;
+        height: 1.5rem !important;
+      }
     }
   }
 
@@ -19,5 +91,133 @@
     height: 72px;
     border-radius: var(--radius-lg);
     @include skeleton-shimmer;
+
+    &--featured {
+      height: 110px;
+    }
+  }
+
+  &__featured {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    margin: var(--spacing-sm) 0;
+  }
+
+  &__featured-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-tertiary);
+
+    &--running {
+      color: var(--color-success);
+    }
+  }
+
+  :host ::ng-deep &__featured .time-entrie {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: 2px solid var(--color-error);
+    border-radius: var(--radius-lg);
+    background: transparent;
+  }
+
+  &__featured-meta {
+    list-style: none;
+    margin: 0;
+    padding: 0 var(--spacing-xs);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+
+    li {
+      display: inline-flex;
+      align-items: baseline;
+      gap: var(--spacing-xs);
+    }
+  }
+
+  &__featured-meta-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-tertiary);
+  }
+
+  &__featured-meta-value {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.tags-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  min-width: 220px;
+
+  &__hint {
+    font-size: 0.8125rem;
+    color: var(--color-text-tertiary);
+    margin: 0;
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-height: 180px;
+    overflow-y: auto;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: none;
+    border-radius: var(--radius-md);
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.8125rem;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+
+    &:hover {
+      background-color: var(--color-surface-hover);
+    }
+
+    &--selected {
+      background-color: var(--color-primary-50);
+    }
+
+    app-icon {
+      margin-left: auto;
+      color: var(--color-primary-600);
+    }
+  }
+
+  &__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }

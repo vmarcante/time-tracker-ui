@@ -3,6 +3,8 @@ import { Observable, Subscription, forkJoin } from 'rxjs';
 import { ForkJoinRequestOptions, RequestOptions, ApiResponse, ApiTypedResponse } from '../../types';
 import { HttpErrorResponse } from '@angular/common/http';
 
+type ApiTypedTuple<T extends readonly unknown[]> = { [K in keyof T]: ApiTypedResponse<T[K]> };
+
 @Injectable({
   providedIn: 'root',
 })
@@ -128,10 +130,10 @@ export class ApiAdapterService {
 
   executeForkJoinWithPromise<T extends readonly unknown[]>(
     requests: readonly [...{ [K in keyof T]: ApiResponse<T[K]> }],
-    options: ForkJoinRequestOptions<T> = {},
-  ): Promise<T> {
+    options: ForkJoinRequestOptions<ApiTypedTuple<T>> = {},
+  ): Promise<ApiTypedTuple<T>> {
     return new Promise((resolve, reject) => {
-      this.executeForkJoinRequest<T>(requests, {
+      this.executeForkJoinRequest<ApiTypedTuple<T>>(requests, {
         ...options,
         onSuccessForkJoin: (responses) => {
           if (options.onSuccessForkJoin) {

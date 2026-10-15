@@ -42,8 +42,10 @@ export class TeamDetailComponent implements OnInit {
   @Input() companyRole: CompanyRole | null = null;
   @Input() currentUserId: string | null = null;
   @Input() team!: TeamDetailOutput;
+  @Input() backLabelKey = 'workspace.section.back';
   @Output() back = new EventEmitter<void>();
   @Output() changed = new EventEmitter<void>();
+  @Output() editInfo = new EventEmitter<void>();
 
   readonly members = signal<TeamMemberOutput[]>([]);
   readonly membersLoading = signal(true);

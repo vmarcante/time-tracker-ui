@@ -165,6 +165,10 @@
       "edit": "Edit team",
       "empty": "No teams registered",
       "members": "members",
+      "page": {
+        "back": "Teams",
+        "notFound": "Team not found"
+      },
       "dialog": {
         "title": {
           "create": "New team",
@@ -189,6 +193,7 @@
         }
       },
       "detail": {
+        "open": "View team details",
         "leave": {
           "action": "Leave team",
           "title": "Leave team",
@@ -238,6 +243,10 @@
       "create": "New Project",
       "edit": "Edit project",
       "empty": "No projects registered",
+      "page": {
+        "back": "Projects",
+        "notFound": "Project not found"
+      },
       "dialog": {
         "title": {
           "create": "New project",

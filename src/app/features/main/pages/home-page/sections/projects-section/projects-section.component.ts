@@ -11,7 +11,6 @@ import { CompanyManagementApiService } from '../../../../services/company-manage
 import {
   ProjectDetailOutput,
   ProjectSummaryOutput,
-  ProjectTeamMembersInput,
 } from '../../../../models/company-management.model';
 import { CompanyRole } from '../../../../../auth/models';
 import { PageWrapper } from '../../../../../../shared/types';
@@ -51,7 +50,6 @@ export class ProjectsSectionComponent implements OnInit {
   readonly loading = signal(true);
   readonly currentPage = signal(1);
   readonly saving = signal(false);
-  readonly editingProjectId = signal<string | null>(null);
 
   readonly canManage = (): boolean => {
     const role = this.companyRole;
@@ -82,19 +80,9 @@ export class ProjectsSectionComponent implements OnInit {
     this.openProjectDialog(null);
   }
 
-  openEditDialog(project: ProjectSummaryOutput): void {
-    if (!this.companyId || !this.canManage() || this.editingProjectId()) return;
-
-    const companyId = this.companyId;
-    this.editingProjectId.set(project.id);
-
-    this.apiAdapter.executeRequest(this.companyApi.findProject(companyId, project.id), {
-      ignoreLoading: true,
-      onSuccess: (response) => {
-        this.editingProjectId.set(null);
-        this.openProjectDialog(response.data);
-      },
-      onError: () => this.editingProjectId.set(null),
+  openProject(project: ProjectSummaryOutput): void {
+    this.router.navigate(['/workspace/projects/edit'], {
+      state: { projectId: project.id },
     });
   }
 
@@ -108,35 +96,12 @@ export class ProjectsSectionComponent implements OnInit {
         { ignoreLoading: true },
       );
 
-      let linkedTeams: ProjectTeamMembersInput[] = [];
-      if (project) {
-        const [linkedResponse, membersResponse] = await this.apiAdapter.executeForkJoinWithPromise(
-          [
-            this.companyApi.listProjectTeams(companyId, project.id, 1, 100),
-            this.companyApi.listProjectMembers(companyId, project.id, 1, 100),
-          ],
-          { ignoreLoading: true },
-        );
-
-        const memberIdsByTeam = new Map<string, string[]>();
-        for (const assignment of membersResponse.content) {
-          const list = memberIdsByTeam.get(assignment.teamId) ?? [];
-          list.push(assignment.userId);
-          memberIdsByTeam.set(assignment.teamId, list);
-        }
-
-        linkedTeams = linkedResponse.content.map((team) => ({
-          teamId: team.id,
-          memberIds: memberIdsByTeam.get(team.id) ?? [],
-        }));
-      }
-
       this.dialogService.openDialog<ProjectDialogComponent, ProjectDialogResult>(
         ProjectDialogComponent,
         {
           width: 'min(680px, 95vw)',
           panelClass: ['stepped-dialog-panel'],
-          data: { project, teams: teamsResponse.data, linkedTeams },
+          data: { project, teams: teamsResponse.data, linkedTeams: [] },
           closeCallback: (result) => {
             if (result?.confirmed) {
               void this.saveProject(companyId, project, result);
@@ -145,7 +110,7 @@ export class ProjectsSectionComponent implements OnInit {
         },
       );
     } catch {
-      this.editingProjectId.set(null);
+      // error already surfaced by the request layer
     }
   }
 
@@ -166,17 +131,10 @@ export class ProjectsSectionComponent implements OnInit {
     };
 
     try {
-      if (project) {
-        await this.apiAdapter.executeRequestWithPromise(
-          this.companyApi.updateProject(companyId, project.id, input),
-          { ignoreLoading: true },
-        );
-      } else {
-        await this.apiAdapter.executeRequestWithPromise(
-          this.companyApi.createProject(companyId, input),
-          { ignoreLoading: true },
-        );
-      }
+      await this.apiAdapter.executeRequestWithPromise(
+        this.companyApi.createProject(companyId, input),
+        { ignoreLoading: true },
+      );
 
       this.loadPage(this.currentPage());
     } catch {

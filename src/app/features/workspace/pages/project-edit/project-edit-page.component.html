@@ -1,0 +1,167 @@
+<div class="section">
+  <div class="section__header">
+    <button
+      type="button"
+      class="section__back"
+      (click)="navigateBack()"
+      [attr.aria-label]="'workspace.projects.page.back' | translate"
+    >
+      <app-icon name="arrows/back" size="0.875rem" />
+      <span>{{ 'workspace.projects.page.back' | translate }}</span>
+    </button>
+    <div class="section__heading">
+      <h2 class="section__title">
+        @if (project()) {
+          {{ project()!.name }}
+        } @else {
+          {{ 'workspace.projects.title' | translate }}
+        }
+      </h2>
+      @if (project(); as p) {
+        <span class="project-page__status project-page__status--{{ p.status | lowercase }}">
+          {{ 'workspace.projects.status.' + p.status | translate }}
+        </span>
+      }
+    </div>
+  </div>
+
+  <div class="project-page__body">
+    @if (loading()) {
+      <div class="project-page__skeleton" aria-hidden="true"></div>
+    } @else if (notFound()) {
+      <div class="project-page__empty">
+        <app-icon name="objects/folder" size="2rem" />
+        <p>{{ 'workspace.projects.page.notFound' | translate }}</p>
+        <app-button
+          [text]="'workspace.projects.page.back' | translate"
+          color="primary"
+          [rounded]="true"
+          (buttonClick)="navigateBack()"
+        />
+      </div>
+    } @else {
+        <section class="project-page__panel">
+          <div class="project-page__panel-header">
+            <h3 class="project-page__panel-title">
+              {{ 'workspace.projects.dialog.steps.details' | translate }}
+            </h3>
+            <p class="project-page__panel-hint">
+              {{ 'workspace.projects.dialog.steps.detailsDescription' | translate }}
+            </p>
+          </div>
+          <div class="project-page__fields">
+            <app-text-input
+              [control]="nameControl"
+              [labelIcon]="'objects/folder'"
+              [label]="'workspace.projects.dialog.name.label' | translate"
+              [placeholder]="'workspace.projects.dialog.name.placeholder' | translate"
+              [required]="true"
+            />
+            <app-text-input
+              [control]="clientNameControl"
+              [labelIcon]="'objects/person'"
+              [label]="'workspace.projects.dialog.clientName.label' | translate"
+              [placeholder]="'workspace.projects.dialog.clientName.placeholder' | translate"
+              [required]="true"
+            />
+            <app-textarea-input
+              [control]="descriptionControl"
+              [labelIcon]="'objects/text-file'"
+              [label]="'workspace.projects.dialog.description.label' | translate"
+              [placeholder]="'workspace.projects.dialog.description.placeholder' | translate"
+              [hint]="'workspace.projects.dialog.description.hint' | translate"
+              [rows]="3"
+              [showCounter]="false"
+            />
+            <app-daterange-input
+              [formGroup]="datesGroup"
+              [label]="'workspace.projects.dialog.dates.label' | translate"
+              [startLabel]="'workspace.projects.dialog.dates.start' | translate"
+              [endLabel]="'workspace.projects.dialog.dates.end' | translate"
+              [separator]="'workspace.projects.dialog.dates.separator' | translate"
+              [hint]="'workspace.projects.dialog.dates.hint' | translate"
+              [errorMessages]="dateErrorMessages"
+            />
+          </div>
+        </section>
+
+        <section class="project-page__panel">
+          <div class="project-page__panel-header">
+            <h3 class="project-page__panel-title">
+              {{ 'workspace.projects.dialog.steps.teams' | translate }}
+            </h3>
+            <p class="project-page__panel-hint">
+              {{ 'workspace.projects.dialog.steps.teamsDescription' | translate }}
+            </p>
+          </div>
+          <div class="project-page__teams">
+            @for (team of teams(); track team.id) {
+              <div
+                class="project-page__team"
+                [class.project-page__team--selected]="isTeamSelected(team.id)"
+              >
+                <div class="project-page__team-header">
+                  <app-checkbox-input
+                    [control]="teamControlOf(team.id)"
+                    [label]="team.name"
+                    (onValueChange)="onTeamToggle(team, $event)"
+                  />
+                  <span class="project-page__team-count">
+                    {{ team.members.length }}
+                    {{ 'workspace.projects.dialog.teams.members' | translate }}
+                  </span>
+                </div>
+
+                @if (isTeamSelected(team.id)) {
+                  <div class="project-page__team-members">
+                    @for (member of team.members; track member.userId) {
+                      <div class="project-page__member">
+                        <app-checkbox-input
+                          [control]="memberControlOf(team.id, member.userId)"
+                          [label]="member.name"
+                        />
+                        @if (member.role === 'LEAD') {
+                          <span class="project-page__member-badge">
+                            {{ 'workspace.projects.dialog.teams.lead' | translate }}
+                          </span>
+                        }
+                      </div>
+                    } @empty {
+                      <p class="project-page__team-empty">
+                        {{ 'workspace.projects.dialog.teams.noMembers' | translate }}
+                      </p>
+                    }
+                  </div>
+                }
+              </div>
+            } @empty {
+              <p class="project-page__teams-empty">
+                {{ 'workspace.projects.dialog.teams.empty' | translate }}
+              </p>
+            }
+          </div>
+        </section>
+
+      @if (canEdit()) {
+        <div class="project-page__actions">
+          <app-button
+            type="button"
+            color="outline-white"
+            [rounded]="true"
+            [text]="'common.dialog.cancel' | translate"
+            (buttonClick)="navigateBack()"
+          />
+          <app-button
+            type="button"
+            color="primary"
+            [rounded]="true"
+            [loading]="saving()"
+            [text]="'workspace.projects.dialog.submit.edit' | translate"
+            [icon]="{ iconName: 'status/check', svgIcon: true, color: '#FFF', position: 'right' }"
+            (buttonClick)="save()"
+          />
+        </div>
+      }
+    }
+  </div>
+</div>

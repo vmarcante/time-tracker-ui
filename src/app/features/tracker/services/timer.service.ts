@@ -1,4 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
+import { Subject } from 'rxjs';
 import { ApiAdapterService } from '../../../shared/services/api/api-adapter.service';
 import { TrackerApiService } from './tracker.api.service';
 import {
@@ -17,6 +18,10 @@ export class TimerService {
   readonly running = signal<RunningTimerOutput | null>(null);
   readonly loading = signal(false);
   readonly busy = signal(false);
+
+  private readonly entryChangedSubject = new Subject<TimeEntryDetailOutput>();
+  /** Emitido quando uma entry muda via timer (start/stop) ou mutações sincronizadas. */
+  readonly entryChanged$ = this.entryChangedSubject.asObservable();
 
   private readonly nowTick = signal(Date.now());
   /** Relógio compartilhado — componentes derivam contadores a partir dele. */
@@ -73,6 +78,7 @@ export class TimerService {
       onSuccess: (response) => {
         this.setRunning(null);
         this.busy.set(false);
+        this.entryChangedSubject.next(response.data);
         onSuccess?.(response.data);
       },
       onError: () => this.busy.set(false),
@@ -81,6 +87,7 @@ export class TimerService {
 
   /** Atualiza o estado a partir de um detail (resposta de start/stop/mutations). */
   syncFromDetail(entry: TimeEntryDetailOutput): void {
+    this.entryChangedSubject.next(entry);
     const runningSession = entry.sessions.find((session) => session.running);
     if (!runningSession) {
       this.setRunning(null);

@@ -3,14 +3,6 @@
     <div class="section__heading">
       <h2 class="section__title">{{ 'tracker.myEntries.title' | translate }}</h2>
       <div class="section__actions">
-        <app-select-input
-          class="tracker-entries__filter"
-          [control]="projectFilterControl"
-          [options]="projectOptions()"
-          [showLabel]="false"
-          [placeholder]="'tracker.entries.filterProject' | translate"
-          (onValueChange)="onFilterChange($event)"
-        />
         <app-popover
           #startPicker
           [options]="{
@@ -25,11 +17,15 @@
         />
         <ng-template #startTrigger>
           <app-button
-            [text]="'tracker.quickActions.newTimeEntry' | translate"
-            [icon]="{ iconName: 'actions/add', position: 'left', color: '#FFF' }"
-            [color]="'primary'"
-            [rounded]="true"
+            customClass="tracker-entries__play"
+            [layoutType]="'icon'"
+            [icon]="{ iconName: 'actions/play', iconOnly: true, color: '#FFF' }"
+            [color]="'success'"
+            [circle]="true"
+            [fill]="true"
+            [size]="{ large: true }"
             [loading]="timer.busy()"
+            [hoverTitle]="'tracker.quickActions.newTimeEntry' | translate"
             (buttonClick)="startPicker.toggle()"
           />
         </ng-template>
@@ -38,6 +34,117 @@
         </ng-template>
       </div>
     </div>
+  </div>
+
+  @if (loading() && !featuredEntry()) {
+    <div
+      class="tracker-entries__skeleton-card tracker-entries__skeleton-card--featured"
+      aria-hidden="true"
+    ></div>
+  } @else if (featuredEntry(); as featured) {
+    <section class="tracker-entries__featured">
+      <span
+        class="tracker-entries__featured-label"
+        [class.tracker-entries__featured-label--running]="featuredRunning()"
+      >
+        {{ (featuredRunning() ? 'tracker.entries.running' : 'tracker.entries.featured') | translate }}
+      </span>
+      <app-card-time-entrie
+        [entry]="featured"
+        [showDate]="true"
+        (entryChanged)="onEntryChanged($event)"
+      />
+      @if (featuredMeta(); as meta) {
+        <ul class="tracker-entries__featured-meta">
+          <li>
+            <span class="tracker-entries__featured-meta-label">
+              {{ 'tracker.entries.sessions' | translate }}
+            </span>
+            <span class="tracker-entries__featured-meta-value">{{ meta.sessions }}</span>
+          </li>
+          <li>
+            <span class="tracker-entries__featured-meta-label">
+              {{ 'tracker.entries.totalDuration' | translate }}
+            </span>
+            <span class="tracker-entries__featured-meta-value">{{ meta.duration }}</span>
+          </li>
+          <li>
+            <span class="tracker-entries__featured-meta-label">
+              {{ 'tracker.entries.createdAt' | translate }}
+            </span>
+            <span class="tracker-entries__featured-meta-value">
+              {{ meta.createdAt | date: 'mediumDate' }}
+            </span>
+          </li>
+        </ul>
+      }
+    </section>
+  }
+
+  <div class="tracker-entries__filters">
+    <app-select-input
+      class="tracker-entries__filter"
+      [control]="projectFilterControl"
+      [options]="projectOptions()"
+      [showLabel]="false"
+      [placeholder]="'tracker.entries.filterProject' | translate"
+      (onValueChange)="onFilterChange($event)"
+    />
+    <app-popover
+      #tagFilter
+      [options]="{
+        position: 'bottom',
+        width: '240px',
+        closeOnClickOutside: true,
+        closeOnEscape: true,
+      }"
+      [triggerTemplate]="tagFilterTrigger"
+      [contentTemplate]="tagFilterContent"
+    />
+    <ng-template #tagFilterTrigger>
+      <button
+        type="button"
+        class="tracker-entries__tag-filter"
+        [class.tracker-entries__tag-filter--active]="filterTagIds().size > 0"
+        (click)="tagFilter.toggle()"
+      >
+        <app-icon name="objects/layers" size="0.875rem" />
+        <span>{{ 'tracker.entries.filterTags' | translate }}</span>
+        @if (filterTagIds().size > 0) {
+          <span class="tracker-entries__tag-count">{{ filterTagIds().size }}</span>
+        }
+      </button>
+    </ng-template>
+    <ng-template #tagFilterContent>
+      <div class="tags-picker">
+        @if (userTags().length > 0) {
+          <ul class="tags-picker__list">
+            @for (tag of userTags(); track tag.id) {
+              <li>
+                <button
+                  type="button"
+                  class="tags-picker__item"
+                  [class.tags-picker__item--selected]="isTagFilterSelected(tag.id)"
+                  (click)="toggleTagFilter(tag.id)"
+                >
+                  <span
+                    class="tags-picker__dot"
+                    [style.background-color]="tag.color"
+                    aria-hidden="true"
+                  ></span>
+                  <span class="tags-picker__name">{{ tag.name }}</span>
+                  @if (isTagFilterSelected(tag.id)) {
+                    <app-icon name="status/check" size="0.75rem" />
+                  }
+                </button>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="tags-picker__hint">{{ 'timeEntry.noTagsFound' | translate }}</p>
+        }
+      </div>
+    </ng-template>
   </div>
 
   @if (loading()) {
@@ -52,10 +159,12 @@
       <p>{{ 'tracker.entries.empty' | translate }}</p>
     </div>
   } @else {
-    <app-recent-time-entries
-      [entries]="entries()"
-      (entryChanged)="onEntryChanged($event)"
-    />
+    @if (listEntries().length > 0) {
+      <app-recent-time-entries
+        [entries]="listEntries()"
+        (entryChanged)="onEntryChanged($event)"
+      />
+    }
 
     <app-pagination
       [page]="currentPage()"

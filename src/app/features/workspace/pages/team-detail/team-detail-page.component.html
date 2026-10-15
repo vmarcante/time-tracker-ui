@@ -1,0 +1,40 @@
+@if (loading()) {
+  <div class="section">
+    <div class="team-page__skeleton" aria-hidden="true"></div>
+  </div>
+} @else if (notFound()) {
+  <div class="section">
+    <div class="section__header">
+      <button
+        type="button"
+        class="section__back"
+        (click)="navigateBack()"
+        [attr.aria-label]="'workspace.teams.page.back' | translate"
+      >
+        <app-icon name="arrows/back" size="0.875rem" />
+        <span>{{ 'workspace.teams.page.back' | translate }}</span>
+      </button>
+    </div>
+    <div class="team-page__empty">
+      <app-icon name="objects/layers" size="2rem" />
+      <p>{{ 'workspace.teams.page.notFound' | translate }}</p>
+      <app-button
+        [text]="'workspace.teams.page.back' | translate"
+        color="primary"
+        [rounded]="true"
+        (buttonClick)="navigateBack()"
+      />
+    </div>
+  </div>
+} @else if (team(); as t) {
+  <app-team-detail
+    [companyId]="t.companyId"
+    [companyRole]="companyRole"
+    [currentUserId]="currentUserId()"
+    [team]="t"
+    backLabelKey="workspace.teams.page.back"
+    (back)="navigateBack()"
+    (changed)="reloadTeam()"
+    (editInfo)="openEditDialog()"
+  />
+}

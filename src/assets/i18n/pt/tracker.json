@@ -16,6 +16,12 @@
     "entries": {
       "allProjects": "Todos os projetos",
       "filterProject": "Filtrar por projeto",
+      "filterTags": "Tags",
+      "featured": "Mais recente",
+      "running": "Em andamento",
+      "sessions": "Sessões",
+      "totalDuration": "Duração total",
+      "createdAt": "Criada em",
       "clearFilter": "Limpar filtro",
       "empty": "Nenhuma marcação encontrada",
       "noSessions": "Sem sessões",

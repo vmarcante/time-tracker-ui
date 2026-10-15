@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '../../../../../../shared/pipes/translate.pipe';
@@ -9,6 +10,7 @@ import { CompanyManagementApiService } from '../../../../services/company-manage
 import { CompanyTimeEntryOutput } from '../../../../models/company-management.model';
 import { PageWrapper } from '../../../../../../shared/types';
 import { AuthTokenService } from '../../../../../auth/services/auth-token.service';
+import { TimerService } from '../../../../../tracker/services/timer.service';
 
 @Component({
   selector: 'app-time-entries-section',
@@ -21,6 +23,8 @@ export class TimeEntriesSectionComponent implements OnInit {
   private apiAdapter = inject(ApiAdapterService);
   private authTokenService = inject(AuthTokenService);
   private router = inject(Router);
+  private timer = inject(TimerService);
+  private destroyRef = inject(DestroyRef);
 
   private get companyId(): string | null {
     return this.authTokenService.currentUser()?.companyId ?? null;
@@ -37,6 +41,9 @@ export class TimeEntriesSectionComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadPage(1);
+    this.timer.entryChanged$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadPage(this.currentPage()));
   }
 
   loadPage(pageNumber: number): void {
