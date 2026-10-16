@@ -34,7 +34,7 @@
     @if (tags().length > 0) {
       <ul class="time-entrie__tags" aria-label="Tags">
         @for (tag of visibleTags(); track tag.id) {
-          <li class="time-entrie__tag" [style.background-color]="tag.color">
+          <li class="time-entrie__tag" [style.--tag-color]="tag.color">
             {{ tag.name }}
           </li>
         }

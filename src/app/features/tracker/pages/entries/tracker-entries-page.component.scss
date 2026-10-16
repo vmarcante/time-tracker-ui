@@ -40,7 +40,8 @@
     min-width: 240px;
     flex: 0 1 280px;
 
-    ::ng-deep .mat-select-input-field {
+    ::ng-deep .mat-select-input-field,
+    ::ng-deep .mat-text-input-field {
       width: 100%;
     }
   }

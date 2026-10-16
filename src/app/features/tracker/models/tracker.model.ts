@@ -67,6 +67,7 @@ export interface StartTimerInput {
   projectId?: string | null;
   name?: string | null;
   description?: string | null;
+  tagIds?: string[] | null;
 }
 
 export interface SessionInput {

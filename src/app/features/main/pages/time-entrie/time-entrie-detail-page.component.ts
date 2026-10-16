@@ -16,8 +16,10 @@ import { DialogService } from '../../../../shared/services/dialog.service';
 import { TranslationService } from '../../../../shared/services/translation.service';
 import { ApiAdapterService } from '../../../../shared/services/api/api-adapter.service';
 import { TimeEntrieSessionsComponent } from '../../components/time-entries/sessions/time-entrie-sessions.component';
-import { ProjectPickerComponent } from '../../../tracker/components/project-picker/project-picker.component';
-import { ProjectSummaryOutput } from '../../models/company-management.model';
+import {
+  ProjectPickerComponent,
+  ProjectPickerSelection,
+} from '../../../tracker/components/project-picker/project-picker.component';
 import { TrackerApiService } from '../../../tracker/services/tracker.api.service';
 import { TimerService } from '../../../tracker/services/timer.service';
 import {
@@ -167,11 +169,12 @@ export class TimeEntrieDetailPageComponent implements OnInit {
 
   private projectPopover = viewChild<PopoverComponent>('projectPopover');
 
-  protected onProjectChange(project: ProjectSummaryOutput | null): void {
+  protected onProjectChange(selection: ProjectPickerSelection): void {
     const entry = this.entry();
     if (!entry || this.saving()) {
       return;
     }
+    const project = selection.project;
 
     this.projectPopover()?.close();
     this.saving.set(true);

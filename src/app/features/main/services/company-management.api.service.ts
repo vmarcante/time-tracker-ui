@@ -33,11 +33,11 @@ export class CompanyManagementApiService {
 
   listMembers(
     companyId: string,
-    page = 1,
-    size = 10,
+    pageNumber = 1,
+    pageSize = 10,
   ): ApiResponse<PageWrapper<CompanyMemberOutput>> {
     return this.httpService.get(`/companies/${companyId}/members`, {
-      params: { page, size },
+      params: { pageNumber, pageSize },
     });
   }
 
@@ -51,21 +51,21 @@ export class CompanyManagementApiService {
 
   listPending(
     companyId: string,
-    page = 1,
-    size = 10,
+    pageNumber = 1,
+    pageSize = 10,
   ): ApiResponse<PageWrapper<CompanyMemberOutput>> {
     return this.httpService.get(`/companies/${companyId}/members/pending`, {
-      params: { page, size },
+      params: { pageNumber, pageSize },
     });
   }
 
   listResolved(
     companyId: string,
-    page = 1,
-    size = 10,
+    pageNumber = 1,
+    pageSize = 10,
   ): ApiResponse<PageWrapper<CompanyMemberOutput>> {
     return this.httpService.get(`/companies/${companyId}/members/resolved`, {
-      params: { page, size },
+      params: { pageNumber, pageSize },
     });
   }
 
@@ -115,8 +115,8 @@ export class CompanyManagementApiService {
     return this.httpService.post(`/companies/${companyId}/members/pre-register-and-invite`, input);
   }
 
-  listTeams(companyId: string, page = 1, size = 10): ApiResponse<PageWrapper<TeamSummaryOutput>> {
-    return this.httpService.get(`/companies/${companyId}/teams`, { params: { page, size } });
+  listTeams(companyId: string, pageNumber = 1, pageSize = 10): ApiResponse<PageWrapper<TeamSummaryOutput>> {
+    return this.httpService.get(`/companies/${companyId}/teams`, { params: { pageNumber, pageSize } });
   }
 
   listTeamsWithMembers(companyId: string): ApiResponse<TeamWithMembersOutput[]> {
@@ -142,11 +142,11 @@ export class CompanyManagementApiService {
   listTeamMembers(
     companyId: string,
     teamId: string,
-    page = 1,
-    size = 50,
+    pageNumber = 1,
+    pageSize = 50,
   ): ApiResponse<PageWrapper<TeamMemberOutput>> {
     return this.httpService.get(`/companies/${companyId}/teams/${teamId}/members`, {
-      params: { page, size },
+      params: { pageNumber, pageSize },
     });
   }
 
@@ -181,11 +181,11 @@ export class CompanyManagementApiService {
   listTeamProjects(
     companyId: string,
     teamId: string,
-    page = 1,
-    size = 50,
+    pageNumber = 1,
+    pageSize = 50,
   ): ApiResponse<PageWrapper<ProjectSummaryOutput>> {
     return this.httpService.get(`/companies/${companyId}/teams/${teamId}/projects`, {
-      params: { page, size },
+      params: { pageNumber, pageSize },
     });
   }
 
@@ -213,29 +213,29 @@ export class CompanyManagementApiService {
   listProjectTeams(
     companyId: string,
     projectId: string,
-    page = 1,
-    size = 100,
+    pageNumber = 1,
+    pageSize = 100,
   ): ApiResponse<PageWrapper<TeamSummaryOutput>> {
     return this.httpService.get(`/companies/${companyId}/projects/${projectId}/teams`, {
-      params: { page, size },
+      params: { pageNumber, pageSize },
     });
   }
 
   listProjects(
     companyId: string,
-    page = 1,
-    size = 10,
+    pageNumber = 1,
+    pageSize = 10,
   ): ApiResponse<PageWrapper<ProjectSummaryOutput>> {
-    return this.httpService.get(`/companies/${companyId}/projects`, { params: { page, size } });
+    return this.httpService.get(`/companies/${companyId}/projects`, { params: { pageNumber, pageSize } });
   }
 
   listMyProjects(
     companyId: string,
-    page = 1,
-    size = 50,
+    pageNumber = 1,
+    pageSize = 50,
   ): ApiResponse<PageWrapper<ProjectSummaryOutput>> {
     return this.httpService.get(`/companies/${companyId}/projects/mine`, {
-      params: { page, size },
+      params: { pageNumber, pageSize },
     });
   }
 
@@ -246,11 +246,11 @@ export class CompanyManagementApiService {
   listProjectMembers(
     companyId: string,
     projectId: string,
-    page = 1,
-    size = 100,
+    pageNumber = 1,
+    pageSize = 100,
   ): ApiResponse<PageWrapper<ProjectAssignmentOutput>> {
     return this.httpService.get(`/companies/${companyId}/projects/${projectId}/members`, {
-      params: { page, size },
+      params: { pageNumber, pageSize },
     });
   }
 
@@ -268,8 +268,8 @@ export class CompanyManagementApiService {
 
   listCompanyTimeEntries(
     companyId: string,
-    page = 1,
-    size = 10,
+    pageNumber = 1,
+    pageSize = 10,
     filters: {
       from?: string | null;
       to?: string | null;
@@ -278,7 +278,7 @@ export class CompanyManagementApiService {
       teamIds?: string[] | null;
     } = {},
   ): ApiResponse<PageWrapper<CompanyTimeEntryOutput>> {
-    const params: Record<string, string | number> = { page, size };
+    const params: Record<string, string | number> = { pageNumber, pageSize };
     if (filters.from) params['from'] = filters.from;
     if (filters.to) params['to'] = filters.to;
     if (filters.userIds?.length) params['userIds'] = filters.userIds.join(',');

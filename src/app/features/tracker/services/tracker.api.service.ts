@@ -26,13 +26,14 @@ export class TrackerApiService {
   private httpService = inject(HttpService);
 
   listMyEntries(
-    filters: { projectId?: string; tagIds?: string[]; from?: string; to?: string } = {},
-    page = 1,
-    size = 20,
+    filters: { projectId?: string; tagIds?: string[]; name?: string; from?: string; to?: string } = {},
+    pageNumber = 1,
+    pageSize = 20,
   ): ApiResponse<PageWrapper<TimeEntrySummaryOutput>> {
-    const params: Record<string, string | number> = { page, size };
+    const params: Record<string, string | number> = { pageNumber, pageSize };
     if (filters.projectId) params['projectId'] = filters.projectId;
     if (filters.tagIds?.length) params['tagIds'] = filters.tagIds.join(',');
+    if (filters.name?.trim()) params['name'] = filters.name.trim();
     if (filters.from) params['from'] = this.toApiDateTime(filters.from);
     if (filters.to) params['to'] = this.toApiDateTime(filters.to);
     return this.httpService.get('/time-entries', { params });
@@ -93,8 +94,11 @@ export class TrackerApiService {
     return this.httpService.get('/timer/current');
   }
 
-  listPersonalProjects(page = 1, size = 50): ApiResponse<PageWrapper<ProjectSummaryOutput>> {
-    return this.httpService.get('/projects', { params: { page, size } });
+  listPersonalProjects(
+    pageNumber = 1,
+    pageSize = 50,
+  ): ApiResponse<PageWrapper<ProjectSummaryOutput>> {
+    return this.httpService.get('/projects', { params: { pageNumber, pageSize } });
   }
 
   createPersonalProject(input: CreateProjectInput): ApiResponse<CreateProjectOutput> {

@@ -19,6 +19,8 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
 import { PopoverComponent } from '../../../../shared/components/popover/popover.component';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { SelectInputComponent } from '../../../../shared/components/inputs/select/select-input.component';
+import { TextInputComponent } from '../../../../shared/components/inputs/text/text-input.component';
+import { debounceTime } from 'rxjs';
 import {
   DateRange,
   DaterangeInputComponent,
@@ -28,7 +30,10 @@ import { TranslationService } from '../../../../shared/services/translation.serv
 import { InputValue, PageWrapper, SelectOption } from '../../../../shared/types';
 import { RecentTimeEntriesComponent } from '../../../main/components/time-entries/recent-entries/recent-time-entries.component';
 import { CardTimeEntrieComponent } from '../../../main/components/time-entries/card/card-time-entrie.component';
-import { ProjectPickerComponent } from '../../components/project-picker/project-picker.component';
+import {
+  ProjectPickerComponent,
+  ProjectPickerSelection,
+} from '../../components/project-picker/project-picker.component';
 import { TrackerApiService } from '../../services/tracker.api.service';
 import { TimerService } from '../../services/timer.service';
 import {
@@ -36,7 +41,6 @@ import {
   TimeEntryDetailOutput,
   TimeEntrySummaryOutput,
 } from '../../models/tracker.model';
-import { ProjectSummaryOutput } from '../../../main/models/company-management.model';
 
 @Component({
   selector: 'app-tracker-entries-page',
@@ -50,6 +54,7 @@ import { ProjectSummaryOutput } from '../../../main/models/company-management.mo
     PaginationComponent,
     SelectInputComponent,
     DaterangeInputComponent,
+    TextInputComponent,
     RecentTimeEntriesComponent,
     CardTimeEntrieComponent,
     ProjectPickerComponent,
@@ -106,6 +111,8 @@ export class TrackerEntriesPageComponent implements OnInit {
   readonly filterTo = signal<string | null>(null);
   readonly userTags = signal<TagOutput[]>([]);
 
+  readonly filterName = signal<string | null>(null);
+  readonly nameFilterControl = new FormControl('', { nonNullable: true });
   readonly projectFilterControl = new FormControl<string>('');
   readonly periodGroup = new FormGroup({
     start: new FormControl<Date | null>(null),
@@ -133,6 +140,14 @@ export class TrackerEntriesPageComponent implements OnInit {
     this.loadProjects();
     this.loadTags();
     this.loadPage(1);
+
+    this.nameFilterControl.valueChanges
+      .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => {
+        const name = value.trim();
+        this.filterName.set(name.length > 0 ? name : null);
+        this.loadPage(1);
+      });
 
     this.timer.entryChanged$
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -170,6 +185,7 @@ export class TrackerEntriesPageComponent implements OnInit {
     }
     const projectId = this.filterProjectId();
     const tagIds = [...this.filterTagIds()];
+    const name = this.filterName();
     const from = this.filterFrom();
     const to = this.filterTo();
     this.apiAdapter.executeRequest(
@@ -177,6 +193,7 @@ export class TrackerEntriesPageComponent implements OnInit {
         {
           ...(projectId ? { projectId } : {}),
           ...(tagIds.length ? { tagIds } : {}),
+          ...(name ? { name } : {}),
           ...(from ? { from } : {}),
           ...(to ? { to } : {}),
         },
@@ -234,9 +251,13 @@ export class TrackerEntriesPageComponent implements OnInit {
     this.loadPage(1);
   }
 
-  onProjectStart(project: ProjectSummaryOutput | null): void {
+  onProjectStart(selection: ProjectPickerSelection): void {
     this.startPickerPopover()?.close();
-    this.timer.start(project ? { projectId: project.id } : {});
+    this.timer.start({
+      projectId: selection.project?.id ?? null,
+      name: selection.name,
+      tagIds: selection.tagIds,
+    });
   }
 
   onEntryChanged(detail: TimeEntryDetailOutput): void {
@@ -321,6 +342,7 @@ export class TrackerEntriesPageComponent implements OnInit {
     () =>
       !!this.filterProjectId() ||
       this.filterTagIds().size > 0 ||
+      !!this.filterName() ||
       !!this.filterFrom() ||
       !!this.filterTo(),
   );

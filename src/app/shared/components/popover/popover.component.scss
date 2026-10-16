@@ -16,7 +16,7 @@
   width: max-content;
   min-width: 200px;
   box-sizing: border-box;
-  will-change: transform, top, left;
+  will-change: top, left;
 }
 
 @keyframes fadeIn {

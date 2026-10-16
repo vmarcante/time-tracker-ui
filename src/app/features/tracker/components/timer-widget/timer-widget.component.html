@@ -27,7 +27,7 @@
         #pickerPopover
         [options]="{
           position: 'bottom',
-          width: '320px',
+          width: '420px',
           closeOnClickOutside: true,
           closeOnEscape: true,
           showArrow: true,
@@ -47,7 +47,7 @@
         </button>
       </ng-template>
       <ng-template #pickerContent>
-        <app-project-picker (select)="onProjectSelected($event)" />
+        <app-project-picker [withEntryFields]="true" (selected)="onProjectSelected($event)" />
       </ng-template>
     }
   </div>

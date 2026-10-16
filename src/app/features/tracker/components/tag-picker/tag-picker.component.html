@@ -1,0 +1,33 @@
+<div class="tags-picker">
+  @if (loading()) {
+    <div class="tags-picker__chips" aria-hidden="true">
+      @for (s of [1, 2, 3, 4, 5]; track s) {
+        <span class="tags-picker__skeleton"></span>
+      }
+    </div>
+  } @else {
+    @if (allTags().length > 0) {
+      <ul class="tags-picker__chips">
+        @for (tag of allTags(); track tag.id) {
+          <li>
+            <button
+              type="button"
+              class="tags-picker__chip"
+              [class.tags-picker__chip--selected]="isSelected(tag.id)"
+              (click)="toggle.emit(tag)"
+            >
+              <span
+                class="tags-picker__dot"
+                [style.background-color]="tag.color"
+                aria-hidden="true"
+              ></span>
+              <span class="tags-picker__name">{{ tag.name }}</span>
+            </button>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="tags-picker__hint">{{ 'timeEntry.noTagsFound' | translate }}</p>
+    }
+  }
+</div>

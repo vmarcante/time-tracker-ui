@@ -5,8 +5,10 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { PopoverComponent } from '../../../../shared/components/popover/popover.component';
 import { TimerService } from '../../services/timer.service';
-import { ProjectPickerComponent } from '../project-picker/project-picker.component';
-import { ProjectSummaryOutput } from '../../../main/models/company-management.model';
+import {
+  ProjectPickerComponent,
+  ProjectPickerSelection,
+} from '../project-picker/project-picker.component';
 import { AuthTokenService } from '../../../auth/services/auth-token.service';
 
 @Component({
@@ -39,9 +41,13 @@ export class TimerWidgetComponent implements OnInit {
     }
   }
 
-  onProjectSelected(project: ProjectSummaryOutput | null): void {
+  onProjectSelected(selection: ProjectPickerSelection): void {
     this.pickerPopover()?.close();
-    this.timer.start(project ? { projectId: project.id } : {});
+    this.timer.start({
+      projectId: selection.project?.id ?? null,
+      name: selection.name,
+      tagIds: selection.tagIds,
+    });
   }
 
   stopTimer(): void {

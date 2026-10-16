@@ -7,7 +7,7 @@
           #startPicker
           [options]="{
             position: 'bottom',
-            width: '280px',
+            width: '420px',
             closeOnClickOutside: true,
             closeOnEscape: true,
             showArrow: true,
@@ -30,7 +30,7 @@
           />
         </ng-template>
         <ng-template #pickerContentStart>
-          <app-project-picker (select)="onProjectStart($event)" />
+          <app-project-picker [withEntryFields]="true" (selected)="onProjectStart($event)" />
         </ng-template>
       </div>
     </div>
@@ -86,6 +86,14 @@
   }
 
   <div class="tracker-entries__filters">
+    <app-text-input
+      class="tracker-entries__filter"
+      [control]="nameFilterControl"
+      [showLabel]="false"
+      [placeholder]="'tracker.entries.filterName' | translate"
+      [hideHint]="true"
+      [hideError]="true"
+    />
     <app-select-input
       class="tracker-entries__filter"
       [control]="projectFilterControl"

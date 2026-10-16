@@ -141,11 +141,13 @@
     border-radius: var(--radius-pill);
     font-size: 0.75rem;
     font-weight: var(--font-weight-medium);
-    color: var(--color-text-primary);
     white-space: nowrap;
+    background-color: color-mix(in srgb, var(--tag-color, var(--color-primary-500)) 12%, transparent);
+    color: color-mix(in srgb, var(--tag-color, var(--color-primary-500)) 55%, var(--color-text-primary));
 
     &--more {
-      background-color: var(--color-primary-200);
+      background-color: var(--color-surface-hover);
+      color: var(--color-text-secondary);
     }
   }
 

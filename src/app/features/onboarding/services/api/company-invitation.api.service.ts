@@ -9,9 +9,9 @@ import { CompanyInvitationOutput } from '../../models';
 export class CompanyInvitationApiService {
   private httpService = inject(HttpService);
 
-  listMyInvitations(page = 1, size = 10): ApiResponse<PageWrapper<CompanyInvitationOutput>> {
+  listMyInvitations(pageNumber = 1, pageSize = 10): ApiResponse<PageWrapper<CompanyInvitationOutput>> {
     return this.httpService.get('/companies/invitations', {
-      params: { page, size },
+      params: { pageNumber, pageSize },
     });
   }
 

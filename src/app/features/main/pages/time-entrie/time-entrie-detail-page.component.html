@@ -83,7 +83,7 @@
                 </button>
               </ng-template>
               <ng-template #projectContent>
-                <app-project-picker (select)="onProjectChange($event)" />
+                <app-project-picker (selected)="onProjectChange($event)" />
               </ng-template>
             </span>
             @if (item.clientName; as clientName) {
@@ -126,7 +126,7 @@
               @for (tag of item.tags; track tag.id) {
                 <li
                   class="time-entrie-detail__tag"
-                  [style.background-color]="tag.color"
+                  [style.--tag-color]="tag.color"
                 >
                   {{ tag.name }}
                 </li>

@@ -15,6 +15,7 @@
     },
     "entries": {
       "allProjects": "All projects",
+      "filterName": "Search by name",
       "filterProject": "Filter by project",
       "filterTags": "Tags",
       "periodStart": "From",
@@ -46,6 +47,7 @@
       "projectName": "Project",
       "clientName": "Client",
       "search": "Search project...",
+      "taskName": "What are you working on?",
       "noProject": "No project",
       "noResults": "No projects found for this search."
     }

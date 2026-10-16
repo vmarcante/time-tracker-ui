@@ -15,6 +15,7 @@
     },
     "entries": {
       "allProjects": "Todos os projetos",
+      "filterName": "Buscar por nome",
       "filterProject": "Filtrar por projeto",
       "filterTags": "Tags",
       "periodStart": "De",
@@ -46,6 +47,7 @@
       "projectName": "Projeto",
       "clientName": "Cliente",
       "search": "Buscar projeto...",
+      "taskName": "O que você está fazendo?",
       "noProject": "Sem projeto",
       "noResults": "Nenhum projeto encontrado para a busca."
     }

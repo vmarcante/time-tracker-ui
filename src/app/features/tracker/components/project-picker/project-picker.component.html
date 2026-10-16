@@ -1,72 +1,184 @@
 <div class="project-picker">
-  @if (loading()) {
-    @for (s of [1, 2, 3]; track s) {
-      <div class="project-picker__skeleton" aria-hidden="true"></div>
+  @if (withEntryFields()) {
+    <div class="project-picker__entry">
+      <app-inline-input
+        class="project-picker__name"
+        [value]="entryName()"
+        [placeholder]="'tracker.projectPicker.taskName' | translate"
+        [editTitle]="'tracker.projectPicker.taskName' | translate"
+        [maxLength]="200"
+        (save)="onNameSave($event)"
+      />
+      <div class="project-picker__entry-side">
+        <button
+          type="button"
+          class="project-picker__project-btn"
+          [class.project-picker__project-btn--active]="openPanel() === 'projects'"
+          (click)="togglePanel('projects')"
+          [attr.aria-expanded]="openPanel() === 'projects'"
+          [attr.aria-label]="'tracker.projectPicker.search' | translate"
+          [attr.title]="selectedProject()?.name ?? ('tracker.projectPicker.noProject' | translate)"
+        >
+          <app-icon
+            [name]="selectedProject() ? 'objects/folder' : 'objects/clock'"
+            size="0.75rem"
+          />
+          <span class="project-picker__project-btn-name">
+            {{ selectedProject()?.name ?? ('tracker.projectPicker.noProject' | translate) }}
+          </span>
+        </button>
+        <button
+          type="button"
+          class="project-picker__tags-btn"
+          [class.project-picker__tags-btn--active]="openPanel() === 'tags' || selectedTags().length > 0"
+          [class.project-picker__tags-btn--with-count]="selectedTags().length > 0"
+          (click)="togglePanel('tags')"
+          [attr.aria-expanded]="openPanel() === 'tags'"
+          [attr.aria-label]="'timeEntry.editTags' | translate"
+          [attr.title]="'timeEntry.editTags' | translate"
+        >
+          <app-icon name="objects/pile-lines" size="0.8125rem" />
+          @if (selectedTags().length > 0) {
+            <span class="project-picker__tags-count">{{ selectedTags().length }}</span>
+          }
+        </button>
+        <button
+          type="button"
+          class="project-picker__start-btn"
+          (click)="startEntry()"
+          [attr.aria-label]="'tracker.timer.start' | translate"
+          [attr.title]="'tracker.timer.start' | translate"
+        >
+          <app-icon name="actions/play" size="0.6875rem" />
+        </button>
+      </div>
+    </div>
+
+    @if (openPanel() === 'tags') {
+      <div
+        class="project-picker__accordion"
+        animate.enter="pp-expand"
+        animate.leave="pp-collapse"
+      >
+        <div class="project-picker__accordion-inner">
+          <div class="project-picker__tags-panel">
+            <app-tag-picker
+              [selectedIds]="selectedTagIds()"
+              (toggle)="onTagToggle($event)"
+            />
+          </div>
+        </div>
+      </div>
     }
+  }
+
+  @if (showProjectList()) {
+    <div
+      class="project-picker__accordion"
+      animate.enter="pp-expand"
+      animate.leave="pp-collapse"
+    >
+      <div class="project-picker__accordion-inner">
+    <div class="project-picker__panel">
+  @if (loading()) {
+    <div class="project-picker__list" aria-hidden="true">
+      @for (s of [1, 2, 3, 4]; track s) {
+        <div class="project-picker__skeleton">
+          <span class="project-picker__skeleton-icon"></span>
+          <span class="project-picker__skeleton-bar"></span>
+        </div>
+      }
+    </div>
   } @else {
     <div class="project-picker__header">
-      <app-text-input
-        class="project-picker__search"
-        [control]="searchControl"
-        [showLabel]="false"
-        [placeholder]="'tracker.projectPicker.search' | translate"
-        [hideHint]="true"
-        [hideError]="true"
-        [debounceTime]="150"
-      />
+      <div class="project-picker__search">
+        <app-icon name="actions/search" size="0.75rem" />
+        <input
+          class="project-picker__search-input"
+          type="text"
+          [formControl]="searchControl"
+          [placeholder]="'tracker.projectPicker.search' | translate"
+        />
+      </div>
     </div>
 
     <div class="project-picker__list">
-      @if (!search()) {
-        <button
-          type="button"
-          class="project-picker__item project-picker__item--none"
-          (click)="onSelectNoProject()"
-        >
-          <app-icon name="objects/clock" size="0.875rem" class="project-picker__item-icon" />
-          <span class="project-picker__item-name">
-            {{ 'tracker.projectPicker.noProject' | translate }}
-          </span>
-        </button>
-      }
-
-      @for (group of filteredGroups(); track group.labelKey) {
+      <div class="project-picker__columns" [class.project-picker__columns--split]="twoColumns()">
         <div class="project-picker__group">
-          <span class="project-picker__group-label">{{ group.labelKey | translate }}</span>
-          @for (project of group.projects; track project.id) {
+          <div class="project-picker__group-head">
+            <span class="project-picker__group-label">
+              {{ 'tracker.projectPicker.personal' | translate }}
+            </span>
+            @if (!showCreate()) {
+              <button
+                type="button"
+                class="project-picker__group-add"
+                (click)="toggleCreate()"
+                [attr.aria-label]="'tracker.projectPicker.newProject' | translate"
+                [attr.title]="'tracker.projectPicker.newProject' | translate"
+              >
+                <app-icon name="actions/add" size="0.75rem" />
+              </button>
+            }
+          </div>
+          @for (project of personalProjects(); track project.id) {
             <button
               type="button"
               class="project-picker__item"
+              [class.project-picker__item--selected]="selectedProject()?.id === project.id"
               (click)="onSelect(project)"
             >
-              <app-icon name="objects/folder" size="0.875rem" class="project-picker__item-icon" />
+              <app-icon name="objects/folder" size="0.8125rem" class="project-picker__item-icon" />
               <span class="project-picker__item-name">{{ project.name }}</span>
               @if (project.clientName) {
                 <span class="project-picker__item-client">· {{ project.clientName }}</span>
               }
+              @if (selectedProject()?.id === project.id) {
+                <app-icon name="status/check" size="0.75rem" class="project-picker__item-check" />
+              }
             </button>
+          } @empty {
+            <p class="project-picker__group-empty">
+              {{ 'tracker.projectPicker.empty' | translate }}
+            </p>
           }
         </div>
-      }
 
-      @if (search() && filteredGroups().length === 0) {
+        @if (twoColumns()) {
+          <div class="project-picker__group project-picker__group--split">
+            <div class="project-picker__group-head">
+              <span class="project-picker__group-label">
+                {{ 'tracker.projectPicker.company' | translate }}
+              </span>
+            </div>
+            @for (project of companyProjects(); track project.id) {
+              <button
+                type="button"
+                class="project-picker__item"
+                [class.project-picker__item--selected]="selectedProject()?.id === project.id"
+                (click)="onSelect(project)"
+              >
+                <app-icon name="objects/folder" size="0.8125rem" class="project-picker__item-icon" />
+                <span class="project-picker__item-name">{{ project.name }}</span>
+                @if (project.clientName) {
+                  <span class="project-picker__item-client">· {{ project.clientName }}</span>
+                }
+                @if (selectedProject()?.id === project.id) {
+                  <app-icon name="status/check" size="0.75rem" class="project-picker__item-check" />
+                }
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      @if (search() && personalProjects().length === 0 && companyProjects().length === 0) {
         <p class="project-picker__empty">{{ 'tracker.projectPicker.noResults' | translate }}</p>
-      } @else if (!search() && groups().length === 0) {
-        <p class="project-picker__empty">{{ 'tracker.projectPicker.empty' | translate }}</p>
       }
     </div>
 
-    <div class="project-picker__footer">
-      @if (!showCreate()) {
-        <button
-          type="button"
-          class="project-picker__item project-picker__item--create"
-          (click)="toggleCreate()"
-        >
-          <app-icon name="actions/add" size="0.875rem" class="project-picker__item-icon" />
-          <span class="project-picker__item-name">{{ 'tracker.projectPicker.newProject' | translate }}</span>
-        </button>
-      } @else {
+    @if (showCreate()) {
+      <div class="project-picker__footer">
         <div class="project-picker__form">
           <div class="project-picker__form-head">
             <span class="project-picker__group-label">
@@ -110,7 +222,11 @@
             />
           </div>
         </div>
-      }
+      </div>
+    }
+  }
+    </div>
+      </div>
     </div>
   }
 </div>
