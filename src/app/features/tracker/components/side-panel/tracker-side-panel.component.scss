@@ -1,0 +1,244 @@
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding-top: var(--spacing-xl);
+
+  &__block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__label {
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ---- Resumo ---- */
+
+  &__stats {
+    display: flex;
+    gap: var(--spacing-md);
+  }
+
+  &__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 0;
+  }
+
+  &__stat-label {
+    font-size: 0.6875rem;
+    color: var(--color-text-secondary);
+  }
+
+  &__stat-value {
+    font-size: 1.375rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+
+  &__delta {
+    margin: 0;
+    font-size: 0.6875rem;
+    color: var(--color-text-tertiary);
+
+    &--up {
+      color: var(--color-success);
+    }
+
+    &--down {
+      color: var(--color-error);
+    }
+  }
+
+  /* ---- Período ---- */
+
+  &__period-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xs);
+  }
+
+  &__today-link {
+    padding: 0;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: 0.6875rem;
+    color: var(--color-primary-600);
+    cursor: pointer;
+    transition: color var(--transition-fast);
+
+    &:hover {
+      color: var(--color-primary-700);
+      text-decoration: underline;
+    }
+  }
+
+  /* ---- Mini calendário ---- */
+
+  &__cal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xs);
+  }
+
+  &__cal-title {
+    padding: 0.125rem var(--spacing-xs);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: none;
+    font-family: inherit;
+    font-size: 0.8125rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    text-transform: capitalize;
+    cursor: pointer;
+    transition:
+      color var(--transition-fast),
+      background-color var(--transition-fast);
+
+    &:hover {
+      color: var(--color-primary-700);
+      background-color: var(--color-surface-hover);
+    }
+
+    &--active {
+      color: var(--color-primary-700);
+      background-color: var(--color-primary-50);
+    }
+  }
+
+  &__cal-nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.375rem;
+    height: 1.375rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-text-tertiary);
+    cursor: pointer;
+    transition:
+      color var(--transition-fast),
+      background-color var(--transition-fast);
+
+    &:hover {
+      color: var(--color-primary-700);
+      background-color: var(--color-surface-hover);
+    }
+  }
+
+  &__cal-weekdays,
+  &__cal-grid {
+    display: grid;
+    grid-template-columns: 1.25rem repeat(7, 1fr);
+    gap: 2px;
+  }
+
+  &__cal-weekday {
+    font-size: 0.5625rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    text-align: center;
+    padding-bottom: 0.125rem;
+  }
+
+  &__cal-grid {
+    grid-auto-rows: auto;
+    align-items: stretch;
+  }
+
+  &__week {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.5625rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-tertiary);
+    cursor: pointer;
+    padding: 0;
+    transition:
+      color var(--transition-fast),
+      background-color var(--transition-fast);
+
+    &:hover {
+      color: var(--color-primary-700);
+      background-color: var(--color-surface-hover);
+    }
+
+    &--active {
+      color: var(--color-primary-700);
+      background-color: var(--color-primary-50);
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+
+  &__day {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.6875rem;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: 0;
+    transition:
+      background-color var(--transition-fast),
+      color var(--transition-fast);
+
+    &:hover {
+      background-color: var(--color-surface-hover);
+    }
+
+    &--outside {
+      color: var(--color-text-tertiary);
+      opacity: 0.45;
+    }
+
+    &--today {
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-primary-700);
+      box-shadow: inset 0 0 0 1px var(--color-primary-500);
+    }
+
+    &--in-range {
+      background-color: color-mix(in srgb, var(--color-primary-500) 22%, transparent) !important;
+      color: var(--color-primary-700);
+      font-weight: var(--font-weight-medium);
+    }
+
+    &--selected {
+      background-color: var(--color-primary-600) !important;
+      color: #fff;
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+
+}

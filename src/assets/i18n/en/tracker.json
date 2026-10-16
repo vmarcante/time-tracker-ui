@@ -37,7 +37,8 @@
     "timer": {
       "start": "Start timer",
       "stop": "Stop timer",
-      "openEntry": "Open running entry"
+      "openEntry": "Open running entry",
+      "error": "Could not complete the timer operation"
     },
     "projectPicker": {
       "personal": "Personal projects",
@@ -50,6 +51,17 @@
       "taskName": "What are you working on?",
       "noProject": "No project",
       "noResults": "No projects found for this search."
+    },
+    "sidePanel": {
+      "summary": "Summary",
+      "today": "Today",
+      "thisWeek": "This week",
+      "vsLastWeek": "vs last week",
+      "period": "Period",
+      "prevMonth": "Previous month",
+      "nextMonth": "Next month",
+      "selectWeek": "Select week",
+      "selectMonth": "Select month"
     }
   }
 }

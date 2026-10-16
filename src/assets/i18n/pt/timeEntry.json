@@ -1,6 +1,7 @@
 {
   "timeEntry": {
     "notFound": "Tarefa não encontrada",
+    "backToTasks": "Voltar para tarefas",
     "project": "Projeto",
     "changeProject": "Alterar projeto",
     "client": "Cliente",
@@ -22,11 +23,18 @@
     "deleteTitle": "Excluir tarefa",
     "deleteMessage": "Tem certeza que deseja excluir esta tarefa? Todas as sessões serão removidas.",
     "deleteSession": "Excluir sessão",
+    "deleteSessionTitle": "Excluir sessão",
+    "deleteSessionMessage": "Tem certeza que deseja excluir esta sessão?",
     "editTags": "Editar tags",
     "newTagName": "Nome da nova tag",
     "searchOrCreateTag": "Buscar ou criar tag...",
     "noTagsFound": "Nenhuma tag encontrada",
     "tagColor": "Cor da tag",
-    "createTag": "Criar"
+    "createTag": "Criar",
+    "resume": "Retomar tarefa",
+    "editTime": "Editar horário",
+    "invalidTime": "Horário inválido",
+    "endBeforeStart": "O fim deve ser depois do início",
+    "sessionOverlap": "O horário conflita com outra sessão"
   }
 }

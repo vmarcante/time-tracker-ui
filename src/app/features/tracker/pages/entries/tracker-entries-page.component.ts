@@ -1,6 +1,7 @@
 import {
   Component,
   DestroyRef,
+  ElementRef,
   OnInit,
   computed,
   effect,
@@ -17,7 +18,6 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
 import { PopoverComponent } from '../../../../shared/components/popover/popover.component';
-import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { SelectInputComponent } from '../../../../shared/components/inputs/select/select-input.component';
 import { TextInputComponent } from '../../../../shared/components/inputs/text/text-input.component';
 import { debounceTime } from 'rxjs';
@@ -27,9 +27,10 @@ import {
 } from '../../../../shared/components/inputs/daterange/daterange-input.component';
 import { ApiAdapterService } from '../../../../shared/services/api/api-adapter.service';
 import { TranslationService } from '../../../../shared/services/translation.service';
-import { InputValue, PageWrapper, SelectOption } from '../../../../shared/types';
+import { InputValue, SelectOption } from '../../../../shared/types';
 import { RecentTimeEntriesComponent } from '../../../main/components/time-entries/recent-entries/recent-time-entries.component';
 import { CardTimeEntrieComponent } from '../../../main/components/time-entries/card/card-time-entrie.component';
+import { TrackerSidePanelComponent } from '../../components/side-panel/tracker-side-panel.component';
 import {
   ProjectPickerComponent,
   ProjectPickerSelection,
@@ -51,13 +52,13 @@ import {
     IconComponent,
     ButtonComponent,
     PopoverComponent,
-    PaginationComponent,
     SelectInputComponent,
     DaterangeInputComponent,
     TextInputComponent,
     RecentTimeEntriesComponent,
     CardTimeEntrieComponent,
     ProjectPickerComponent,
+    TrackerSidePanelComponent,
   ],
   templateUrl: './tracker-entries-page.component.html',
   styleUrl: './tracker-entries-page.component.scss',
@@ -102,9 +103,11 @@ export class TrackerEntriesPageComponent implements OnInit {
   /** Entry mais recente GLOBAL — só atualiza em cargas sem filtro ou quando a vigente para. */
   private readonly recentEntryId = signal<string | null>(null);
   private lastRunningId: string | null = null;
-  readonly page = signal<PageWrapper<TimeEntrySummaryOutput> | null>(null);
+  readonly totalElements = signal(0);
   readonly loading = signal(true);
   readonly currentPage = signal(1);
+  /** Infinite scroll: ainda há o que buscar enquanto o carregado < total. */
+  readonly hasMore = computed(() => this.entries().length < this.totalElements());
   readonly filterProjectId = signal<string | null>(null);
   readonly filterTagIds = signal<ReadonlySet<string>>(new Set());
   readonly filterFrom = signal<string | null>(null);
@@ -121,6 +124,14 @@ export class TrackerEntriesPageComponent implements OnInit {
   readonly projectOptions = signal<SelectOption[]>([]);
 
   private startPickerPopover = viewChild<PopoverComponent>('startPicker');
+  private sentinelRef = viewChild<ElementRef<HTMLElement>>('scrollSentinel');
+
+  /** Dispara loadMore quando o fim da lista entra na área visível. */
+  private readonly scrollObserver = new IntersectionObserver((observed) => {
+    if (observed.some((entry) => entry.isIntersecting)) {
+      this.loadMore();
+    }
+  });
 
   constructor() {
     effect(() => {
@@ -132,6 +143,13 @@ export class TrackerEntriesPageComponent implements OnInit {
       if (id) {
         this.featuredAnimTick.update((tick) => tick + 1);
       }
+    });
+
+    effect((onCleanup) => {
+      const el = this.sentinelRef()?.nativeElement;
+      if (!el) return;
+      this.scrollObserver.observe(el);
+      onCleanup(() => this.scrollObserver.unobserve(el));
     });
   }
 
@@ -179,41 +197,72 @@ export class TrackerEntriesPageComponent implements OnInit {
     });
   }
 
-  loadPage(pageNumber: number, silent = false): void {
-    if (!silent) {
-      this.loading.set(true);
-    }
-    const projectId = this.filterProjectId();
-    const tagIds = [...this.filterTagIds()];
-    const name = this.filterName();
-    const from = this.filterFrom();
-    const to = this.filterTo();
+  loadPage(pageNumber: number, append = false): void {
+    this.loading.set(true);
     this.apiAdapter.executeRequest(
-      this.trackerApi.listMyEntries(
-        {
-          ...(projectId ? { projectId } : {}),
-          ...(tagIds.length ? { tagIds } : {}),
-          ...(name ? { name } : {}),
-          ...(from ? { from } : {}),
-          ...(to ? { to } : {}),
-        },
-        pageNumber,
-        20,
-      ),
+      this.trackerApi.listMyEntries(this.entryFilters(), pageNumber, 10),
       {
         ignoreLoading: true,
+        subscriptionName: 'trackerEntriesPage',
         onSuccess: (response) => {
-          this.page.set(response.data);
-          this.entries.set(response.data.content);
+          this.totalElements.set(response.data.totalElements);
+          if (append) {
+            const loaded = new Set(this.entries().map((entry) => entry.id));
+            this.entries.update((list) => [
+              ...list,
+              ...response.data.content.filter((entry) => !loaded.has(entry.id)),
+            ]);
+          } else {
+            this.entries.set(response.data.content);
+          }
           this.currentPage.set(pageNumber);
           this.loading.set(false);
-          if (pageNumber === 1 && !this.hasActiveFilters()) {
+          if (!append && pageNumber === 1 && !this.hasActiveFilters()) {
             this.recentEntryId.set(response.data.content[0]?.id ?? null);
           }
         },
         onError: () => this.loading.set(false),
       },
     );
+  }
+
+  /**
+   * Refaz silenciosamente todo o intervalo já carregado pelo infinite scroll
+   * numa única request (entries crescem com o scroll, então o pageSize acompanha).
+   */
+  private silentRefresh(): void {
+    const pageSize = Math.max(this.entries().length, 10);
+    this.apiAdapter.executeRequest(
+      this.trackerApi.listMyEntries(this.entryFilters(), 1, pageSize),
+      {
+        ignoreLoading: true,
+        subscriptionName: 'trackerEntriesPage',
+        onSuccess: (response) => {
+          this.totalElements.set(response.data.totalElements);
+          this.entries.set(response.data.content);
+        },
+      },
+    );
+  }
+
+  private loadMore(): void {
+    if (this.loading() || !this.hasMore()) return;
+    this.loadPage(this.currentPage() + 1, true);
+  }
+
+  private entryFilters() {
+    const projectId = this.filterProjectId();
+    const tagIds = [...this.filterTagIds()];
+    const name = this.filterName();
+    const from = this.filterFrom();
+    const to = this.filterTo();
+    return {
+      ...(projectId ? { projectId } : {}),
+      ...(tagIds.length ? { tagIds } : {}),
+      ...(name ? { name } : {}),
+      ...(from ? { from } : {}),
+      ...(to ? { to } : {}),
+    };
   }
 
   onFilterChange(value: InputValue): void {
@@ -225,6 +274,11 @@ export class TrackerEntriesPageComponent implements OnInit {
     this.filterFrom.set(range.start ? range.start.toISOString() : null);
     this.filterTo.set(range.end ? this.endOfDay(range.end).toISOString() : null);
     this.loadPage(1);
+  }
+
+  /** Preset/calendário do painel lateral — setar o grupo dispara rangeChange → onPeriodChange. */
+  onPeriodPreset(range: DateRange): void {
+    this.periodGroup.setValue({ start: range.start, end: range.end });
   }
 
   /** O fim do período inclui o dia inteiro selecionado. */
@@ -282,10 +336,8 @@ export class TrackerEntriesPageComponent implements OnInit {
     }
     if (this.entries().some((entry) => entry.id === detail.id)) {
       this.mergeDetail(detail);
-      this.loadPage(this.currentPage(), true);
-      return;
     }
-    this.loadPage(1);
+    this.silentRefresh();
   }
 
   /** Mescla o detail retornado pelo backend na linha correspondente da lista. */
@@ -374,6 +426,7 @@ export class TrackerEntriesPageComponent implements OnInit {
     if (!id) return;
     this.apiAdapter.executeRequest(this.trackerApi.findEntry(id), {
       ignoreLoading: true,
+      subscriptionName: 'trackerFeaturedDetail',
       onSuccess: (response) => {
         if (this.featuredId() === response.data.id) {
           this.featuredDetail.set(response.data);

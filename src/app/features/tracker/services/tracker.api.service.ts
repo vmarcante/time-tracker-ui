@@ -13,6 +13,7 @@ import {
   StartTimerInput,
   TagInput,
   TagOutput,
+  TimeEntryDayStatsOutput,
   TimeEntryDetailOutput,
   TimeEntryProjectOutput,
   TimeEntrySummaryOutput,
@@ -41,6 +42,11 @@ export class TrackerApiService {
 
   listEntryProjects(): ApiResponse<TimeEntryProjectOutput[]> {
     return this.httpService.get('/time-entries/projects');
+  }
+
+  /** Totais agregados por dia (YYYY-MM-DD) — alimenta resumo e heatmap. */
+  listDailyStats(from: string, to: string): ApiResponse<TimeEntryDayStatsOutput[]> {
+    return this.httpService.get('/time-entries/heatmap', { params: { from, to } });
   }
 
   findEntry(entryId: string): ApiResponse<TimeEntryDetailOutput> {

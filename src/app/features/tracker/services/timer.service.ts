@@ -1,6 +1,8 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ApiAdapterService } from '../../../shared/services/api/api-adapter.service';
+import { ToastrService } from '../../../shared/services/toastr.service';
+import { TranslationService } from '../../../shared/services/translation.service';
 import { TrackerApiService } from './tracker.api.service';
 import {
   RunningTimerOutput,
@@ -14,6 +16,8 @@ import {
 export class TimerService {
   private api = inject(TrackerApiService);
   private apiAdapter = inject(ApiAdapterService);
+  private toastr = inject(ToastrService);
+  private translationService = inject(TranslationService);
 
   readonly running = signal<RunningTimerOutput | null>(null);
   readonly loading = signal(false);
@@ -75,7 +79,10 @@ export class TimerService {
         this.busy.set(false);
         onSuccess?.(response.data);
       },
-      onError: () => this.busy.set(false),
+      onError: (error) => {
+        this.busy.set(false);
+        this.notifyError(error);
+      },
     });
   }
 
@@ -89,8 +96,18 @@ export class TimerService {
         this.entryChangedSubject.next(response.data);
         onSuccess?.(response.data);
       },
-      onError: () => this.busy.set(false),
+      onError: (error) => {
+        this.busy.set(false);
+        this.notifyError(error);
+      },
     });
+  }
+
+  private notifyError(error: unknown): void {
+    const message = (error as { error?: { data?: { message?: string } } })?.error?.data?.message;
+    this.toastr.errorMessage(
+      message ?? this.translationService.translate('tracker.timer.error'),
+    );
   }
 
   /** Atualiza o estado a partir de um detail (resposta de start/stop/mutations). */

@@ -1,3 +1,9 @@
+<div class="tracker-entries-layout">
+  <app-tracker-side-panel
+    [rangeFrom]="filterFrom()"
+    [rangeTo]="filterTo()"
+    (periodSelect)="onPeriodPreset($event)"
+  />
 <div class="section">
   <div class="section__header">
     <div class="section__heading">
@@ -171,31 +177,34 @@
     </ng-template>
   </div>
 
-  @if (loading()) {
-    <div class="tracker-entries__loading">
-      @for (s of [1, 2, 3]; track s) {
-        <div class="tracker-entries__skeleton-card" aria-hidden="true"></div>
+  <div class="tracker-entries__scroll">
+    @if (loading() && entries().length === 0) {
+      <div class="tracker-entries__loading">
+        @for (s of [1, 2, 3]; track s) {
+          <div class="tracker-entries__skeleton-card" aria-hidden="true"></div>
+        }
+      </div>
+    } @else if (empty()) {
+      <div class="section__empty">
+        <app-icon name="objects/clock" size="2rem" />
+        <p>{{ 'tracker.entries.empty' | translate }}</p>
+      </div>
+    } @else {
+      @if (listEntries().length > 0) {
+        <app-recent-time-entries
+          [entries]="listEntries()"
+          (entryChanged)="onEntryChanged($event)"
+        />
       }
-    </div>
-  } @else if (empty()) {
-    <div class="section__empty">
-      <app-icon name="objects/clock" size="2rem" />
-      <p>{{ 'tracker.entries.empty' | translate }}</p>
-    </div>
-  } @else {
-    @if (listEntries().length > 0) {
-      <app-recent-time-entries
-        [entries]="listEntries()"
-        (entryChanged)="onEntryChanged($event)"
-      />
-    }
 
-    <app-pagination
-      [page]="currentPage()"
-      [totalPages]="page()?.totalPages ?? 0"
-      [totalElements]="page()?.totalElements ?? null"
-      [loading]="loading()"
-      (pageChange)="loadPage($event)"
-    />
-  }
+      @if (hasMore()) {
+        <div class="tracker-entries__sentinel" #scrollSentinel>
+          @if (loading()) {
+            <div class="tracker-entries__skeleton-card" aria-hidden="true"></div>
+          }
+        </div>
+      }
+    }
+  </div>
+</div>
 </div>

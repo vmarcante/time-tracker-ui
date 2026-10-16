@@ -42,6 +42,12 @@ export interface TimeEntryDetailOutput extends TimeEntrySummaryOutput {
   updatedAt: string;
 }
 
+/** Totais diários agregados no backend (GET /time-entries/heatmap). */
+export interface TimeEntryDayStatsOutput {
+  date: string;
+  seconds: number;
+}
+
 export interface RunningTimerOutput {
   entryId: string;
   entryName: string;

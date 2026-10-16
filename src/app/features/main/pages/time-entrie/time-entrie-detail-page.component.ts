@@ -1,4 +1,5 @@
-import { Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, Location } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -13,6 +14,7 @@ import { PopoverComponent } from '../../../../shared/components/popover/popover.
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { ConfirmationDialogComponent } from '../../../../shared/components/dialogs/confirmation/confirmation-dialog.component';
 import { DialogService } from '../../../../shared/services/dialog.service';
+import { ToastrService } from '../../../../shared/services/toastr.service';
 import { TranslationService } from '../../../../shared/services/translation.service';
 import { ApiAdapterService } from '../../../../shared/services/api/api-adapter.service';
 import { TimeEntrieSessionsComponent } from '../../components/time-entries/sessions/time-entrie-sessions.component';
@@ -69,8 +71,10 @@ export class TimeEntrieDetailPageComponent implements OnInit {
   private trackerApi = inject(TrackerApiService);
   private apiAdapter = inject(ApiAdapterService);
   private dialogService = inject(DialogService);
+  private toastr = inject(ToastrService);
   private translationService = inject(TranslationService);
   protected timer = inject(TimerService);
+  private destroyRef = inject(DestroyRef);
 
   readonly entry = signal<TimeEntryDetailOutput | null>(null);
   readonly loading = signal(true);
@@ -79,7 +83,12 @@ export class TimeEntrieDetailPageComponent implements OnInit {
 
   readonly selectedSession = signal<SessionView | null>(null);
   readonly isEditingSession = signal<boolean>(false);
+  readonly isEditingSessionTime = signal<boolean>(false);
   readonly descriptionControl = new FormControl<string>('');
+  readonly sessionStartControl = new FormControl<string>('');
+  readonly sessionEndControl = new FormControl<string>('');
+  readonly isEditingDescription = signal<boolean>(false);
+  readonly entryDescriptionControl = new FormControl<string>('');
 
   readonly allTags = signal<TagOutput[]>([]);
   readonly tagsLoading = signal(false);
@@ -104,6 +113,18 @@ export class TimeEntrieDetailPageComponent implements OnInit {
     (this.entry()?.sessions ?? []).map((session) => toSessionView(session)),
   );
 
+  /** Derivado do TimerService — reage a start/stop feitos em qualquer lugar da aplicação. */
+  readonly isRunning = computed<boolean>(() => {
+    const entry = this.entry();
+    return !!entry && this.timer.runningEntryId() === entry.id;
+  });
+
+  readonly anotherRunning = computed<boolean>(() => {
+    const runningId = this.timer.runningEntryId();
+    const entry = this.entry();
+    return !!runningId && !!entry && runningId !== entry.id;
+  });
+
   readonly sessionDuration = computed<string>(() => {
     const session = this.selectedSession();
     if (!session) {
@@ -120,10 +141,29 @@ export class TimeEntrieDetailPageComponent implements OnInit {
     color: 'var(--color-text-secondary)',
   };
 
+  protected readonly playIcon: ButtonIcon = {
+    iconName: 'actions/play',
+    iconOnly: true,
+    color: 'var(--color-success)',
+  };
+
+  protected readonly pauseIcon: ButtonIcon = {
+    iconName: 'actions/stop',
+    iconOnly: true,
+    color: 'var(--color-error)',
+  };
+
   private tagsPopover = viewChild<PopoverComponent>('tagsPopover');
 
   ngOnInit(): void {
     this.timer.init();
+    this.timer.entryChanged$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((detail) => {
+        if (detail.id === this.entry()?.id) {
+          this.applyDetailData(detail);
+        }
+      });
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
       this.loading.set(false);
@@ -151,8 +191,12 @@ export class TimeEntrieDetailPageComponent implements OnInit {
 
   /** Mescla um detail retornado pelo backend (mutations retornam o entry completo). */
   private applyDetail(detail: TimeEntryDetailOutput): void {
-    this.entry.set(detail);
+    this.applyDetailData(detail);
     this.timer.syncFromDetail(detail);
+  }
+
+  private applyDetailData(detail: TimeEntryDetailOutput): void {
+    this.entry.set(detail);
     const selected = this.selectedSession();
     if (selected) {
       const refreshed = detail.sessions.find((s) => s.id === selected.id);
@@ -165,6 +209,48 @@ export class TimeEntrieDetailPageComponent implements OnInit {
 
   protected close(): void {
     this.location.back();
+  }
+
+  /** Alterna o timer da entry — o detail volta via timer.entryChanged$. */
+  protected toggleRunning(): void {
+    const entry = this.entry();
+    if (!entry || this.anotherRunning() || this.timer.busy()) {
+      return;
+    }
+    if (this.isRunning()) {
+      this.timer.stop();
+    } else {
+      this.timer.start({ entryId: entry.id });
+    }
+  }
+
+  protected startEditingEntryDescription(): void {
+    this.entryDescriptionControl.setValue(this.entry()?.description ?? '');
+    this.isEditingDescription.set(true);
+  }
+
+  protected saveEntryDescription(): void {
+    const entry = this.entry();
+    if (!entry || this.saving()) {
+      return;
+    }
+
+    this.saving.set(true);
+    this.apiAdapter.executeRequest(
+      this.trackerApi.updateEntry(entry.id, {
+        name: entry.name,
+        description: this.entryDescriptionControl.value ?? '',
+      }),
+      {
+        ignoreLoading: true,
+        onSuccess: (response) => {
+          this.applyDetail(response.data);
+          this.isEditingDescription.set(false);
+          this.saving.set(false);
+        },
+        onError: () => this.saving.set(false),
+      },
+    );
   }
 
   private projectPopover = viewChild<PopoverComponent>('projectPopover');
@@ -222,7 +308,84 @@ export class TimeEntrieDetailPageComponent implements OnInit {
   protected onSessionClick(session: SessionView): void {
     this.selectedSession.set(session);
     this.isEditingSession.set(false);
+    this.isEditingSessionTime.set(false);
     this.descriptionControl.setValue(session.description ?? '');
+  }
+
+  /** HH:mm local de um ISO — usado para preencher os inputs de horário. */
+  private toLocalTime(iso: string): string {
+    const date = new Date(iso);
+    const hh = String(date.getHours()).padStart(2, '0');
+    const mm = String(date.getMinutes()).padStart(2, '0');
+    return `${hh}:${mm}`;
+  }
+
+  /** Combina a data da sessão com um HH:mm local → ISO string. */
+  private combineDayAndTime(dayIso: string, hhmm: string): string | null {
+    const match = /^(\d{2}):(\d{2})$/.exec(hhmm.trim());
+    if (!match) {
+      return null;
+    }
+    const hours = Number(match[1]);
+    const minutes = Number(match[2]);
+    if (hours > 23 || minutes > 59) {
+      return null;
+    }
+    const date = new Date(dayIso);
+    date.setHours(hours, minutes, 0, 0);
+    return date.toISOString();
+  }
+
+  protected startEditingSessionTime(): void {
+    const session = this.selectedSession();
+    if (!session) {
+      return;
+    }
+    this.sessionStartControl.setValue(this.toLocalTime(session.start));
+    this.sessionEndControl.setValue(session.running ? '' : this.toLocalTime(session.end));
+    this.isEditingSessionTime.set(true);
+  }
+
+  protected saveSessionTime(): void {
+    const selected = this.selectedSession();
+    const entry = this.entry();
+    if (!selected || !entry || this.saving()) {
+      return;
+    }
+
+    const startIso = this.combineDayAndTime(selected.start, this.sessionStartControl.value ?? '');
+    const endIso = selected.running
+      ? null
+      : this.combineDayAndTime(selected.start, this.sessionEndControl.value ?? '');
+
+    if (!startIso || (!selected.running && !endIso)) {
+      this.toastr.errorMessage(this.translationService.translate('timeEntry.invalidTime'));
+      return;
+    }
+
+    const effectiveEnd = endIso ?? new Date().toISOString();
+    if (new Date(effectiveEnd).getTime() <= new Date(startIso).getTime()) {
+      this.toastr.errorMessage(this.translationService.translate('timeEntry.endBeforeStart'));
+      return;
+    }
+
+    this.saving.set(true);
+    this.apiAdapter.executeRequest(
+      this.trackerApi.updateSession(entry.id, selected.id, {
+        startTime: startIso,
+        endTime: endIso,
+        description: selected.description ?? null,
+      }),
+      {
+        ignoreLoading: true,
+        onSuccess: (response) => {
+          this.applyDetail(response.data);
+          this.isEditingSessionTime.set(false);
+          this.saving.set(false);
+        },
+        onError: () => this.saving.set(false),
+      },
+    );
   }
 
   protected startEditingSession(): void {
@@ -232,6 +395,7 @@ export class TimeEntrieDetailPageComponent implements OnInit {
   protected closeSessionPanel(): void {
     this.selectedSession.set(null);
     this.isEditingSession.set(false);
+    this.isEditingSessionTime.set(false);
     this.descriptionControl.setValue('');
   }
 
@@ -268,36 +432,68 @@ export class TimeEntrieDetailPageComponent implements OnInit {
       return;
     }
 
-    this.saving.set(true);
-    this.apiAdapter.executeRequest(this.trackerApi.deleteSession(entry.id, selected.id), {
-      ignoreLoading: true,
-      onSuccess: (response) => {
-        this.closeSessionPanel();
-        this.applyDetail(response.data);
-        this.saving.set(false);
+    this.dialogService.openDialog<ConfirmationDialogComponent, { confirm?: boolean }>(
+      ConfirmationDialogComponent,
+      {
+        width: '480px',
+        data: {
+          title: this.translationService.translate('timeEntry.deleteSessionTitle'),
+          message: this.translationService.translate('timeEntry.deleteSessionMessage'),
+          closeable: true,
+          buttons: {
+            cancel: {
+              show: true,
+              text: this.translationService.translate('common.cancel'),
+              order: 1,
+              name: 'cancel',
+              color: 'secondary',
+            },
+            confirmation: {
+              show: true,
+              text: this.translationService.translate('common.delete'),
+              order: 2,
+              name: 'confirm',
+              color: 'error',
+            },
+          },
+        },
+        closeCallback: (result) => {
+          if (!result?.confirm) return;
+          this.saving.set(true);
+          this.apiAdapter.executeRequest(
+            this.trackerApi.deleteSession(entry.id, selected.id),
+            {
+              ignoreLoading: true,
+              onSuccess: (response) => {
+                this.closeSessionPanel();
+                this.applyDetail(response.data);
+                this.saving.set(false);
+              },
+              onError: () => this.saving.set(false),
+            },
+          );
+        },
       },
-      onError: () => this.saving.set(false),
-    });
+    );
   }
 
   protected onHourClick(isoTime: string): void {
+    this.createSessionAt(isoTime, this.dateUtil.addMinutes(isoTime, 15));
+  }
+
+  protected onSessionCreate(range: { start: string; end: string }): void {
+    this.createSessionAt(range.start, range.end);
+  }
+
+  private createSessionAt(startIso: string, endIso: string): void {
     const entry = this.entry();
     if (!entry || this.saving()) {
       return;
     }
 
-    const end = this.dateUtil.addMinutes(isoTime, 15);
-    const hasOverlap = entry.sessions.some((session) => {
-      const sessionEnd = session.endTime ?? new Date().toISOString();
-      return this.dateUtil.sessionsOverlap(isoTime, end, session.startTime, sessionEnd);
-    });
-    if (hasOverlap) {
-      return;
-    }
-
     this.saving.set(true);
     this.apiAdapter.executeRequest(
-      this.trackerApi.createSession(entry.id, { startTime: isoTime, endTime: end }),
+      this.trackerApi.createSession(entry.id, { startTime: startIso, endTime: endIso }),
       {
         ignoreLoading: true,
         onSuccess: (response) => {
@@ -312,6 +508,7 @@ export class TimeEntrieDetailPageComponent implements OnInit {
   protected onDayChange(): void {
     this.selectedSession.set(null);
     this.isEditingSession.set(false);
+    this.isEditingSessionTime.set(false);
     this.descriptionControl.setValue('');
   }
 
@@ -359,7 +556,7 @@ export class TimeEntrieDetailPageComponent implements OnInit {
               text: this.translationService.translate('common.cancel'),
               order: 1,
               name: 'cancel',
-              color: 'outline-white',
+              color: 'secondary',
             },
             confirmation: {
               show: true,

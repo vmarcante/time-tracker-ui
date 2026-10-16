@@ -1,6 +1,14 @@
 <div class="time-entrie-sessions">
   <div class="time-entrie-sessions__header">
-    <h2 class="time-entrie-sessions__title">Sessões do dia</h2>
+    <div class="time-entrie-sessions__heading">
+      <h2 class="time-entrie-sessions__title">Sessões do dia</h2>
+      <time
+        class="time-entrie-sessions__date"
+        [attr.datetime]="selectedDate() | date: 'yyyy-MM-dd'"
+      >
+        {{ selectedDate() | date: 'EEE, d MMM' }}
+      </time>
+    </div>
     <span class="time-entrie-sessions__total">{{ formatDuration(totalDuration()) }}</span>
   </div>
 
@@ -86,7 +94,12 @@
     aria-label="Timeline de 24 horas. Clique para adicionar uma sessão no horário desejado."
     role="button"
   >
-    <div class="time-entrie-sessions__track" #trackEl (click)="onTrackClick($event)">
+    <div
+      class="time-entrie-sessions__track"
+      #trackEl
+      (click)="onTrackClick($event)"
+      (mousedown)="onTrackMouseDown($event, trackEl)"
+    >
       @for (tick of timeTicks(); track $index) {
         <div
           class="time-entrie-sessions__tick"
@@ -129,6 +142,25 @@
             (mousedown)="onHandleMouseDown($event, $index, 'bottom', trackEl)"
           ></div>
         </div>
+      }
+
+      @if (createPreview(); as preview) {
+        @if (ghostOffsets(); as offsets) {
+          <div
+            class="time-entrie-sessions__segment time-entrie-sessions__segment--ghost"
+            [style.top.%]="preview.top"
+            [style.height.%]="preview.height"
+            [style.left]="offsets.left"
+            [style.right]="offsets.right"
+            aria-hidden="true"
+          >
+          <span class="time-entrie-sessions__ghost-label">
+            <img src="assets/icons/actions/add.svg" alt="" aria-hidden="true" />
+            {{ preview.label }}
+          </span>
+          <span class="time-entrie-sessions__ghost-duration">{{ preview.duration }}</span>
+          </div>
+        }
       }
 
       @if (isToday()) {

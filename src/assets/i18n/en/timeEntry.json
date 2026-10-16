@@ -1,6 +1,7 @@
 {
   "timeEntry": {
     "notFound": "Time entry not found",
+    "backToTasks": "Back to tasks",
     "project": "Project",
     "changeProject": "Change project",
     "client": "Client",
@@ -22,11 +23,18 @@
     "deleteTitle": "Delete time entry",
     "deleteMessage": "Are you sure you want to delete this entry? All sessions will be removed.",
     "deleteSession": "Delete session",
+    "deleteSessionTitle": "Delete session",
+    "deleteSessionMessage": "Are you sure you want to delete this session?",
     "editTags": "Edit tags",
     "newTagName": "New tag name",
     "searchOrCreateTag": "Search or create tag...",
     "noTagsFound": "No tags found",
     "tagColor": "Tag color",
-    "createTag": "Create"
+    "createTag": "Create",
+    "resume": "Resume entry",
+    "editTime": "Edit time",
+    "invalidTime": "Invalid time",
+    "endBeforeStart": "End must be after start",
+    "sessionOverlap": "Time overlaps another session"
   }
 }

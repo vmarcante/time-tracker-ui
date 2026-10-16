@@ -4,45 +4,86 @@
       <div class="time-entrie-detail__loading">
         <div class="time-entrie-detail__loading-info">
           <div class="time-entrie-detail__loading-topbar">
-            <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--circle" aria-hidden="true"></div>
-            <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--circle" aria-hidden="true"></div>
+            <div
+              class="time-entrie-detail__skeleton time-entrie-detail__skeleton--circle"
+              aria-hidden="true"
+            ></div>
+            <div
+              class="time-entrie-detail__skeleton time-entrie-detail__skeleton--circle"
+              aria-hidden="true"
+            ></div>
           </div>
-          <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--title" aria-hidden="true"></div>
-          <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--meta" aria-hidden="true"></div>
-          <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--meta" aria-hidden="true"></div>
-          <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--meta time-entrie-detail__skeleton--meta-short" aria-hidden="true"></div>
+          <div
+            class="time-entrie-detail__skeleton time-entrie-detail__skeleton--title"
+            aria-hidden="true"
+          ></div>
+          <div
+            class="time-entrie-detail__skeleton time-entrie-detail__skeleton--meta"
+            aria-hidden="true"
+          ></div>
+          <div
+            class="time-entrie-detail__skeleton time-entrie-detail__skeleton--meta"
+            aria-hidden="true"
+          ></div>
+          <div
+            class="time-entrie-detail__skeleton time-entrie-detail__skeleton--meta time-entrie-detail__skeleton--meta-short"
+            aria-hidden="true"
+          ></div>
         </div>
         <div class="time-entrie-detail__loading-sessions">
-          <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--sessions-header" aria-hidden="true"></div>
-          <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--days" aria-hidden="true"></div>
-          <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--timeline" aria-hidden="true"></div>
+          <div
+            class="time-entrie-detail__skeleton time-entrie-detail__skeleton--sessions-header"
+            aria-hidden="true"
+          ></div>
+          <div
+            class="time-entrie-detail__skeleton time-entrie-detail__skeleton--days"
+            aria-hidden="true"
+          ></div>
+          <div
+            class="time-entrie-detail__skeleton time-entrie-detail__skeleton--timeline"
+            aria-hidden="true"
+          ></div>
         </div>
       </div>
     </div>
   </div>
 } @else if (entry(); as item) {
   <div class="time-entrie-detail">
+    <button
+      type="button"
+      class="time-entrie-detail__page-back"
+      (click)="close()"
+      [attr.aria-label]="'timeEntry.backToTasks' | translate"
+    >
+      <app-icon name="arrows/back" size="1rem" />
+      <span>{{ 'timeEntry.backToTasks' | translate }}</span>
+    </button>
     <article class="time-entrie-detail__panel" aria-labelledby="detail-title">
       <div class="time-entrie-detail__body">
         <div class="time-entrie-detail__info">
-          <div class="time-entrie-detail__topbar">
-            <app-button
-              [icon]="backIcon"
-              [size]="{ small: true }"
-              [rounded]="true"
-              [color]="'secondary'"
-              [customClass]="'time-entrie-detail__back'"
-              [hoverTitle]="'common.back' | translate"
-              (buttonClick)="close()"
-            />
-            <app-button
-              [icon]="{ iconName: 'objects/trash', iconOnly: true, color: 'var(--color-error)' }"
-              [size]="{ small: true }"
-              [rounded]="true"
-              [color]="'secondary'"
-              [hoverTitle]="'timeEntry.delete' | translate"
-              (buttonClick)="confirmDeleteEntry()"
-            />
+          <div class="time-entrie-detail__topbar time-entrie-detail__topbar--actions-only">
+            <div class="time-entrie-detail__topbar-actions">
+              <app-button
+                [icon]="isRunning() ? pauseIcon : playIcon"
+                [size]="{ small: true }"
+                [rounded]="true"
+                [color]="'primary'"
+                [disabled]="anotherRunning() || timer.busy()"
+                [hoverTitle]="
+                  isRunning() ? ('tracker.timer.stop' | translate) : ('timeEntry.resume' | translate)
+                "
+                [hoverTitleDisabled]="'tracker.entries.anotherRunning' | translate"
+                (buttonClick)="toggleRunning()"
+              />
+              <app-button
+                [icon]="{ iconName: 'objects/trash', iconOnly: true, color: 'var(--color-error)' }"
+                [size]="{ small: true }"
+                [rounded]="true"
+                [color]="'transparent'"
+                [hoverTitle]="'timeEntry.delete' | translate"
+                (buttonClick)="confirmDeleteEntry()"
+              />
+            </div>
           </div>
           <app-inline-input
             id="detail-title"
@@ -57,7 +98,9 @@
 
           <div class="time-entrie-detail__meta">
             <span class="time-entrie-detail__meta-item">
-              <span class="time-entrie-detail__meta-label">{{ 'timeEntry.project' | translate }}</span>
+              <span class="time-entrie-detail__meta-label">{{
+                'timeEntry.project' | translate
+              }}</span>
               <app-popover
                 #projectPopover
                 [options]="{
@@ -89,7 +132,9 @@
             @if (item.clientName; as clientName) {
               <span class="time-entrie-detail__meta-divider" aria-hidden="true"></span>
               <span class="time-entrie-detail__meta-item">
-                <span class="time-entrie-detail__meta-label">{{ 'timeEntry.client' | translate }}</span>
+                <span class="time-entrie-detail__meta-label">{{
+                  'timeEntry.client' | translate
+                }}</span>
                 <span class="time-entrie-detail__meta-value">{{ clientName }}</span>
               </span>
             }
@@ -106,28 +151,85 @@
                     <time>{{ item.endTime | date: 'short' }}</time>
                   } @else if (item.running) {
                     <span class="time-entrie-detail__value-separator" aria-hidden="true">–</span>
-                    <span class="time-entrie-detail__value--running">{{ 'timeEntry.running' | translate }}</span>
+                    <span class="time-entrie-detail__value--running">{{
+                      'timeEntry.running' | translate
+                    }}</span>
                   }
                 </dd>
               </div>
             }
 
-            @if (item.description) {
-              <div class="time-entrie-detail__field time-entrie-detail__field--block">
+            <div class="time-entrie-detail__field time-entrie-detail__field--block">
+              @if (!isEditingDescription()) {
+                <dt class="time-entrie-detail__label time-entrie-detail__label--with-action">
+                  {{ 'timeEntry.description' | translate }}
+                  @if (item.description) {
+                    <button
+                      type="button"
+                      class="time-entrie-detail__icon-action"
+                      [disabled]="saving()"
+                      [attr.aria-label]="'timeEntry.editDescription' | translate"
+                      [attr.title]="'timeEntry.editDescription' | translate"
+                      (click)="startEditingEntryDescription()"
+                    >
+                      <app-icon name="actions/edit" size="0.875rem" />
+                    </button>
+                  }
+                </dt>
+                @if (item.description) {
+                  <dd class="time-entrie-detail__value time-entrie-detail__value--multiline">
+                    {{ item.description }}
+                  </dd>
+                } @else {
+                  <dd class="time-entrie-detail__value">
+                    <button
+                      type="button"
+                      class="time-entrie-detail__add-description"
+                      [disabled]="saving()"
+                      (click)="startEditingEntryDescription()"
+                    >
+                      <app-icon name="actions/edit" size="0.75rem" />
+                      <span>{{ 'timeEntry.addDescription' | translate }}</span>
+                    </button>
+                  </dd>
+                }
+              } @else {
                 <dt class="time-entrie-detail__label">{{ 'timeEntry.description' | translate }}</dt>
-                <dd class="time-entrie-detail__value time-entrie-detail__value--multiline">{{ item.description }}</dd>
-              </div>
-            }
+                <dd class="time-entrie-detail__value">
+                  <app-textarea-input
+                    [control]="entryDescriptionControl"
+                    [showLabel]="false"
+                    [placeholder]="'timeEntry.describeSession' | translate"
+                    [rows]="3"
+                    [showCounter]="false"
+                  />
+                </dd>
+                <dd class="time-entrie-detail__value time-entrie-detail__value--actions">
+                  <app-button
+                    [text]="'common.cancel' | translate"
+                    [color]="'secondary'"
+                    [rounded]="true"
+                    [size]="{ small: true }"
+                    (buttonClick)="isEditingDescription.set(false)"
+                  />
+                  <app-button
+                    [text]="'common.save' | translate"
+                    [color]="'primary'"
+                    [rounded]="true"
+                    [size]="{ small: true }"
+                    [loading]="saving()"
+                    (buttonClick)="saveEntryDescription()"
+                  />
+                </dd>
+              }
+            </div>
           </dl>
 
           <div class="time-entrie-detail__tags-section">
             <span class="time-entrie-detail__tags-label">{{ 'timeEntry.tags' | translate }}</span>
             <ul class="time-entrie-detail__tags" [attr.aria-label]="'timeEntry.tags' | translate">
               @for (tag of item.tags; track tag.id) {
-                <li
-                  class="time-entrie-detail__tag"
-                  [style.--tag-color]="tag.color"
-                >
+                <li class="time-entrie-detail__tag" [style.--tag-color]="tag.color">
                   {{ tag.name }}
                 </li>
               }
@@ -214,7 +316,11 @@
                               {{ 'timeEntry.createTag' | translate }} "{{ newTagName.value }}"
                             </span>
                           </button>
-                          <div class="tags-picker__colors" role="radiogroup" [attr.aria-label]="'timeEntry.tagColor' | translate">
+                          <div
+                            class="tags-picker__colors"
+                            role="radiogroup"
+                            [attr.aria-label]="'timeEntry.tagColor' | translate"
+                          >
                             @for (color of tagColors; track color) {
                               <button
                                 type="button"
@@ -241,6 +347,7 @@
             [sessions]="sessionViews()"
             [selectedSession]="selectedSession()"
             (hourClick)="onHourClick($event)"
+            (sessionCreate)="onSessionCreate($event)"
             (sessionClick)="onSessionClick($event)"
             (sessionResize)="onSessionResize($event)"
             (dayChange)="onDayChange()"
@@ -248,33 +355,113 @@
         </div>
 
         @if (selectedSession(); as session) {
-          <aside class="time-entrie-detail__session-panel" [attr.aria-label]="'timeEntry.selectedSession' | translate">
+          <aside
+            class="time-entrie-detail__session-panel"
+            [attr.aria-label]="'timeEntry.selectedSession' | translate"
+          >
             <header class="time-entrie-detail__session-panel-header">
               <div class="time-entrie-detail__session-panel-heading">
                 <time class="time-entrie-detail__session-panel-date">
                   {{ session.start | date: 'EEEE, d MMMM' }}
                 </time>
-                <h3 class="time-entrie-detail__session-panel-title">
-                  {{ session.start | date:'HH:mm' }} – {{ session.running ? ('timeEntry.now' | translate) : (session.end | date:'HH:mm') }}
-                </h3>
-                <span class="time-entrie-detail__session-panel-duration-inline" [attr.aria-label]="'timeEntry.duration' | translate">
+                @if (!isEditingSessionTime()) {
+                  <button
+                    type="button"
+                    class="time-entrie-detail__session-panel-time"
+                    [disabled]="saving()"
+                    [attr.aria-label]="'timeEntry.editTime' | translate"
+                    [attr.title]="'timeEntry.editTime' | translate"
+                    (click)="startEditingSessionTime()"
+                  >
+                    <span class="time-entrie-detail__session-panel-title">
+                      {{ session.start | date: 'HH:mm' }} –
+                      {{
+                        session.running
+                          ? ('timeEntry.now' | translate)
+                          : (session.end | date: 'HH:mm')
+                      }}
+                    </span>
+                    <app-icon name="actions/edit" size="0.625rem" />
+                  </button>
+                } @else {
+                  <div class="time-entrie-detail__session-panel-time-edit">
+                    <input
+                      type="time"
+                      class="time-entrie-detail__time-input"
+                      [formControl]="sessionStartControl"
+                      [attr.aria-label]="'timeEntry.start' | translate"
+                    />
+                    <span class="time-entrie-detail__value-separator" aria-hidden="true">–</span>
+                    @if (session.running) {
+                      <span class="time-entrie-detail__value--running">{{
+                        'timeEntry.now' | translate
+                      }}</span>
+                    } @else {
+                      <input
+                        type="time"
+                        class="time-entrie-detail__time-input"
+                        [formControl]="sessionEndControl"
+                        [attr.aria-label]="'timeEntry.end' | translate"
+                      />
+                    }
+                    <div class="time-entrie-detail__session-panel-time-actions">
+                      <app-button
+                        [icon]="{
+                          iconName: 'actions/close',
+                          iconOnly: true,
+                          color: 'var(--color-text-secondary)',
+                        }"
+                        [size]="{ small: true }"
+                        [rounded]="true"
+                        [color]="'transparent'"
+                        [hoverTitle]="'common.cancel' | translate"
+                        (buttonClick)="isEditingSessionTime.set(false)"
+                      />
+                      <app-button
+                        [icon]="{
+                          iconName: 'status/check',
+                          iconOnly: true,
+                          color: 'var(--color-success)',
+                        }"
+                        [size]="{ small: true }"
+                        [rounded]="true"
+                        [color]="'transparent'"
+                        [loading]="saving()"
+                        [hoverTitle]="'common.save' | translate"
+                        (buttonClick)="saveSessionTime()"
+                      />
+                    </div>
+                  </div>
+                }
+                <span
+                  class="time-entrie-detail__session-panel-duration-inline"
+                  [attr.aria-label]="'timeEntry.duration' | translate"
+                >
                   {{ sessionDuration() }}
                 </span>
               </div>
               <div class="time-entrie-detail__session-panel-actions">
                 <app-button
-                  [icon]="{ iconName: 'objects/trash', iconOnly: true, color: 'var(--color-error)' }"
+                  [icon]="{
+                    iconName: 'objects/trash',
+                    iconOnly: true,
+                    color: 'var(--color-error)',
+                  }"
                   [size]="{ small: true }"
                   [rounded]="true"
-                  [color]="'secondary'"
+                  [color]="'transparent'"
                   [hoverTitle]="'timeEntry.deleteSession' | translate"
                   (buttonClick)="deleteSession()"
                 />
                 <app-button
-                  [icon]="{ iconName: 'actions/close', iconOnly: true, color: 'var(--color-text-secondary)' }"
+                  [icon]="{
+                    iconName: 'actions/close',
+                    iconOnly: true,
+                    color: 'var(--color-text-secondary)',
+                  }"
                   [size]="{ small: true }"
                   [rounded]="true"
-                  [color]="'secondary'"
+                  [color]="'transparent'"
                   [hoverTitle]="'common.close' | translate"
                   (buttonClick)="closeSessionPanel()"
                 />
@@ -282,13 +469,18 @@
             </header>
 
             <div class="time-entrie-detail__session-panel-body">
-
               @if (!isEditingSession()) {
                 @if (session.description) {
                   <div class="time-entrie-detail__session-panel-desc-header">
-                    <span class="time-entrie-detail__session-panel-label">{{ 'timeEntry.sessionDescription' | translate }}</span>
+                    <span class="time-entrie-detail__session-panel-label">{{
+                      'timeEntry.sessionDescription' | translate
+                    }}</span>
                     <app-button
-                      [icon]="{ iconName: 'actions/edit', iconOnly: true, color: 'var(--color-primary-500)' }"
+                      [icon]="{
+                        iconName: 'actions/edit',
+                        iconOnly: true,
+                        color: 'var(--color-primary-500)',
+                      }"
                       [color]="'secondary'"
                       [size]="{ small: true }"
                       [rounded]="true"

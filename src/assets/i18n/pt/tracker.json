@@ -37,7 +37,8 @@
     "timer": {
       "start": "Iniciar tarefa",
       "stop": "Parar tarefa",
-      "openEntry": "Abrir tarefa em andamento"
+      "openEntry": "Abrir tarefa em andamento",
+      "error": "Não foi possível concluir a operação do timer"
     },
     "projectPicker": {
       "personal": "Projetos pessoais",
@@ -50,6 +51,17 @@
       "taskName": "O que você está fazendo?",
       "noProject": "Sem projeto",
       "noResults": "Nenhum projeto encontrado para a busca."
+    },
+    "sidePanel": {
+      "summary": "Resumo",
+      "today": "Hoje",
+      "thisWeek": "Esta semana",
+      "vsLastWeek": "vs semana passada",
+      "period": "Período",
+      "prevMonth": "Mês anterior",
+      "nextMonth": "Próximo mês",
+      "selectWeek": "Selecionar semana",
+      "selectMonth": "Selecionar mês"
     }
   }
 }

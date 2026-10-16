@@ -50,6 +50,7 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
   readonly sessions = input.required<SessionView[]>();
   readonly selectedSession = input<SessionView | null>(null);
   readonly hourClick = output<string>();
+  readonly sessionCreate = output<{ start: string; end: string }>();
   readonly sessionClick = output<SessionView>();
   readonly sessionResize = output<{ original: SessionView; updated: SessionView }>();
   readonly dayChange = output<Date>();
@@ -75,6 +76,16 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
   private readonly draggedOverride = signal<{ index: number; top: number; height: number } | null>(
     null,
   );
+
+  // --- Drag-to-create ---
+  private createAnchorMin: number | null = null;
+  private createTrackEl: HTMLElement | null = null;
+  readonly createPreview = signal<{
+    top: number;
+    height: number;
+    label: string;
+    duration: string;
+  } | null>(null);
   private readonly boundOnDragMove = (e: MouseEvent) => this.onDragMove(e);
   private readonly boundOnDragEnd = (e: MouseEvent) => this.onDragEnd(e);
 
@@ -214,6 +225,12 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
   });
 
   readonly displaySegments = computed<TimelineSegment[]>(() => {
+    const laid = this.laidOutSegments();
+    return this.createPreview() ? laid.slice(0, -1) : laid;
+  });
+
+  /** Segmentos + ghost do drag-create num único pass de colunas (sessões paralelas). */
+  private readonly laidOutSegments = computed<TimelineSegment[]>(() => {
     const segs = this.segments();
     const override = this.draggedOverride();
     const dayStart = this.dayStart();
@@ -235,7 +252,24 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
         })
       : segs;
 
-    return this.applyColumnLayout(withOverride);
+    const preview = this.createPreview();
+    const ghostSegs = preview
+      ? [
+          ...withOverride,
+          {
+            top: preview.top,
+            height: preview.height,
+            start: '',
+            end: '',
+            duration: '',
+            session: {} as SessionView,
+            col: 0,
+            totalCols: 1,
+          },
+        ]
+      : withOverride;
+
+    return this.applyColumnLayout(ghostSegs);
   });
 
   readonly cursorPosition = computed<number>(() => {
@@ -331,6 +365,8 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
     }
     document.removeEventListener('mousemove', this.boundOnDragMove);
     document.removeEventListener('mouseup', this.boundOnDragEnd);
+    document.removeEventListener('mousemove', this.boundOnCreateMove);
+    document.removeEventListener('mouseup', this.boundOnCreateEnd);
   }
 
   // --- Navigation handlers ---
@@ -536,6 +572,81 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
     this.hourClick.emit(date.toISOString());
   }
 
+  protected onTrackMouseDown(event: MouseEvent, trackEl: HTMLElement): void {
+    if (event.button !== 0) {
+      return;
+    }
+    const hit = event.target as HTMLElement;
+    if (hit.closest('.time-entrie-sessions__segment')) {
+      return;
+    }
+    const rect = trackEl.getBoundingClientRect();
+    const y = Math.max(0, Math.min(rect.height, event.clientY - rect.top));
+    this.createAnchorMin = this.snapToMinutes((y / rect.height) * 1440);
+    this.createTrackEl = trackEl;
+    this.wasDragging = false;
+    document.addEventListener('mousemove', this.boundOnCreateMove);
+    document.addEventListener('mouseup', this.boundOnCreateEnd);
+  }
+
+  private onCreateDragMove(event: MouseEvent): void {
+    const track = this.createTrackEl;
+    if (!track || this.createAnchorMin == null) {
+      return;
+    }
+    const rect = track.getBoundingClientRect();
+    const y = Math.max(0, Math.min(rect.height, event.clientY - rect.top));
+    const current = this.snapToMinutes((y / rect.height) * 1440);
+    if (current !== this.createAnchorMin) {
+      this.wasDragging = true;
+    }
+    const startMin = Math.min(this.createAnchorMin, current);
+    const endMin = Math.max(this.createAnchorMin, current);
+    const startDate = new Date(this.dayStart() + startMin * 60_000);
+    const endDate = new Date(this.dayStart() + endMin * 60_000);
+    const totalSeconds = (endMin - startMin) * 60;
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const compact =
+      hours > 0
+        ? `${hours}h${minutes > 0 ? String(minutes).padStart(2, '0') : ''}`
+        : `${minutes}min`;
+    this.createPreview.set({
+      top: (startMin / 1440) * 100,
+      height: ((endMin - startMin) / 1440) * 100,
+      label: `${this.timeLabel(startDate)} – ${this.timeLabel(endDate)}`,
+      duration: compact,
+    });
+  }
+
+  private onCreateDragEnd(_event: MouseEvent): void {
+    document.removeEventListener('mousemove', this.boundOnCreateMove);
+    document.removeEventListener('mouseup', this.boundOnCreateEnd);
+    const preview = this.createPreview();
+    this.createPreview.set(null);
+    this.createTrackEl = null;
+
+    if (!preview || this.createAnchorMin == null || !this.wasDragging) {
+      this.createAnchorMin = null;
+      return;
+    }
+
+    const startMin = Math.round((preview.top / 100) * 1440);
+    const endMin = Math.round(((preview.top + preview.height) / 100) * 1440);
+    this.createAnchorMin = null;
+
+    if (endMin - startMin < 5) {
+      return;
+    }
+
+    const start = new Date(this.dayStart() + startMin * 60_000);
+    const end = new Date(this.dayStart() + endMin * 60_000);
+    this.sessionCreate.emit({ start: start.toISOString(), end: end.toISOString() });
+  }
+
+  private readonly boundOnCreateMove = (e: MouseEvent) => this.onCreateDragMove(e);
+  private readonly boundOnCreateEnd = (e: MouseEvent) => this.onCreateDragEnd(e);
+
   protected onEnterKey(): void {
     const date = new Date(this.dayStart());
     date.setHours(this.currentHour(), 0, 0, 0);
@@ -699,7 +810,7 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
         maxCol = Math.max(maxCol, assigned);
       }
 
-      const totalCols = maxCol + 1;
+      const totalCols = Math.min(maxCol + 1, 3);
       for (const i of members) {
         const current = indexed[i];
         if (!current) {
@@ -707,7 +818,7 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
         }
         const target = result[current.origIndex];
         if (target) {
-          target.col = cols[i] ?? 0;
+          target.col = (cols[i] ?? 0) % totalCols;
           target.totalCols = totalCols;
         }
       }
@@ -721,27 +832,37 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
   }
 
   protected getSegmentLeft(seg: TimelineSegment): string {
-    const LABEL_PX = 76;
-    const RIGHT_PX = 8;
-    if (seg.totalCols === 1) {
-      return `${LABEL_PX}px`;
-    }
-    const usable = `(100% - ${LABEL_PX}px - ${RIGHT_PX}px)`;
-    const gap = seg.col > 0 ? 2 : 0;
-    return `calc(${LABEL_PX}px + ${seg.col} * ${usable} / ${seg.totalCols} + ${gap}px)`;
+    return this.colOffsets(seg.col, seg.totalCols).left;
   }
 
   protected getSegmentRight(seg: TimelineSegment): string {
+    return this.colOffsets(seg.col, seg.totalCols).right;
+  }
+
+  private colOffsets(col: number, totalCols: number): { left: string; right: string } {
     const LABEL_PX = 76;
     const RIGHT_PX = 8;
-    if (seg.totalCols === 1) {
-      return `${RIGHT_PX}px`;
+    if (totalCols === 1) {
+      return { left: `${LABEL_PX}px`, right: `${RIGHT_PX}px` };
     }
     const usable = `(100% - ${LABEL_PX}px - ${RIGHT_PX}px)`;
-    const remaining = seg.totalCols - seg.col - 1;
-    const gap = remaining > 0 ? 2 : 0;
-    return `calc(${remaining} * ${usable} / ${seg.totalCols} + ${RIGHT_PX}px + ${gap}px)`;
+    const leftGap = col > 0 ? 2 : 0;
+    const remaining = totalCols - col - 1;
+    const rightGap = remaining > 0 ? 2 : 0;
+    return {
+      left: `calc(${LABEL_PX}px + ${col} * ${usable} / ${totalCols} + ${leftGap}px)`,
+      right: `calc(${remaining} * ${usable} / ${totalCols} + ${RIGHT_PX}px + ${rightGap}px)`,
+    };
   }
+
+  /** Posição do ghost de drag-create — último segmento do pass de layout. */
+  readonly ghostOffsets = computed<{ left: string; right: string } | null>(() => {
+    if (!this.createPreview()) {
+      return null;
+    }
+    const ghost = this.laidOutSegments().at(-1);
+    return ghost ? this.colOffsets(ghost.col, ghost.totalCols) : null;
+  });
 
   protected duration(start: string, end: string): number {
     const startTime = new Date(start).getTime();

@@ -1,5 +1,48 @@
 @use '../../../main/pages/home-page/sections/section-shared' as *;
 
+/* A página preenche a área de conteúdo sem rolar — o scroll fica na lista. */
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Painel lateral empurra o conteúdo principal para a direita. */
+.tracker-entries-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: var(--spacing-xl);
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+  flex: 1;
+  min-height: 0;
+
+  > app-tracker-side-panel {
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
+
+  /* A seção vira coluna de altura presa: header/filtros fixos, lista rola. */
+  > .section {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    height: auto;
+    flex: none;
+  }
+}
+
 @keyframes featured-scanline {
   from {
     transform: translateX(-100%);
@@ -10,12 +53,42 @@
 }
 
 .tracker-entries {
+  /* Região rolável da lista — scrollbar fina e discreta. */
+  &__scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--color-border);
+      border-radius: 3px;
+
+      &:hover {
+        background: var(--color-text-tertiary);
+      }
+    }
+  }
+
+  &__sentinel {
+    padding-bottom: var(--spacing-md);
+  }
+
   &__filters {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: var(--spacing-md);
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     padding: var(--spacing-md) 0;
     border-top: 1px solid var(--color-border);
 
@@ -34,11 +107,15 @@
         pointer-events: none;
       }
     }
+
+    > app-popover {
+      flex-shrink: 0;
+    }
   }
 
   &__filter {
-    min-width: 240px;
-    flex: 0 1 280px;
+    min-width: 0;
+    flex: 0 1 200px;
 
     ::ng-deep .mat-select-input-field,
     ::ng-deep .mat-text-input-field {

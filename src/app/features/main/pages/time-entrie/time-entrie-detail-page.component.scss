@@ -13,11 +13,42 @@
     min-height: 0;
   }
 
+  &__page-back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    align-self: flex-start;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    padding-left: 0;
+    margin-bottom: var(--spacing-sm);
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: color var(--transition-fast);
+
+    &:hover {
+      color: var(--color-text-primary);
+    }
+  }
+
   &__topbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--spacing-sm);
+
+    &--actions-only {
+      justify-content: flex-end;
+    }
+  }
+
+  &__topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxs, 4px);
   }
 
   &__name {
@@ -121,6 +152,70 @@
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-primary);
     margin: 0;
+  }
+
+  &__session-panel-time {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: 0;
+    border: none;
+    background: transparent;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    width: fit-content;
+
+    app-icon {
+      color: var(--color-text-tertiary);
+      transition: color var(--transition-fast);
+    }
+
+    &:hover:not(:disabled) app-icon,
+    &:focus-visible app-icon {
+      color: var(--color-primary-600);
+    }
+
+    &:hover:not(:disabled) .time-entrie-detail__session-panel-title {
+      color: var(--color-primary-700);
+    }
+
+    &:disabled {
+      cursor: default;
+    }
+  }
+
+  &__session-panel-time-edit {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+
+  &__session-panel-time-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  &__time-input {
+    padding: 2px var(--spacing-xs);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-semibold);
+    font-variant-numeric: tabular-nums;
+    width: 5.25rem;
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary-500);
+      outline-offset: 1px;
+      border-color: var(--color-primary-500);
+    }
   }
 
   &__session-panel-body {
@@ -286,10 +381,7 @@
   }
 
   &__details {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-    margin: 0;
+    display: contents;
   }
 
   &__field {
@@ -299,6 +391,7 @@
 
     &--block {
       width: 100%;
+      order: 3;
     }
   }
 
@@ -308,6 +401,70 @@
     color: var(--color-text-tertiary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+
+    &--with-action {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--spacing-xs);
+    }
+  }
+
+  &__icon-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    min-width: 1.25rem;
+    min-height: 1.25rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--color-text-tertiary);
+    border-radius: var(--radius-sm);
+    transition: color var(--transition-fast);
+    line-height: 1;
+
+    &:hover:not(:disabled) {
+      color: var(--color-primary-600);
+    }
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.5;
+    }
+  }
+
+  &__add-description {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--color-text-tertiary);
+    font-family: inherit;
+    font-size: 0.8125rem;
+    font-weight: var(--font-weight-medium);
+    transition: color var(--transition-fast);
+
+    app-icon {
+      opacity: 0.6;
+    }
+
+    &:hover:not(:disabled) {
+      color: var(--color-primary-700);
+
+      app-icon {
+        opacity: 1;
+      }
+    }
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.6;
+    }
   }
 
   &__value {
@@ -321,6 +478,12 @@
     &--multiline {
       line-height: 1.5;
       white-space: pre-wrap;
+    }
+
+    &--actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--spacing-sm);
     }
   }
 
@@ -339,6 +502,7 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--spacing-sm);
+    order: 2;
   }
 
   &__tags-label {

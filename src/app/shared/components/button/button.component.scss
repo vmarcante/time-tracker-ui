@@ -291,6 +291,10 @@
     border: none;
     color: var(--color-text-tertiary);
 
+    &.btn--icon-only {
+      background-color: transparent;
+    }
+
     &.btn--filled {
       background-color: var(--color-background-card);
       color: var(--color-text-tertiary);
