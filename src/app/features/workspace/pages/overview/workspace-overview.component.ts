@@ -8,6 +8,7 @@ import { CompanyManagementApiService } from '../../../main/services/company-mana
 import { CompanyOverviewOutput } from '../../../main/models/company-management.model';
 import { AuthTokenService } from '../../../auth/services/auth-token.service';
 import { CompanyRole } from '../../../auth/models/person.model';
+import { CompanyStatsComponent } from '../../components/company-stats/company-stats.component';
 
 interface OverviewCard {
   labelKey: string;
@@ -21,7 +22,7 @@ interface OverviewCard {
 
 @Component({
   selector: 'app-workspace-overview',
-  imports: [CommonModule, RouterLink, TranslatePipe, IconComponent],
+  imports: [CommonModule, RouterLink, TranslatePipe, IconComponent, CompanyStatsComponent],
   templateUrl: './workspace-overview.component.html',
   styleUrl: './workspace-overview.component.scss',
 })

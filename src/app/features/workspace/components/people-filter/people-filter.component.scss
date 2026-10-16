@@ -1,0 +1,200 @@
+.people-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3125rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: transparent;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+
+  &:hover {
+    color: var(--color-text-primary);
+    border-color: var(--color-text-tertiary);
+  }
+
+  &--active {
+    color: var(--color-primary-700);
+    border-color: var(--color-primary-700);
+    background-color: color-mix(in srgb, var(--color-primary-500) 8%, transparent);
+  }
+
+  &__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.125rem;
+    height: 1.125rem;
+    padding: 0 0.25rem;
+    border-radius: 999px;
+    background-color: var(--color-primary-700);
+    color: var(--color-surface);
+    font-size: 0.625rem;
+    font-weight: 600;
+  }
+
+  &__chevron {
+    transition: transform 0.15s ease;
+
+    &--open {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.people {
+  display: flex;
+  flex-direction: column;
+
+  &__search {
+    padding: 0.625rem 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  &__body {
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 0.375rem 0;
+  }
+
+  &__team {
+    padding: 0.125rem 0.75rem;
+  }
+
+  &__team-head {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0;
+
+    app-checkbox-input {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  &__team-count {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--color-text-tertiary);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+
+  &__team-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.375rem;
+    height: 1.375rem;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--color-text-tertiary);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+
+    &:hover {
+      background-color: var(--color-border);
+    }
+
+    &--expanded {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__members {
+    display: flex;
+    flex-direction: column;
+    padding-left: 1.625rem;
+  }
+
+  &__member {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.1875rem 0;
+    min-width: 0;
+
+    app-checkbox-input {
+      flex: 1;
+      min-width: 0;
+    }
+
+    &--flat {
+      padding: 0.25rem 0.75rem;
+    }
+  }
+
+  &__member-team {
+    font-size: 0.6875rem;
+    color: var(--color-text-tertiary);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  &__member-badge {
+    font-size: 0.5625rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-primary-700);
+    background-color: color-mix(in srgb, var(--color-primary-500) 10%, transparent);
+    padding: 0.0625rem 0.375rem;
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+
+  &__group-label {
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    padding: 0.25rem 0;
+  }
+
+  &__empty {
+    margin: 0;
+    padding: 1rem 0.75rem;
+    font-size: 0.75rem;
+    color: var(--color-text-tertiary);
+    text-align: center;
+  }
+
+  &__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  &__selected {
+    font-size: 0.6875rem;
+    color: var(--color-text-tertiary);
+  }
+
+  &__clear {
+    border: none;
+    background: transparent;
+    padding: 0.375rem 0.625rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease;
+
+    &:hover {
+      color: var(--color-text-primary);
+      background-color: var(--color-border);
+    }
+  }
+}

@@ -152,6 +152,54 @@ export interface TagOutput {
   color: string;
 }
 
+export interface CompanyMemberStatsOutput {
+  userId: string;
+  userName: string;
+  seconds: number;
+  entryCount: number;
+}
+
+export interface CompanyProjectStatsOutput {
+  projectId: string;
+  projectName: string;
+  clientName: string | null;
+  seconds: number;
+  entryCount: number;
+}
+
+export interface CompanyDayStatsOutput {
+  date: string;
+  seconds: number;
+}
+
+export interface CompanyProjectDayStatsOutput {
+  projectId: string;
+  date: string;
+  seconds: number;
+}
+
+export interface CompanyRunningMemberOutput {
+  userId: string;
+  userName: string;
+  entryId: string;
+  entryName: string;
+  startedAt: string;
+}
+
+export interface CompanyTimeEntryStatsOutput {
+  totalSeconds: number;
+  entryCount: number;
+  runningCount: number;
+  memberCount: number;
+  previousTotalSeconds: number;
+  previousEntryCount: number;
+  members: CompanyMemberStatsOutput[];
+  projects: CompanyProjectStatsOutput[];
+  days: CompanyDayStatsOutput[];
+  projectDays: CompanyProjectDayStatsOutput[];
+  running: CompanyRunningMemberOutput[];
+}
+
 export interface CompanyTimeEntryOutput {
   id: string;
   userId: string;

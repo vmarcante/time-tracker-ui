@@ -1,0 +1,146 @@
+<app-popover
+  #peoplePopover
+  [options]="{
+    position: 'auto',
+    width: '340px',
+    closeOnClickOutside: true,
+    closeOnEscape: true,
+    showArrow: true,
+  }"
+  [triggerTemplate]="peopleTrigger"
+  [contentTemplate]="peopleContent"
+/>
+<ng-template #peopleTrigger>
+  <button
+    type="button"
+    class="people-trigger"
+    [class.people-trigger--active]="hasSelection()"
+    [attr.aria-expanded]="peoplePopover.isOpen"
+    (click)="peoplePopover.toggle()"
+  >
+    <app-icon name="objects/person" size="0.875rem" />
+    <span>{{ 'workspace.timeEntries.stats.people' | translate }}</span>
+    @if (hasSelection()) {
+      <span class="people-trigger__count">{{ selectionCount() }}</span>
+    }
+    <app-icon
+      name="arrows/chevron-down"
+      size="0.75rem"
+      class="people-trigger__chevron"
+      [class.people-trigger__chevron--open]="peoplePopover.isOpen"
+    />
+  </button>
+</ng-template>
+<ng-template #peopleContent>
+  <div class="people">
+    <div class="people__search">
+      <app-text-input
+        [control]="searchControl"
+        [showLabel]="false"
+        [placeholder]="'workspace.timeEntries.stats.searchPeople' | translate"
+        [hideHint]="true"
+        [hideError]="true"
+        [debounceTime]="150"
+      />
+    </div>
+
+    <div class="people__body">
+      @if (searchActive()) {
+        @for (result of flatResults(); track result.userId + ':' + (result.team?.id ?? '')) {
+          <div class="people__member people__member--flat">
+            <app-checkbox-input
+              [control]="memberControlOf(result.userId)"
+              [label]="result.name"
+              (onValueChange)="onMemberToggle(result.team)"
+            />
+            @if (result.team) {
+              <span class="people__member-team">· {{ result.team.name }}</span>
+            }
+          </div>
+        } @empty {
+          <p class="people__empty">
+            {{ 'workspace.timeEntries.stats.noPeopleResults' | translate }}
+          </p>
+        }
+      } @else {
+        @for (team of teamsWithMembers(); track team.id) {
+          <div class="people__team">
+            <div class="people__team-head">
+              <app-checkbox-input
+                [control]="teamControlOf(team.id)"
+                [label]="team.name"
+                [indeterminate]="isTeamIndeterminate(team)"
+                (onValueChange)="onTeamToggle(team, $event)"
+              />
+              <span class="people__team-count">
+                {{ selectedMemberCount(team) }}/{{ team.members.length }}
+              </span>
+              <button
+                type="button"
+                class="people__team-toggle"
+                [class.people__team-toggle--expanded]="isTeamExpanded(team.id)"
+                [attr.aria-expanded]="isTeamExpanded(team.id)"
+                [attr.aria-label]="team.name"
+                (click)="toggleTeamExpanded(team.id)"
+              >
+                <app-icon name="arrows/chevron-down" size="0.75rem" />
+              </button>
+            </div>
+            @if (isTeamExpanded(team.id)) {
+              <div class="people__members">
+                @for (member of team.members; track member.userId) {
+                  <div class="people__member">
+                    <app-checkbox-input
+                      [control]="memberControlOf(member.userId)"
+                      [label]="member.name"
+                      (onValueChange)="onMemberToggle(team)"
+                    />
+                    @if (member.role === 'LEAD') {
+                      <span class="people__member-badge">
+                        {{ 'workspace.timeEntries.stats.lead' | translate }}
+                      </span>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+        @if (unassignedMembers().length > 0) {
+          <div class="people__team">
+            <div class="people__team-head">
+              <span class="people__group-label">
+                {{ 'workspace.timeEntries.stats.noTeam' | translate }}
+              </span>
+            </div>
+            <div class="people__members">
+              @for (member of unassignedMembers(); track member.userId) {
+                <div class="people__member">
+                  <app-checkbox-input
+                    [control]="memberControlOf(member.userId)"
+                    [label]="member.name"
+                    (onValueChange)="onMemberToggle(null)"
+                  />
+                </div>
+              }
+            </div>
+          </div>
+        }
+      }
+    </div>
+
+    @if (hasSelection()) {
+      <div class="people__foot">
+        <span class="people__selected">
+          {{
+            'workspace.timeEntries.stats.selectedCount'
+              | translate: { count: selectionCount() }
+          }}
+        </span>
+        <button type="button" class="people__clear" (click)="clearSelection()">
+          {{ 'workspace.timeEntries.stats.clearFilters' | translate }}
+        </button>
+      </div>
+    }
+  </div>
+</ng-template>

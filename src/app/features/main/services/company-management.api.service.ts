@@ -7,6 +7,7 @@ import {
   CompanyMenuOverviewOutput,
   CompanyOverviewOutput,
   CompanyTimeEntryOutput,
+  CompanyTimeEntryStatsOutput,
   CreateProjectInput,
   CreateProjectOutput,
   CreateTeamInput,
@@ -269,7 +270,39 @@ export class CompanyManagementApiService {
     companyId: string,
     page = 1,
     size = 10,
+    filters: {
+      from?: string | null;
+      to?: string | null;
+      userIds?: string[] | null;
+      projectId?: string | null;
+      teamIds?: string[] | null;
+    } = {},
   ): ApiResponse<PageWrapper<CompanyTimeEntryOutput>> {
-    return this.httpService.get(`/companies/${companyId}/time-entries`, { params: { page, size } });
+    const params: Record<string, string | number> = { page, size };
+    if (filters.from) params['from'] = filters.from;
+    if (filters.to) params['to'] = filters.to;
+    if (filters.userIds?.length) params['userIds'] = filters.userIds.join(',');
+    if (filters.projectId) params['projectId'] = filters.projectId;
+    if (filters.teamIds?.length) params['teamIds'] = filters.teamIds.join(',');
+    return this.httpService.get(`/companies/${companyId}/time-entries`, { params });
+  }
+
+  listCompanyTimeEntryStats(
+    companyId: string,
+    filters: {
+      from?: string | null;
+      to?: string | null;
+      userIds?: string[] | null;
+      projectId?: string | null;
+      teamIds?: string[] | null;
+    } = {},
+  ): ApiResponse<CompanyTimeEntryStatsOutput> {
+    const params: Record<string, string | number> = {};
+    if (filters.from) params['from'] = filters.from;
+    if (filters.to) params['to'] = filters.to;
+    if (filters.userIds?.length) params['userIds'] = filters.userIds.join(',');
+    if (filters.projectId) params['projectId'] = filters.projectId;
+    if (filters.teamIds?.length) params['teamIds'] = filters.teamIds.join(',');
+    return this.httpService.get(`/companies/${companyId}/time-entries/stats`, { params });
   }
 }

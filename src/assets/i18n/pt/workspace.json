@@ -39,6 +39,13 @@
         "label": "Lançamentos da equipe",
         "hint": "Ver todos os lançamentos",
         "aria": "Ver lançamentos da equipe"
+      },
+      "stats": {
+        "title": "Horas da equipe",
+        "subtitle": "Últimos 7 dias",
+        "viewAll": "Ver lançamentos",
+        "runningNow": "{{count}} em andamento",
+        "membersCount": "{{count}} membros ativos"
       }
     },
     "section": {
@@ -322,7 +329,39 @@
     "timeEntries": {
       "title": "Lançamentos da Equipe",
       "empty": "Nenhum lançamento encontrado",
-      "running": "Em andamento"
+      "running": "Em andamento",
+      "stats": {
+        "title": "Resumo do período",
+        "period": "Período",
+        "lastDays": "{{days}} dias",
+        "custom": "Personalizado",
+        "rangeStart": "Início",
+        "rangeEnd": "Fim",
+        "rangeUntil": "até",
+        "member": "Membro",
+        "team": "Time",
+        "allMembers": "Todos os membros",
+        "allTeams": "Todos os times",
+        "people": "Pessoas",
+        "searchPeople": "Buscar pessoa ou time...",
+        "noPeopleResults": "Nenhum resultado para a busca",
+        "noTeam": "Sem time",
+        "lead": "Lead",
+        "selectedCount": "{{count}} selecionados",
+        "clearFilters": "Limpar filtros",
+        "totalTime": "Tempo total",
+        "entries": "Lançamentos",
+        "activeMembers": "Membros ativos",
+        "running": "Em andamento",
+        "perDay": "Horas por dia",
+        "perMember": "Horas por membro",
+        "perProject": "Horas por projeto",
+        "entriesCount": "{{count}} lançamentos",
+        "vsPrevious": "vs período anterior",
+        "avgPerDay": "Média de {{value}}/dia",
+        "bestDay": "Melhor dia: {{date}} ({{value}})",
+        "empty": "Sem dados no período"
+      }
     }
   }
 }

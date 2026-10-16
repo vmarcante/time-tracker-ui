@@ -9,6 +9,8 @@
     </div>
   </div>
 
+  <app-company-stats variant="full" (filterChange)="onStatsFilters($event)" />
+
   <div class="section__body">
     @if (loading()) {
       <div class="section__loading">

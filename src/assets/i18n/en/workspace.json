@@ -39,6 +39,13 @@
         "label": "Team time entries",
         "hint": "View all time entries",
         "aria": "View team time entries"
+      },
+      "stats": {
+        "title": "Team hours",
+        "subtitle": "Last 7 days",
+        "viewAll": "View time entries",
+        "runningNow": "{{count}} running",
+        "membersCount": "{{count}} active members"
       }
     },
     "section": {
@@ -322,7 +329,39 @@
     "timeEntries": {
       "title": "Team Time Entries",
       "empty": "No time entries found",
-      "running": "Running"
+      "running": "Running",
+      "stats": {
+        "title": "Period summary",
+        "period": "Period",
+        "lastDays": "{{days}} days",
+        "custom": "Custom",
+        "rangeStart": "Start",
+        "rangeEnd": "End",
+        "rangeUntil": "to",
+        "member": "Member",
+        "team": "Team",
+        "allMembers": "All members",
+        "allTeams": "All teams",
+        "people": "People",
+        "searchPeople": "Search person or team...",
+        "noPeopleResults": "No results for this search",
+        "noTeam": "No team",
+        "lead": "Lead",
+        "selectedCount": "{{count}} selected",
+        "clearFilters": "Clear filters",
+        "totalTime": "Total time",
+        "entries": "Entries",
+        "activeMembers": "Active members",
+        "running": "Running",
+        "perDay": "Hours per day",
+        "perMember": "Hours per member",
+        "perProject": "Hours per project",
+        "entriesCount": "{{count}} entries",
+        "vsPrevious": "vs previous period",
+        "avgPerDay": "Avg {{value}}/day",
+        "bestDay": "Best day: {{date}} ({{value}})",
+        "empty": "No data in this period"
+      }
     }
   }
 }
