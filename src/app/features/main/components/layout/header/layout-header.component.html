@@ -29,17 +29,28 @@
   </div>
   @if (isAuthenticated() && canAccessWorkspace()) {
     <nav class="header-context-nav" [attr.aria-label]="'header.navAriaLabel' | translate">
+      <span
+        class="header-context-nav__indicator"
+        [class.header-context-nav__indicator--visible]="indicatorVisible()"
+        [style.transform]="'translateX(' + indicatorX() + 'px)'"
+        [style.width.px]="indicatorWidth()"
+        aria-hidden="true"
+      ></span>
       <a
+        #navTracker
         class="header-context-nav__link"
         routerLink="/tracker"
         routerLinkActive="header-context-nav__link--active"
+        (isActiveChange)="onSegmentActive('tracker', $event)"
       >
         {{ 'header.navigation.tracker' | translate }}
       </a>
       <a
+        #navWorkspace
         class="header-context-nav__link"
         routerLink="/workspace"
         routerLinkActive="header-context-nav__link--active"
+        (isActiveChange)="onSegmentActive('workspace', $event)"
       >
         {{ 'header.navigation.workspace' | translate }}
       </a>

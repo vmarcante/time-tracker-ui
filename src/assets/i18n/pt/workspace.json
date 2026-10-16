@@ -200,10 +200,13 @@
           "message": "Deseja sair do time {{team}}? Você poderá ser adicionado novamente depois.",
           "confirm": "Sair do time"
         },
+        "createdAt": "Criado em",
         "members": {
           "title": "Membros",
           "addPlaceholder": "Selecione um membro da empresa",
           "add": "Adicionar",
+          "addTrigger": "Adicionar membro",
+          "noCandidates": "Todos os membros da empresa já estão neste time",
           "empty": "Nenhum membro neste time",
           "you": "(você)",
           "promote": "Tornar líder",
@@ -227,6 +230,8 @@
           "title": "Projetos",
           "linkPlaceholder": "Selecione um projeto para vincular",
           "link": "Vincular",
+          "linkTrigger": "Vincular projeto",
+          "noCandidates": "Não há projetos ativos disponíveis para vincular",
           "empty": "Nenhum projeto vinculado",
           "unlinkAction": "Desvincular projeto",
           "unlink": {
@@ -293,7 +298,10 @@
           "members": "membros",
           "lead": "Líder",
           "noMembers": "Nenhum membro aprovado neste time.",
-          "empty": "Nenhum time cadastrado na empresa."
+          "empty": "Nenhum time cadastrado na empresa.",
+          "searchPlaceholder": "Buscar membro ou time...",
+          "summary": "{{members}} selecionados em {{teams}} times",
+          "noSearchResults": "Nenhum membro encontrado para a busca."
         },
         "actions": {
           "next": "Avançar",

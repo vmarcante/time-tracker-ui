@@ -1,10 +1,9 @@
-import { Component, Input, Output, EventEmitter, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl } from '@angular/forms';
 import { TranslatePipe } from '../../../../../../../shared/pipes/translate.pipe';
 import { ButtonComponent } from '../../../../../../../shared/components/button/button.component';
 import { IconComponent } from '../../../../../../../shared/components/icon/icon.component';
-import { SelectInputComponent } from '../../../../../../../shared/components/inputs/select/select-input.component';
+import { PopoverComponent } from '../../../../../../../shared/components/popover/popover.component';
 import { ConfirmationDialogComponent } from '../../../../../../../shared/components/dialogs/confirmation/confirmation-dialog.component';
 import { ApiAdapterService } from '../../../../../../../shared/services/api/api-adapter.service';
 import { DialogService } from '../../../../../../../shared/services/dialog.service';
@@ -27,12 +26,14 @@ import { ConfirmationDialogConfiguration } from '../../../../../../../shared/typ
     TranslatePipe,
     ButtonComponent,
     IconComponent,
-    SelectInputComponent,
+    PopoverComponent,
   ],
   templateUrl: './team-detail.component.html',
   styleUrl: './team-detail.component.scss',
 })
 export class TeamDetailComponent implements OnInit {
+  protected readonly String = String;
+
   private companyApi = inject(CompanyManagementApiService);
   private apiAdapter = inject(ApiAdapterService);
   private dialogService = inject(DialogService);
@@ -56,8 +57,25 @@ export class TeamDetailComponent implements OnInit {
   readonly companyProjects = signal<ProjectSummaryOutput[]>([]);
   readonly processing = signal(false);
 
-  readonly memberSelectControl = new FormControl<string | null>(null);
-  readonly projectSelectControl = new FormControl<string | null>(null);
+  private memberAddPopover = viewChild<PopoverComponent>('memberAdd');
+  private projectAddPopover = viewChild<PopoverComponent>('projectAdd');
+
+  /** projectId → userIds alocados nesse projeto via ESTE time. */
+  readonly projectMemberIds = signal<Map<string, Set<string>>>(new Map());
+
+  /** projectId → membros do time alocados nele (stack de avatares). */
+  readonly teamMembersByProject = computed(() => {
+    const memberIds = this.projectMemberIds();
+    const members = this.members();
+    const result = new Map<string, TeamMemberOutput[]>();
+    for (const [projectId, userIds] of memberIds) {
+      result.set(
+        projectId,
+        members.filter((member) => userIds.has(member.userId)),
+      );
+    }
+    return result;
+  });
 
   readonly canManageCompany = computed(
     () => this.companyRole === 'OWNER' || this.companyRole === 'ADMIN',
@@ -138,10 +156,34 @@ export class TeamDetailComponent implements OnInit {
         onSuccess: (response) => {
           this.projects.set(response.data.content);
           this.projectsLoading.set(false);
+          this.loadProjectMembers(response.data.content);
         },
         onError: () => this.projectsLoading.set(false),
       },
     );
+  }
+
+  /** Carrega as alocações de cada projeto e filtra as feitas via este time. */
+  private loadProjectMembers(projects: ProjectSummaryOutput[]): void {
+    this.projectMemberIds.set(new Map());
+    for (const project of projects) {
+      this.apiAdapter.executeRequest(
+        this.companyApi.listProjectMembers(this.companyId, project.id),
+        {
+          ignoreLoading: true,
+          onSuccess: (response) => {
+            const userIds = new Set(
+              response.data.content
+                .filter((assignment) => assignment.teamId === this.team.id)
+                .map((assignment) => assignment.userId),
+            );
+            this.projectMemberIds.update(
+              (map) => new Map(map).set(project.id, userIds),
+            );
+          },
+        },
+      );
+    }
   }
 
   private loadCompanyMembers(): void {
@@ -177,10 +219,9 @@ export class TeamDetailComponent implements OnInit {
     );
   }
 
-  addMember(): void {
-    const userId = this.memberSelectControl.value;
-    const email = userId ? this.companyEmailByUserId().get(userId) : null;
-    if (!userId || !email || this.processing()) return;
+  addMember(userId: string): void {
+    const email = this.companyEmailByUserId().get(userId);
+    if (!email || this.processing()) return;
 
     this.processing.set(true);
     this.apiAdapter.executeRequest(
@@ -189,7 +230,7 @@ export class TeamDetailComponent implements OnInit {
         ignoreLoading: true,
         onSuccess: () => {
           this.processing.set(false);
-          this.memberSelectControl.reset();
+          this.memberAddPopover()?.close();
           this.loadMembers();
           this.changed.emit();
         },
@@ -313,8 +354,7 @@ export class TeamDetailComponent implements OnInit {
     );
   }
 
-  linkProject(): void {
-    const projectId = this.projectSelectControl.value;
+  linkProject(projectId: string): void {
     if (!projectId || this.processing()) return;
 
     this.processing.set(true);
@@ -324,7 +364,7 @@ export class TeamDetailComponent implements OnInit {
         ignoreLoading: true,
         onSuccess: () => {
           this.processing.set(false);
-          this.projectSelectControl.reset();
+          this.projectAddPopover()?.close();
           this.loadProjects();
           this.changed.emit();
         },

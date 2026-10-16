@@ -1,7 +1,8 @@
 {
   "timeEntry": {
-    "notFound": "Marcação não encontrada",
+    "notFound": "Tarefa não encontrada",
     "project": "Projeto",
+    "changeProject": "Alterar projeto",
     "client": "Cliente",
     "description": "Descrição",
     "start": "Início",
@@ -17,9 +18,9 @@
     "noDescription": "Sem descrição",
     "running": "Em andamento",
     "now": "agora",
-    "delete": "Excluir marcação",
-    "deleteTitle": "Excluir marcação",
-    "deleteMessage": "Tem certeza que deseja excluir esta marcação? Todas as sessões serão removidas.",
+    "delete": "Excluir tarefa",
+    "deleteTitle": "Excluir tarefa",
+    "deleteMessage": "Tem certeza que deseja excluir esta tarefa? Todas as sessões serão removidas.",
     "deleteSession": "Excluir sessão",
     "editTags": "Editar tags",
     "newTagName": "Nome da nova tag",

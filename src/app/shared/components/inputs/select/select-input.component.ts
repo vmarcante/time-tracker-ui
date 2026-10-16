@@ -38,6 +38,8 @@ export class SelectInputComponent {
 
   // Custom error messages
   @Input() errorMessages: Record<string, string> = {};
+  @Input() hideHint: boolean = false;
+  @Input() hideError: boolean = false;
 
   private translationService: TranslationService = inject(TranslationService);
 
@@ -79,6 +81,10 @@ export class SelectInputComponent {
 
   protected get ariaInvalid(): boolean | null {
     return this.hasError ? true : null;
+  }
+
+  protected get hideSubscript(): boolean {
+    return this.hideHint && this.hideError;
   }
 
   protected get ariaRequired(): boolean | null {

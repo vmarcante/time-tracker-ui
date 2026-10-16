@@ -56,7 +56,8 @@
 
 .mat-text-input-field--no-subscript .mat-mdc-form-field-subscript-wrapper,
 .mat-integer-input-field--no-subscript .mat-mdc-form-field-subscript-wrapper,
-.mat-date-input-field--no-subscript .mat-mdc-form-field-subscript-wrapper {
+.mat-date-input-field--no-subscript .mat-mdc-form-field-subscript-wrapper,
+.mat-select-input-field--no-subscript .mat-mdc-form-field-subscript-wrapper {
   display: none !important;
 }
 

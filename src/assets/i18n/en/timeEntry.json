@@ -2,6 +2,7 @@
   "timeEntry": {
     "notFound": "Time entry not found",
     "project": "Project",
+    "changeProject": "Change project",
     "client": "Client",
     "description": "Description",
     "start": "Start",

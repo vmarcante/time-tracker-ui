@@ -5,18 +5,24 @@ import {
   computed,
   effect,
   inject,
+  untracked,
   signal,
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { animate, keyframes, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
 import { PopoverComponent } from '../../../../shared/components/popover/popover.component';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { SelectInputComponent } from '../../../../shared/components/inputs/select/select-input.component';
+import {
+  DateRange,
+  DaterangeInputComponent,
+} from '../../../../shared/components/inputs/daterange/daterange-input.component';
 import { ApiAdapterService } from '../../../../shared/services/api/api-adapter.service';
 import { TranslationService } from '../../../../shared/services/translation.service';
 import { InputValue, PageWrapper, SelectOption } from '../../../../shared/types';
@@ -43,12 +49,42 @@ import { ProjectSummaryOutput } from '../../../main/models/company-management.mo
     PopoverComponent,
     PaginationComponent,
     SelectInputComponent,
+    DaterangeInputComponent,
     RecentTimeEntriesComponent,
     CardTimeEntrieComponent,
     ProjectPickerComponent,
   ],
   templateUrl: './tracker-entries-page.component.html',
   styleUrl: './tracker-entries-page.component.scss',
+  animations: [
+    trigger('featuredSwap', [
+      transition(':increment', [
+        animate(
+          '750ms cubic-bezier(0.22, 1, 0.36, 1)',
+          keyframes([
+            style({
+              transform: 'translateY(24px) scale(0.96)',
+              opacity: 0.3,
+              'box-shadow': '0 0 0 0 rgb(220 38 38 / 0.45)',
+              offset: 0,
+            }),
+            style({
+              transform: 'translateY(0) scale(1)',
+              opacity: 1,
+              'box-shadow': '0 0 0 10px rgb(220 38 38 / 0.18)',
+              offset: 0.7,
+            }),
+            style({
+              transform: 'translateY(0) scale(1)',
+              opacity: 1,
+              'box-shadow': '0 0 0 18px rgb(220 38 38 / 0)',
+              offset: 1,
+            }),
+          ]),
+        ),
+      ]),
+    ]),
+  ],
 })
 export class TrackerEntriesPageComponent implements OnInit {
   private trackerApi = inject(TrackerApiService);
@@ -58,20 +94,38 @@ export class TrackerEntriesPageComponent implements OnInit {
   protected timer = inject(TimerService);
 
   readonly entries = signal<TimeEntrySummaryOutput[]>([]);
+  /** Entry mais recente GLOBAL — só atualiza em cargas sem filtro ou quando a vigente para. */
+  private readonly recentEntryId = signal<string | null>(null);
+  private lastRunningId: string | null = null;
   readonly page = signal<PageWrapper<TimeEntrySummaryOutput> | null>(null);
   readonly loading = signal(true);
   readonly currentPage = signal(1);
   readonly filterProjectId = signal<string | null>(null);
   readonly filterTagIds = signal<ReadonlySet<string>>(new Set());
+  readonly filterFrom = signal<string | null>(null);
+  readonly filterTo = signal<string | null>(null);
   readonly userTags = signal<TagOutput[]>([]);
 
   readonly projectFilterControl = new FormControl<string>('');
+  readonly periodGroup = new FormGroup({
+    start: new FormControl<Date | null>(null),
+    end: new FormControl<Date | null>(null),
+  });
   readonly projectOptions = signal<SelectOption[]>([]);
 
   private startPickerPopover = viewChild<PopoverComponent>('startPicker');
 
   constructor() {
-    effect(() => this.loadFeaturedDetail(this.featuredId()));
+    effect(() => {
+      const id = this.featuredId();
+      // untracked: chamadas HTTP leem signals (token do interceptor, idioma)
+      // sincronamente — sem isso viram dependências do effect e cada refresh
+      // de token dispararia a animação + refetch.
+      untracked(() => this.loadFeaturedDetail(id));
+      if (id) {
+        this.featuredAnimTick.update((tick) => tick + 1);
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -116,11 +170,15 @@ export class TrackerEntriesPageComponent implements OnInit {
     }
     const projectId = this.filterProjectId();
     const tagIds = [...this.filterTagIds()];
+    const from = this.filterFrom();
+    const to = this.filterTo();
     this.apiAdapter.executeRequest(
       this.trackerApi.listMyEntries(
         {
           ...(projectId ? { projectId } : {}),
           ...(tagIds.length ? { tagIds } : {}),
+          ...(from ? { from } : {}),
+          ...(to ? { to } : {}),
         },
         pageNumber,
         20,
@@ -132,6 +190,9 @@ export class TrackerEntriesPageComponent implements OnInit {
           this.entries.set(response.data.content);
           this.currentPage.set(pageNumber);
           this.loading.set(false);
+          if (pageNumber === 1 && !this.hasActiveFilters()) {
+            this.recentEntryId.set(response.data.content[0]?.id ?? null);
+          }
         },
         onError: () => this.loading.set(false),
       },
@@ -141,6 +202,19 @@ export class TrackerEntriesPageComponent implements OnInit {
   onFilterChange(value: InputValue): void {
     this.filterProjectId.set(typeof value === 'string' && value ? value : null);
     this.loadPage(1);
+  }
+
+  onPeriodChange(range: DateRange): void {
+    this.filterFrom.set(range.start ? range.start.toISOString() : null);
+    this.filterTo.set(range.end ? this.endOfDay(range.end).toISOString() : null);
+    this.loadPage(1);
+  }
+
+  /** O fim do período inclui o dia inteiro selecionado. */
+  private endOfDay(date: Date): Date {
+    const end = new Date(date);
+    end.setHours(23, 59, 59, 999);
+    return end;
   }
 
   isTagFilterSelected(tagId: string): boolean {
@@ -160,20 +234,31 @@ export class TrackerEntriesPageComponent implements OnInit {
     this.loadPage(1);
   }
 
-  onProjectStart(project: ProjectSummaryOutput): void {
+  onProjectStart(project: ProjectSummaryOutput | null): void {
     this.startPickerPopover()?.close();
-    this.timer.start({ projectId: project.id });
+    this.timer.start(project ? { projectId: project.id } : {});
   }
 
   onEntryChanged(detail: TimeEntryDetailOutput): void {
-    this.mergeDetail(detail);
-    // A mutação pode mudar a ordem (nova sessão vira a mais recente) —
-    // recarrega silencioso pra reordenar igual ao backend, sem skeleton.
-    this.loadPage(this.currentPage(), true);
+    // Toda mutação passa pelo TimerService: ele emite entryChanged$ (que o
+    // runningNameSync usa pro header) e o subscriber desta página faz
+    // merge + reload silencioso pra reordenar.
+    this.timer.syncFromDetail(detail);
   }
 
   /** Reage a mudanças emitidas pelo timer global (header ou outras telas). */
   private applyExternalChange(detail: TimeEntryDetailOutput): void {
+    // Uma entry que acabou de parar é a mais recente por definição —
+    // mesmo filtrada fora da lista, ela assume o destaque.
+    if (detail.running) {
+      this.lastRunningId = detail.id;
+    } else if (detail.id === this.lastRunningId) {
+      this.lastRunningId = null;
+      this.recentEntryId.set(detail.id);
+    }
+    if (this.featuredId() === detail.id) {
+      this.featuredDetail.set(detail);
+    }
     if (this.entries().some((entry) => entry.id === detail.id)) {
       this.mergeDetail(detail);
       this.loadPage(this.currentPage(), true);
@@ -189,9 +274,6 @@ export class TrackerEntriesPageComponent implements OnInit {
         entry.id === detail.id ? { ...entry, ...this.summaryFromDetail(detail) } : entry,
       ),
     );
-    if (this.featuredId() === detail.id) {
-      this.featuredDetail.set(detail);
-    }
   }
 
   private summaryFromDetail(detail: TimeEntryDetailOutput): TimeEntrySummaryOutput {
@@ -212,13 +294,22 @@ export class TrackerEntriesPageComponent implements OnInit {
     };
   }
 
-  /** Entry vigente (running) ou a mais recente do resultado atual — sai da lista padrão. */
+  /**
+   * Destaque é independente dos filtros: a vigente (running) ou a mais
+   * recente global — nunca o primeiro item da lista filtrada.
+   */
+  private readonly featuredId = computed(
+    () => this.timer.runningEntryId() ?? this.recentEntryId(),
+  );
+
   readonly featuredEntry = computed<TimeEntrySummaryOutput | null>(() => {
-    const list = this.entries();
-    if (list.length === 0) return null;
-    const runningId = this.timer.runningEntryId();
-    const runningEntry = runningId ? list.find((entry) => entry.id === runningId) : undefined;
-    return runningEntry ?? list[0] ?? null;
+    const id = this.featuredId();
+    if (!id) return null;
+    const inList = this.entries().find((entry) => entry.id === id);
+    if (inList) return inList;
+    // Featured filtrada fora da lista — usa o detail já carregado como summary.
+    const detail = this.featuredDetail();
+    return detail && detail.id === id ? detail : null;
   });
 
   readonly featuredRunning = computed(() => {
@@ -226,8 +317,17 @@ export class TrackerEntriesPageComponent implements OnInit {
     return !!featured && this.timer.runningEntryId() === featured.id;
   });
 
-  private readonly featuredId = computed(() => this.featuredEntry()?.id ?? null);
+  private readonly hasActiveFilters = computed(
+    () =>
+      !!this.filterProjectId() ||
+      this.filterTagIds().size > 0 ||
+      !!this.filterFrom() ||
+      !!this.filterTo(),
+  );
+
   readonly featuredDetail = signal<TimeEntryDetailOutput | null>(null);
+  /** Incrementa a cada troca de destaque — dispara a animação :increment. */
+  readonly featuredAnimTick = signal(0);
 
   readonly featuredMeta = computed(() => {
     const detail = this.featuredDetail();
@@ -266,8 +366,8 @@ export class TrackerEntriesPageComponent implements OnInit {
   }
 
   readonly listEntries = computed<TimeEntrySummaryOutput[]>(() => {
-    const featured = this.featuredEntry();
-    return featured ? this.entries().filter((entry) => entry.id !== featured.id) : [];
+    const id = this.featuredId();
+    return id ? this.entries().filter((entry) => entry.id !== id) : this.entries();
   });
 
   protected readonly empty = computed(() => !this.loading() && this.entries().length === 0);

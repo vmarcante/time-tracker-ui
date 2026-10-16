@@ -16,7 +16,11 @@
   </label>
 }
 
-<mat-form-field class="mat-select-input-field" appearance="outline">
+<mat-form-field
+  class="mat-select-input-field"
+  [class.mat-select-input-field--no-subscript]="hideSubscript"
+  appearance="outline"
+>
   <mat-select
     [id]="generatedInputId"
     [formControl]="control!"
@@ -35,10 +39,10 @@
     }
   </mat-select>
 
-  @if (hint) {
+  @if (hint && !hideHint) {
     <mat-hint [id]="hintId">{{ hint }}</mat-hint>
   }
-  @if (hasError) {
+  @if (hasError && !hideError) {
     <mat-error [id]="errorId">{{ errorMessage }}</mat-error>
   }
 </mat-form-field>

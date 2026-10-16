@@ -193,6 +193,7 @@
         }
       },
       "detail": {
+        "createdAt": "Created",
         "open": "View team details",
         "leave": {
           "action": "Leave team",
@@ -204,6 +205,8 @@
           "title": "Members",
           "addPlaceholder": "Select a company member",
           "add": "Add",
+          "addTrigger": "Add member",
+          "noCandidates": "All company members are already in this team",
           "empty": "No members in this team",
           "you": "(you)",
           "promote": "Make lead",
@@ -227,6 +230,8 @@
           "title": "Projects",
           "linkPlaceholder": "Select a project to link",
           "link": "Link",
+          "linkTrigger": "Link project",
+          "noCandidates": "No active projects available to link",
           "empty": "No linked projects",
           "unlinkAction": "Unlink project",
           "unlink": {
@@ -293,7 +298,10 @@
           "members": "members",
           "lead": "Lead",
           "noMembers": "No approved members in this team.",
-          "empty": "No teams registered in the company."
+          "empty": "No teams registered in the company.",
+          "searchPlaceholder": "Search member or team...",
+          "summary": "{{members}} selected across {{teams}} teams",
+          "noSearchResults": "No members found for this search."
         },
         "actions": {
           "next": "Next",

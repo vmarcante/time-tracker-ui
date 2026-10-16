@@ -17,11 +17,17 @@
       "allProjects": "All projects",
       "filterProject": "Filter by project",
       "filterTags": "Tags",
+      "periodStart": "From",
+      "periodEnd": "To",
+      "periodUntil": "to",
       "featured": "Most recent",
       "running": "Running",
       "sessions": "Sessions",
       "totalDuration": "Total duration",
       "createdAt": "Created",
+      "anotherRunning": "Stop the running entry to start another",
+      "rename": "Click to rename",
+      "noProject": "No project",
       "clearFilter": "Clear filter",
       "empty": "No time entries found",
       "noSessions": "No sessions",
@@ -37,8 +43,11 @@
       "company": "Company projects",
       "empty": "No projects available",
       "newProject": "New personal project",
-      "projectName": "Project name",
-      "clientName": "Client name"
+      "projectName": "Project",
+      "clientName": "Client",
+      "search": "Search project...",
+      "noProject": "No project",
+      "noResults": "No projects found for this search."
     }
   }
 }

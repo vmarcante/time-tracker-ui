@@ -1,6 +1,17 @@
-import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  inject,
+  signal,
+  OnChanges,
+  OnDestroy,
+  SimpleChanges,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { InputValue } from '../../../types/input.types';
 import { TranslationService } from '../../../../shared/services/translation.service';
 
@@ -10,7 +21,7 @@ import { TranslationService } from '../../../../shared/services/translation.serv
   templateUrl: './checkbox-input.component.html',
   styleUrl: './checkbox-input.component.scss',
 })
-export class CheckboxInputComponent {
+export class CheckboxInputComponent implements OnChanges, OnDestroy {
   // Form control
   @Input() control?: FormControl;
 
@@ -32,6 +43,23 @@ export class CheckboxInputComponent {
   private translationService: TranslationService = inject(TranslationService);
 
   @Output() onValueChange = new EventEmitter<InputValue>();
+
+  protected readonly checked = signal(false);
+  private controlSubscription?: Subscription;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['control']) {
+      this.controlSubscription?.unsubscribe();
+      this.checked.set(this.control?.value === true);
+      this.controlSubscription = this.control?.valueChanges.subscribe((value) =>
+        this.checked.set(value === true),
+      );
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.controlSubscription?.unsubscribe();
+  }
 
   private readonly generatedId = `checkbox-input-${Math.random().toString(36).substring(2, 11)}`;
 

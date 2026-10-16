@@ -17,7 +17,11 @@
               {{ team.leadName }}
             </span>
           }
-          <span>{{ members().length }} {{ 'workspace.teams.members' | translate }}</span>
+          <span>{{ members().length }} {{ 'workspace.teams.members' | translate | lowercase }}</span>
+          @if (!projectsLoading()) {
+            <span>{{ projects().length }} {{ 'workspace.projects.title' | translate | lowercase }}</span>
+          }
+          <span>{{ 'workspace.teams.detail.createdAt' | translate }} {{ team.createdAt | date: 'mediumDate' }}</span>
         </div>
       </div>
       @if (canManageCompany() || isMember()) {
@@ -49,30 +53,64 @@
     </div>
   </div>
 
-  <!-- Membros -->
-  <section class="team-group">
-    <h3 class="team-group__subtitle">{{ 'workspace.teams.detail.members.title' | translate }}</h3>
-    <div class="section__body">
-      @if (canManageMembers()) {
-        <div class="team-detail__add-row">
-          <app-select-input
-            class="team-detail__add-select"
-            [control]="memberSelectControl"
-            [options]="memberCandidates()"
-            [showLabel]="false"
-            [placeholder]="'workspace.teams.detail.members.addPlaceholder' | translate"
+  <div class="team-detail__grid">
+    <!-- Membros -->
+    <section class="team-group team-detail__members">
+      <div class="team-group__head">
+        <h3 class="team-group__subtitle">{{ 'workspace.teams.detail.members.title' | translate }}</h3>
+        @if (canManageMembers()) {
+          <app-popover
+            #memberAdd
+            [options]="{
+              position: 'bottom',
+              width: '300px',
+              closeOnClickOutside: true,
+              closeOnEscape: true,
+            }"
+            [triggerTemplate]="memberAddTrigger"
+            [contentTemplate]="memberAddContent"
           />
-          <app-button
-            type="button"
-            color="primary"
-            [rounded]="true"
-            [text]="'workspace.teams.detail.members.add' | translate"
-            [icon]="{ iconName: 'actions/add', position: 'left', color: '#FFF' }"
-            [disabled]="!memberSelectControl.value || processing()"
-            (buttonClick)="addMember()"
-          />
-        </div>
-      }
+          <ng-template #memberAddTrigger>
+            <button
+              type="button"
+              class="team-detail__add-trigger"
+              [disabled]="processing()"
+              (click)="memberAdd.toggle()"
+            >
+              <app-icon name="actions/add" size="0.875rem" />
+              <span>{{ 'workspace.teams.detail.members.addTrigger' | translate }}</span>
+            </button>
+          </ng-template>
+          <ng-template #memberAddContent>
+            <div class="team-add-popover">
+              @if (memberCandidates().length === 0) {
+                <p class="team-add-popover__empty">
+                  {{ 'workspace.teams.detail.members.noCandidates' | translate }}
+                </p>
+              } @else {
+                <ul class="team-add-popover__list">
+                  @for (candidate of memberCandidates(); track candidate.value) {
+                    <li>
+                      <button
+                        type="button"
+                        class="team-add-popover__item"
+                        [disabled]="processing()"
+                        (click)="addMember(String(candidate.value))"
+                      >
+                        <span class="team-add-popover__avatar" aria-hidden="true">
+                          {{ candidate.label.charAt(0).toUpperCase() }}
+                        </span>
+                        <span class="team-add-popover__name">{{ candidate.label }}</span>
+                        <app-icon name="actions/add" size="0.875rem" class="team-add-popover__add-icon" />
+                      </button>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          </ng-template>
+        }
+      </div>
 
       @if (membersLoading()) {
         <div class="section__loading">
@@ -140,33 +178,65 @@
           }
         </div>
       }
-    </div>
-  </section>
+    </section>
 
-  <!-- Projetos -->
-  <section class="team-group">
-    <h3 class="team-group__subtitle">{{ 'workspace.teams.detail.projects.title' | translate }}</h3>
-    <div class="section__body">
-      @if (canManageCompany()) {
-        <div class="team-detail__add-row">
-          <app-select-input
-            class="team-detail__add-select"
-            [control]="projectSelectControl"
-            [options]="projectCandidates()"
-            [showLabel]="false"
-            [placeholder]="'workspace.teams.detail.projects.linkPlaceholder' | translate"
+    <!-- Projetos -->
+    <section class="team-group">
+      <div class="team-group__head">
+        <h3 class="team-group__subtitle">{{ 'workspace.teams.detail.projects.title' | translate }}</h3>
+        @if (canManageCompany()) {
+          <app-popover
+            #projectAdd
+            [options]="{
+              position: 'bottom',
+              width: '300px',
+              closeOnClickOutside: true,
+              closeOnEscape: true,
+            }"
+            [triggerTemplate]="projectAddTrigger"
+            [contentTemplate]="projectAddContent"
           />
-          <app-button
-            type="button"
-            color="primary"
-            [rounded]="true"
-            [text]="'workspace.teams.detail.projects.link' | translate"
-            [icon]="{ iconName: 'actions/add', position: 'left', color: '#FFF' }"
-            [disabled]="!projectSelectControl.value || processing()"
-            (buttonClick)="linkProject()"
-          />
-        </div>
-      }
+          <ng-template #projectAddTrigger>
+            <button
+              type="button"
+              class="team-detail__add-trigger"
+              [disabled]="processing()"
+              (click)="projectAdd.toggle()"
+            >
+              <app-icon name="actions/add" size="0.875rem" />
+              <span>{{ 'workspace.teams.detail.projects.linkTrigger' | translate }}</span>
+            </button>
+          </ng-template>
+          <ng-template #projectAddContent>
+            <div class="team-add-popover">
+              @if (projectCandidates().length === 0) {
+                <p class="team-add-popover__empty">
+                  {{ 'workspace.teams.detail.projects.noCandidates' | translate }}
+                </p>
+              } @else {
+                <ul class="team-add-popover__list">
+                  @for (candidate of projectCandidates(); track candidate.value) {
+                    <li>
+                      <button
+                        type="button"
+                        class="team-add-popover__item"
+                        [disabled]="processing()"
+                        (click)="linkProject(String(candidate.value))"
+                      >
+                        <span class="team-add-popover__avatar team-add-popover__avatar--project" aria-hidden="true">
+                          <app-icon name="objects/folder" size="0.75rem" />
+                        </span>
+                        <span class="team-add-popover__name">{{ candidate.label }}</span>
+                        <app-icon name="actions/add" size="0.875rem" class="team-add-popover__add-icon" />
+                      </button>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          </ng-template>
+        }
+      </div>
 
       @if (projectsLoading()) {
         <div class="section__loading">
@@ -196,7 +266,23 @@
                     <span class="detail-row__meta">{{ project.clientName }}</span>
                   }
                 </div>
-                <span class="detail-row__meta">{{ project.memberCount }} {{ 'workspace.teams.members' | translate }}</span>
+                @if (teamMembersByProject().get(project.id); as projectMembers) {
+                  @if (projectMembers.length > 0) {
+                    <div class="team-detail__avatars" aria-hidden="true">
+                      @for (m of projectMembers | slice: 0 : 5; track m.membershipId) {
+                        <span class="team-detail__avatar-sm" [attr.title]="m.name">
+                          {{ m.name.charAt(0).toUpperCase() }}
+                        </span>
+                      }
+                      @if (projectMembers.length > 5) {
+                        <span class="team-detail__avatar-sm team-detail__avatar-sm--more">
+                          +{{ projectMembers.length - 5 }}
+                        </span>
+                      }
+                    </div>
+                  }
+                }
+                <span class="detail-row__meta">{{ project.memberCount }} {{ 'workspace.teams.members' | translate | lowercase }}</span>
                 <div class="detail-row__actions">
                   @if (canManageCompany()) {
                     <button
@@ -216,6 +302,6 @@
           }
         </div>
       }
-    </div>
-  </section>
+    </section>
+  </div>
 </div>

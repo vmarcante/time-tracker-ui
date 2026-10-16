@@ -1,0 +1,24 @@
+@if (editing()) {
+  <input
+    #input
+    class="inline-input__field"
+    type="text"
+    [formControl]="control"
+    [disabled]="disabled"
+    [attr.placeholder]="placeholder || null"
+    [attr.maxlength]="maxLength"
+    (keydown.enter)="commit()"
+    (keydown.escape)="cancelEdit()"
+    (blur)="commit()"
+  />
+} @else {
+  <span
+    class="inline-input__text"
+    [class.inline-input__text--interactive]="interactive"
+    [attr.role]="interactive ? 'button' : null"
+    [attr.tabindex]="interactive ? 0 : null"
+    [attr.title]="editTitle || null"
+    (click)="startEdit()"
+    (keydown.enter)="startEdit()"
+  >{{ value || placeholder }}</span>
+}

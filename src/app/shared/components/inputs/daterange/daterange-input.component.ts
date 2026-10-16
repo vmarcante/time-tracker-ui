@@ -38,6 +38,9 @@ export class DaterangeInputComponent {
   // Accessibility
   @Input() inputId: string = '';
 
+  /** Esconde a linha de erro dos campos internos (uso em filtros/toolbars). */
+  @Input() hideError: boolean = false;
+
   // Custom error messages
   @Input() errorMessages: Record<string, string> = {};
 

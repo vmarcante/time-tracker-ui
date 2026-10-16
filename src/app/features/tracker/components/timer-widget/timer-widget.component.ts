@@ -39,9 +39,9 @@ export class TimerWidgetComponent implements OnInit {
     }
   }
 
-  onProjectSelected(project: ProjectSummaryOutput): void {
+  onProjectSelected(project: ProjectSummaryOutput | null): void {
     this.pickerPopover()?.close();
-    this.timer.start({ projectId: project.id });
+    this.timer.start(project ? { projectId: project.id } : {});
   }
 
   stopTimer(): void {

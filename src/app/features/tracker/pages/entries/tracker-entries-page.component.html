@@ -42,7 +42,11 @@
       aria-hidden="true"
     ></div>
   } @else if (featuredEntry(); as featured) {
-    <section class="tracker-entries__featured">
+    <section
+      class="tracker-entries__featured"
+      [class.tracker-entries__featured--running]="featuredRunning()"
+      [@featuredSwap]="featuredAnimTick()"
+    >
       <span
         class="tracker-entries__featured-label"
         [class.tracker-entries__featured-label--running]="featuredRunning()"
@@ -87,8 +91,20 @@
       [control]="projectFilterControl"
       [options]="projectOptions()"
       [showLabel]="false"
+      
       [placeholder]="'tracker.entries.filterProject' | translate"
+      [hideHint]="true"
+      [hideError]="true"
       (onValueChange)="onFilterChange($event)"
+    />
+    <app-daterange-input
+      class="tracker-entries__period"
+      [formGroup]="periodGroup"
+      [startLabel]="'tracker.entries.periodStart' | translate"
+      [endLabel]="'tracker.entries.periodEnd' | translate"
+      [separator]="'tracker.entries.periodUntil' | translate"
+      [hideError]="true"
+      (rangeChange)="onPeriodChange($event)"
     />
     <app-popover
       #tagFilter

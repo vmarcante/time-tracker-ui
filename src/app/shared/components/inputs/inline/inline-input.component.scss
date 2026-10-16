@@ -1,0 +1,43 @@
+:host {
+  display: inline-flex;
+  min-width: 0;
+}
+
+.inline-input {
+  &__text {
+    font: inherit;
+    color: inherit;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &--interactive {
+      cursor: text;
+      border-bottom: 1px dashed transparent;
+      transition: border-color var(--transition-fast);
+
+      &:hover,
+      &:focus-visible {
+        border-bottom-color: var(--color-border-strong);
+        outline: none;
+      }
+    }
+  }
+
+  &__field {
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--color-primary-500);
+    outline: none;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+    width: 100%;
+
+    &:disabled {
+      opacity: 0.6;
+    }
+  }
+}

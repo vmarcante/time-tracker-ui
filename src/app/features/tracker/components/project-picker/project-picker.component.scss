@@ -1,9 +1,19 @@
 .project-picker {
   display: flex;
   flex-direction: column;
-  max-height: 320px;
-  overflow-y: auto;
-  padding: var(--spacing-xs);
+  max-height: 380px;
+
+  &__header {
+    padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-xs);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  &__list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: var(--spacing-xs);
+  }
 
   &__group {
     display: flex;
@@ -60,12 +70,29 @@
   &__item-client {
     font-size: 0.75rem;
     color: var(--color-text-tertiary);
+    max-width: 45%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     flex-shrink: 0;
+  }
+
+  &__item--none {
+    .project-picker__item-name {
+      color: var(--color-text-secondary);
+      font-weight: var(--font-weight-regular);
+    }
+  }
+
+  &__footer {
+    flex-shrink: 0;
+    border-top: 1px solid var(--color-border);
+    padding: var(--spacing-xs);
+    background-color: var(--color-surface);
   }
 
   &__item--create {
     border: 1px dashed var(--color-border-strong);
-    margin-top: var(--spacing-sm);
     color: var(--color-text-secondary);
 
     .project-picker__item-name {
@@ -82,27 +109,37 @@
     }
   }
 
-  &__create {
-    &:not(:first-child) {
-      margin-top: var(--spacing-xs);
-    }
-  }
-
   &__form {
     display: flex;
     flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm) var(--spacing-sm);
+  }
+
+  &__form-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: var(--spacing-sm);
-    padding: var(--spacing-sm);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    margin-top: var(--spacing-sm);
-    background-color: var(--color-background);
+
+    .project-picker__group-label {
+      padding: 0;
+    }
+  }
+
+  &__form-fields {
+    display: flex;
+    gap: var(--spacing-sm);
+
+    app-text-input {
+      flex: 1 1 0;
+      min-width: 0;
+    }
   }
 
   &__form-actions {
     display: flex;
-    justify-content: flex-end;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-xs);
   }
 
   &__empty {

@@ -1,9 +1,23 @@
 @if (loading()) {
   <div class="time-entrie-detail">
-    <div class="time-entrie-detail__loading">
-      <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--title" aria-hidden="true"></div>
-      <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--meta" aria-hidden="true"></div>
-      <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--timeline" aria-hidden="true"></div>
+    <div class="time-entrie-detail__panel">
+      <div class="time-entrie-detail__loading">
+        <div class="time-entrie-detail__loading-info">
+          <div class="time-entrie-detail__loading-topbar">
+            <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--circle" aria-hidden="true"></div>
+            <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--circle" aria-hidden="true"></div>
+          </div>
+          <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--title" aria-hidden="true"></div>
+          <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--meta" aria-hidden="true"></div>
+          <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--meta" aria-hidden="true"></div>
+          <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--meta time-entrie-detail__skeleton--meta-short" aria-hidden="true"></div>
+        </div>
+        <div class="time-entrie-detail__loading-sessions">
+          <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--sessions-header" aria-hidden="true"></div>
+          <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--days" aria-hidden="true"></div>
+          <div class="time-entrie-detail__skeleton time-entrie-detail__skeleton--timeline" aria-hidden="true"></div>
+        </div>
+      </div>
     </div>
   </div>
 } @else if (entry(); as item) {
@@ -30,12 +44,47 @@
               (buttonClick)="confirmDeleteEntry()"
             />
           </div>
-          <h1 id="detail-title" class="time-entrie-detail__name">{{ item.name }}</h1>
+          <app-inline-input
+            id="detail-title"
+            class="time-entrie-detail__name"
+            [value]="item.name"
+            [editTitle]="'tracker.entries.rename' | translate"
+            [required]="true"
+            [maxLength]="120"
+            [disabled]="saving()"
+            (save)="onNameSave($event)"
+          />
 
           <div class="time-entrie-detail__meta">
             <span class="time-entrie-detail__meta-item">
               <span class="time-entrie-detail__meta-label">{{ 'timeEntry.project' | translate }}</span>
-              <span class="time-entrie-detail__meta-value">{{ item.projectName }}</span>
+              <app-popover
+                #projectPopover
+                [options]="{
+                  position: 'bottom',
+                  width: '320px',
+                  closeOnClickOutside: true,
+                  closeOnEscape: true,
+                  showArrow: true,
+                }"
+                [triggerTemplate]="projectTrigger"
+                [contentTemplate]="projectContent"
+              />
+              <ng-template #projectTrigger>
+                <button
+                  type="button"
+                  class="time-entrie-detail__meta-value time-entrie-detail__meta-value--editable"
+                  [disabled]="saving()"
+                  (click)="projectPopover.toggle()"
+                  [attr.aria-label]="'timeEntry.changeProject' | translate"
+                  [attr.title]="'timeEntry.changeProject' | translate"
+                >
+                  {{ item.projectName || ('tracker.entries.noProject' | translate) }}
+                </button>
+              </ng-template>
+              <ng-template #projectContent>
+                <app-project-picker (select)="onProjectChange($event)" />
+              </ng-template>
             </span>
             @if (item.clientName; as clientName) {
               <span class="time-entrie-detail__meta-divider" aria-hidden="true"></span>

@@ -4,7 +4,7 @@
       type="checkbox"
       class="checkbox-input"
       [id]="generatedInputId"
-      [checked]="control?.value"
+      [checked]="checked()"
       [disabled]="readonly || control!.disabled"
       [indeterminate]="indeterminate"
       [attr.aria-describedby]="ariaDescribedBy"

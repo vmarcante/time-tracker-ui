@@ -2,43 +2,52 @@
   "tracker": {
     "quickActions": {
       "title": "Ações Rápidas",
-      "newTimeEntry": "Nova Marcação",
+      "newTimeEntry": "Nova Tarefa",
       "viewReports": "Ver Relatórios",
       "manageProjects": "Gerenciar Projetos",
       "exportData": "Exportar Dados"
     },
     "latestEntries": {
-      "title": "Últimas Marcações"
+      "title": "Últimas Tarefas"
     },
     "myEntries": {
-      "title": "Minhas marcações"
+      "title": "Minhas tarefas"
     },
     "entries": {
       "allProjects": "Todos os projetos",
       "filterProject": "Filtrar por projeto",
       "filterTags": "Tags",
+      "periodStart": "De",
+      "periodEnd": "Até",
+      "periodUntil": "até",
       "featured": "Mais recente",
       "running": "Em andamento",
       "sessions": "Sessões",
       "totalDuration": "Duração total",
       "createdAt": "Criada em",
+      "anotherRunning": "Parar a tarefa em andamento para iniciar outra",
+      "rename": "Clique para renomear",
+      "noProject": "Sem projeto",
       "clearFilter": "Limpar filtro",
-      "empty": "Nenhuma marcação encontrada",
+      "empty": "Nenhuma tarefa encontrada",
       "noSessions": "Sem sessões",
       "details": "Ver detalhes"
     },
     "timer": {
-      "start": "Iniciar timer",
-      "stop": "Parar timer",
-      "openEntry": "Abrir marcação em andamento"
+      "start": "Iniciar tarefa",
+      "stop": "Parar tarefa",
+      "openEntry": "Abrir tarefa em andamento"
     },
     "projectPicker": {
       "personal": "Projetos pessoais",
       "company": "Projetos da empresa",
       "empty": "Nenhum projeto disponível",
       "newProject": "Novo projeto pessoal",
-      "projectName": "Nome do projeto",
-      "clientName": "Nome do cliente"
+      "projectName": "Projeto",
+      "clientName": "Cliente",
+      "search": "Buscar projeto...",
+      "noProject": "Sem projeto",
+      "noResults": "Nenhum projeto encontrado para a busca."
     }
   }
 }

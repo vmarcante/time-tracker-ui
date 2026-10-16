@@ -40,7 +40,8 @@
         />
       </div>
     } @else {
-        <section class="project-page__panel">
+      <div class="project-page__columns">
+        <section class="project-page__panel project-page__panel--details">
           <div class="project-page__panel-header">
             <h3 class="project-page__panel-title">
               {{ 'workspace.projects.dialog.steps.details' | translate }}
@@ -85,7 +86,7 @@
           </div>
         </section>
 
-        <section class="project-page__panel">
+        <section class="project-page__panel project-page__panel--teams">
           <div class="project-page__panel-header">
             <h3 class="project-page__panel-title">
               {{ 'workspace.projects.dialog.steps.teams' | translate }}
@@ -94,53 +95,108 @@
               {{ 'workspace.projects.dialog.steps.teamsDescription' | translate }}
             </p>
           </div>
-          <div class="project-page__teams">
-            @for (team of teams(); track team.id) {
-              <div
-                class="project-page__team"
-                [class.project-page__team--selected]="isTeamSelected(team.id)"
-              >
-                <div class="project-page__team-header">
-                  <app-checkbox-input
-                    [control]="teamControlOf(team.id)"
-                    [label]="team.name"
-                    (onValueChange)="onTeamToggle(team, $event)"
-                  />
-                  <span class="project-page__team-count">
-                    {{ team.members.length }}
-                    {{ 'workspace.projects.dialog.teams.members' | translate }}
-                  </span>
-                </div>
+          @if (teams().length > 0) {
+            <app-text-input
+              class="project-page__teams-search"
+              [control]="memberSearchControl"
+              [showLabel]="false"
+              [placeholder]="'workspace.projects.dialog.teams.searchPlaceholder' | translate"
+              [hideHint]="true"
+              [hideError]="true"
+              [debounceTime]="150"
+            />
+            @if (totalSelected() > 0) {
+              <p class="project-page__teams-summary">
+                {{
+                  'workspace.projects.dialog.teams.summary'
+                    | translate
+                      : { members: totalSelected(), teams: teamsWithSelection() }
+                }}
+              </p>
+            }
+          }
 
-                @if (isTeamSelected(team.id)) {
-                  <div class="project-page__team-members">
-                    @for (member of team.members; track member.userId) {
-                      <div class="project-page__member">
-                        <app-checkbox-input
-                          [control]="memberControlOf(team.id, member.userId)"
-                          [label]="member.name"
-                        />
-                        @if (member.role === 'LEAD') {
-                          <span class="project-page__member-badge">
-                            {{ 'workspace.projects.dialog.teams.lead' | translate }}
-                          </span>
-                        }
-                      </div>
-                    } @empty {
-                      <p class="project-page__team-empty">
-                        {{ 'workspace.projects.dialog.teams.noMembers' | translate }}
-                      </p>
-                    }
-                  </div>
-                }
-              </div>
-            } @empty {
+          <div class="project-page__teams">
+            @if (teams().length === 0) {
               <p class="project-page__teams-empty">
                 {{ 'workspace.projects.dialog.teams.empty' | translate }}
               </p>
+            } @else if (memberSearch()) {
+              @for (result of memberResults(); track result.team.id + ':' + result.member.userId) {
+                <div class="project-page__member project-page__member--flat">
+                  <app-checkbox-input
+                    [control]="memberControlOf(result.team.id, result.member.userId)"
+                    [label]="result.member.name"
+                    (onValueChange)="onMemberToggle(result.team)"
+                  />
+                  <span class="project-page__member-team">· {{ result.team.name }}</span>
+                  @if (result.member.role === 'LEAD') {
+                    <span class="project-page__member-badge">
+                      {{ 'workspace.projects.dialog.teams.lead' | translate }}
+                    </span>
+                  }
+                </div>
+              } @empty {
+                <p class="project-page__teams-empty">
+                  {{ 'workspace.projects.dialog.teams.noSearchResults' | translate }}
+                </p>
+              }
+            } @else {
+              @for (team of teams(); track team.id) {
+                <div
+                  class="project-page__team"
+                  [class.project-page__team--selected]="isTeamSelected(team.id)"
+                >
+                  <div class="project-page__team-header">
+                    <button
+                      type="button"
+                      class="project-page__team-toggle"
+                      [class.project-page__team-toggle--expanded]="isTeamExpanded(team.id)"
+                      [attr.aria-expanded]="isTeamExpanded(team.id)"
+                      [attr.aria-label]="team.name"
+                      (click)="toggleTeamExpanded(team.id)"
+                    >
+                      <app-icon name="arrows/chevron-down" size="0.75rem" />
+                    </button>
+                    <app-checkbox-input
+                      [control]="teamControlOf(team.id)"
+                      [label]="team.name"
+                      [indeterminate]="isTeamIndeterminate(team.id)"
+                      (onValueChange)="onTeamToggle(team, $event)"
+                    />
+                    <span class="project-page__team-count">
+                      {{ selectedCount(team.id) }}/{{ team.members.length }}
+                    </span>
+                  </div>
+
+                  @if (isTeamExpanded(team.id)) {
+                    <div class="project-page__team-members">
+                      @for (member of team.members; track member.userId) {
+                        <div class="project-page__member">
+                          <app-checkbox-input
+                            [control]="memberControlOf(team.id, member.userId)"
+                            [label]="member.name"
+                            (onValueChange)="onMemberToggle(team)"
+                          />
+                          @if (member.role === 'LEAD') {
+                            <span class="project-page__member-badge">
+                              {{ 'workspace.projects.dialog.teams.lead' | translate }}
+                            </span>
+                          }
+                        </div>
+                      } @empty {
+                        <p class="project-page__team-empty">
+                          {{ 'workspace.projects.dialog.teams.noMembers' | translate }}
+                        </p>
+                      }
+                    </div>
+                  }
+                </div>
+              }
             }
           </div>
         </section>
+      </div>
 
       @if (canEdit()) {
         <div class="project-page__actions">

@@ -8,6 +8,8 @@ import {
   inject,
   signal,
   computed,
+  viewChild,
+  ElementRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
@@ -66,6 +68,13 @@ export class LayoutHeaderComponent implements OnInit, OnDestroy {
   currentUser = this.authTokenService.currentUser;
   userLoading = this.authTokenService.currentUserLoading;
 
+  private readonly navTracker = viewChild<ElementRef<HTMLElement>>('navTracker');
+  private readonly navWorkspace = viewChild<ElementRef<HTMLElement>>('navWorkspace');
+  private readonly activeSegment = signal<'tracker' | 'workspace' | null>(null);
+  protected readonly indicatorX = signal(0);
+  protected readonly indicatorWidth = signal(0);
+  protected readonly indicatorVisible = signal(false);
+
   readonly canAccessWorkspace = computed(() => {
     const user = this.currentUser();
     if (!user || user.affiliation !== 'COMPANY') return false;
@@ -119,6 +128,34 @@ export class LayoutHeaderComponent implements OnInit, OnDestroy {
   @HostListener('window:scroll', [])
   onScroll(): void {
     this.isScrolled = window.scrollY > 10;
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    this.updateIndicatorPosition();
+  }
+
+  protected onSegmentActive(segment: 'tracker' | 'workspace', isActive: boolean): void {
+    if (isActive) {
+      this.activeSegment.set(segment);
+    } else if (this.activeSegment() === segment) {
+      this.activeSegment.set(null);
+    }
+    // Mede depois do layout assentar — a troca de rota pode vir antes do reflow.
+    requestAnimationFrame(() => this.updateIndicatorPosition());
+  }
+
+  private updateIndicatorPosition(): void {
+    const segment = this.activeSegment();
+    const ref = segment === 'tracker' ? this.navTracker() : this.navWorkspace();
+    const element = ref?.nativeElement;
+    if (!segment || !element) {
+      this.indicatorVisible.set(false);
+      return;
+    }
+    this.indicatorX.set(element.offsetLeft);
+    this.indicatorWidth.set(element.offsetWidth);
+    this.indicatorVisible.set(true);
   }
 
   onMouseEnter(): void {

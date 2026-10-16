@@ -2,10 +2,20 @@
 
 .project-page {
   &__body {
-    max-width: 720px;
     display: flex;
     flex-direction: column;
     gap: var(--spacing-2xl);
+  }
+
+  &__columns {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xl);
+
+    @media (min-width: 1024px) {
+      flex-direction: row;
+      align-items: flex-start;
+    }
   }
 
   &__status {
@@ -66,6 +76,22 @@
       padding-top: var(--spacing-2xl);
       border-top: 1px solid var(--color-border);
     }
+
+    @media (min-width: 1024px) {
+      &--details {
+        flex: 0 0 420px;
+      }
+
+      &--teams {
+        flex: 1 1 0;
+        min-width: 0;
+      }
+
+      & + & {
+        padding-top: 0;
+        border-top: none;
+      }
+    }
   }
 
   &__panel-header {
@@ -94,6 +120,17 @@
     gap: var(--spacing-md);
   }
 
+  &__teams-search {
+    display: block;
+  }
+
+  &__teams-summary {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+  }
+
   &__teams {
     display: flex;
     flex-direction: column;
@@ -116,14 +153,42 @@
   &__team-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+
+  &__team-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--color-text-tertiary);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+
+    app-icon {
+      transition: transform var(--transition-fast);
+      transform: rotate(-90deg);
+    }
+
+    &--expanded app-icon {
+      transform: rotate(0deg);
+    }
+
+    &:hover {
+      background-color: var(--color-surface);
+      color: var(--color-text-secondary);
+    }
   }
 
   &__team-count {
     font-size: 0.75rem;
     color: var(--color-text-tertiary);
     white-space: nowrap;
+    margin-left: auto;
   }
 
   &__team-members {
@@ -139,8 +204,18 @@
   &__member {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: var(--spacing-md);
+
+    &--flat {
+      justify-content: flex-start;
+      padding: var(--spacing-xs) var(--spacing-sm);
+    }
+  }
+
+  &__member-team {
+    font-size: 0.75rem;
+    color: var(--color-text-tertiary);
+    white-space: nowrap;
   }
 
   &__member-badge {

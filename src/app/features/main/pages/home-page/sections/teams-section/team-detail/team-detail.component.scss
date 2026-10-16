@@ -36,17 +36,170 @@
     font-weight: var(--font-weight-semibold);
   }
 
-  &__add-row {
+  &__grid {
     display: flex;
-    align-items: flex-start;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-md) var(--spacing-lg);
-    border-bottom: 1px solid var(--color-border);
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    align-items: stretch;
+
+    @media (min-width: 900px) {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: var(--spacing-2xl);
+
+      > .team-group {
+        flex: 1 1 0;
+        min-width: 0;
+      }
+
+      > .team-detail__members {
+        flex: 0 0 300px;
+        width: 300px;
+      }
+    }
   }
 
-  &__add-select {
+  &__avatars {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+
+    > * + * {
+      margin-left: -7px;
+    }
+  }
+
+  &__avatar-sm {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--color-background);
+    background-color: var(--color-primary-100);
+    color: var(--color-primary);
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-semibold);
+
+    &--more {
+      background-color: var(--color-surface-hover);
+      color: var(--color-text-secondary);
+    }
+  }
+
+  &__add-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border: 1px dashed var(--color-border-strong);
+    border-radius: 999px;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition:
+      border-color var(--transition-fast),
+      color var(--transition-fast),
+      background-color var(--transition-fast);
+
+    &:hover {
+      border-color: var(--color-primary-500);
+      color: var(--color-primary-500);
+      background-color: var(--color-primary-50);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
+}
+
+.team-add-popover {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-xs) 0;
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.8125rem;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    text-align: left;
+    transition: background-color var(--transition-fast);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-surface-hover);
+
+      .team-add-popover__add-icon {
+        opacity: 1;
+      }
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
+
+  &__avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: var(--color-primary-100);
+    color: var(--color-primary);
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-semibold);
+    flex-shrink: 0;
+
+    &--project {
+      border-radius: var(--radius-sm);
+    }
+  }
+
+  &__name {
     flex: 1;
     min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__add-icon {
+    color: var(--color-text-tertiary);
+    opacity: 0.5;
+    transition: opacity var(--transition-fast);
+    flex-shrink: 0;
+  }
+
+  &__empty {
+    margin: 0;
+    padding: var(--spacing-md);
+    font-size: 0.8125rem;
+    color: var(--color-text-tertiary);
+    text-align: center;
   }
 }
 
@@ -54,9 +207,14 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
+  width: 100%;
 
-  & + & {
-    margin-top: var(--spacing-xl);
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    min-height: 30px;
   }
 
   &__subtitle {

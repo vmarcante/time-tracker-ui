@@ -8,6 +8,7 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
 import { TextareaInputComponent } from '../../../../shared/components/inputs/textarea/textarea-input.component';
 import { TextInputComponent } from '../../../../shared/components/inputs/text/text-input.component';
+import { InlineInputComponent } from '../../../../shared/components/inputs/inline/inline-input.component';
 import { PopoverComponent } from '../../../../shared/components/popover/popover.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { ConfirmationDialogComponent } from '../../../../shared/components/dialogs/confirmation/confirmation-dialog.component';
@@ -15,6 +16,8 @@ import { DialogService } from '../../../../shared/services/dialog.service';
 import { TranslationService } from '../../../../shared/services/translation.service';
 import { ApiAdapterService } from '../../../../shared/services/api/api-adapter.service';
 import { TimeEntrieSessionsComponent } from '../../components/time-entries/sessions/time-entrie-sessions.component';
+import { ProjectPickerComponent } from '../../../tracker/components/project-picker/project-picker.component';
+import { ProjectSummaryOutput } from '../../models/company-management.model';
 import { TrackerApiService } from '../../../tracker/services/tracker.api.service';
 import { TimerService } from '../../../tracker/services/timer.service';
 import {
@@ -48,9 +51,11 @@ const TAG_COLORS = [
     ButtonComponent,
     TextareaInputComponent,
     TextInputComponent,
+    InlineInputComponent,
     PopoverComponent,
     IconComponent,
     TimeEntrieSessionsComponent,
+    ProjectPickerComponent,
   ],
   templateUrl: './time-entrie-detail-page.component.html',
   styleUrl: './time-entrie-detail-page.component.scss',
@@ -158,6 +163,57 @@ export class TimeEntrieDetailPageComponent implements OnInit {
 
   protected close(): void {
     this.location.back();
+  }
+
+  private projectPopover = viewChild<PopoverComponent>('projectPopover');
+
+  protected onProjectChange(project: ProjectSummaryOutput | null): void {
+    const entry = this.entry();
+    if (!entry || this.saving()) {
+      return;
+    }
+
+    this.projectPopover()?.close();
+    this.saving.set(true);
+    this.apiAdapter.executeRequest(
+      this.trackerApi.updateEntry(entry.id, {
+        name: entry.name,
+        description: entry.description,
+        projectId: project?.id ?? null,
+        clearProject: project == null,
+      }),
+      {
+        ignoreLoading: true,
+        onSuccess: (response) => {
+          this.applyDetail(response.data);
+          this.saving.set(false);
+        },
+        onError: () => this.saving.set(false),
+      },
+    );
+  }
+
+  protected onNameSave(name: string): void {
+    const entry = this.entry();
+    if (!entry || this.saving()) {
+      return;
+    }
+
+    this.saving.set(true);
+    this.apiAdapter.executeRequest(
+      this.trackerApi.updateEntry(entry.id, {
+        name,
+        description: entry.description,
+      }),
+      {
+        ignoreLoading: true,
+        onSuccess: (response) => {
+          this.applyDetail(response.data);
+          this.saving.set(false);
+        },
+        onError: () => this.saving.set(false),
+      },
+    );
   }
 
   protected onSessionClick(session: SessionView): void {

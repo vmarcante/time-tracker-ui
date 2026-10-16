@@ -10,8 +10,8 @@
     "navigation": {
       "resources": "Recursos",
       "dashboard": "Dashboard",
-      "tracker": "Tracker",
-      "workspace": "Workspace"
+      "tracker": "Tarefas",
+      "workspace": "Gerência"
     },
     "mobileMenu": {
       "ariaLabel": "Menu de navegação mobile",

@@ -58,6 +58,8 @@ export interface CreateTimeEntryInput {
 export interface UpdateTimeEntryInput {
   name: string;
   description?: string | null;
+  projectId?: string | null;
+  clearProject?: boolean;
 }
 
 export interface StartTimerInput {

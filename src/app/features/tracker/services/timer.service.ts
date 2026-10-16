@@ -23,6 +23,14 @@ export class TimerService {
   /** Emitido quando uma entry muda via timer (start/stop) ou mutações sincronizadas. */
   readonly entryChanged$ = this.entryChangedSubject.asObservable();
 
+  /** Mantém o nome da entry vigente em sync com mutações (ex.: rename inline). */
+  private readonly runningNameSync = this.entryChangedSubject.subscribe((detail) => {
+    const current = this.running();
+    if (current && current.entryId === detail.id && current.entryName !== detail.name) {
+      this.running.set({ ...current, entryName: detail.name });
+    }
+  });
+
   private readonly nowTick = signal(Date.now());
   /** Relógio compartilhado — componentes derivam contadores a partir dele. */
   readonly now = this.nowTick.asReadonly();
@@ -89,15 +97,19 @@ export class TimerService {
   syncFromDetail(entry: TimeEntryDetailOutput): void {
     this.entryChangedSubject.next(entry);
     const runningSession = entry.sessions.find((session) => session.running);
-    if (!runningSession) {
-      this.setRunning(null);
+    if (runningSession) {
+      this.setRunning({
+        entryId: entry.id,
+        entryName: entry.name,
+        session: runningSession,
+      });
       return;
     }
-    this.setRunning({
-      entryId: entry.id,
-      entryName: entry.name,
-      session: runningSession,
-    });
+    // Entry parada: só limpa o running se for a própria entry em execução —
+    // abrir/editar outra entry não deve derrubar o timer vigente.
+    if (this.running()?.entryId === entry.id) {
+      this.setRunning(null);
+    }
   }
 
   private setRunning(value: RunningTimerOutput | null): void {

@@ -22,6 +22,7 @@ import { CompanyManagementApiService } from '../../../main/services/company-mana
 import {
   ProjectDetailOutput,
   ProjectTeamMembersInput,
+  TeamMemberOutput,
   TeamWithMembersOutput,
 } from '../../../main/models/company-management.model';
 import { AuthTokenService } from '../../../auth/services/auth-token.service';
@@ -117,7 +118,62 @@ export class ProjectEditPageComponent implements OnInit {
   readonly teamControls = new Map<string, FormControl<boolean>>();
   readonly memberControls = new Map<string, FormControl<boolean>>();
 
+  readonly memberSearchControl = new FormControl('', { nonNullable: true });
+  readonly memberSearch = signal('');
+  readonly expandedTeams = signal<Set<string>>(new Set());
+  private readonly selectionVersion = signal(0);
+
+  readonly selectedCountByTeam = computed(() => {
+    this.selectionVersion();
+    const counts = new Map<string, number>();
+    for (const team of this.teams()) {
+      let count = 0;
+      for (const member of team.members) {
+        if (this.memberControls.get(this.memberKey(team.id, member.userId))?.value) {
+          count += 1;
+        }
+      }
+      counts.set(team.id, count);
+    }
+    return counts;
+  });
+
+  readonly totalSelected = computed(() => {
+    let total = 0;
+    this.selectedCountByTeam().forEach((count) => (total += count));
+    return total;
+  });
+
+  readonly teamsWithSelection = computed(() => {
+    let total = 0;
+    this.selectedCountByTeam().forEach((count) => {
+      if (count > 0) total += 1;
+    });
+    return total;
+  });
+
+  readonly memberResults = computed<
+    Array<{ team: TeamWithMembersOutput; member: TeamMemberOutput }>
+  >(() => {
+    const term = this.memberSearch();
+    if (!term) return [];
+    const results: Array<{ team: TeamWithMembersOutput; member: TeamMemberOutput }> = [];
+    for (const team of this.teams()) {
+      const teamMatch = team.name.toLowerCase().includes(term);
+      for (const member of team.members) {
+        if (teamMatch || member.name.toLowerCase().includes(term)) {
+          results.push({ team, member });
+        }
+      }
+    }
+    return results;
+  });
+
   ngOnInit(): void {
+    this.memberSearchControl.valueChanges.subscribe((value) =>
+      this.memberSearch.set(value.trim().toLowerCase()),
+    );
+
     const projectId = (history.state as { projectId?: string } | null)?.projectId;
     const companyId = this.companyId;
     if (!projectId || !companyId) {
@@ -186,9 +242,12 @@ export class ProjectEditPageComponent implements OnInit {
           nonNullable: true,
         });
         if (!editable) memberControl.disable();
+        memberControl.valueChanges.subscribe(() => this.selectionVersion.update((v) => v + 1));
         this.memberControls.set(this.memberKey(team.id, member.userId), memberControl);
       }
     }
+
+    this.expandedTeams.set(new Set(linkedTeamIds));
 
     if (!editable) {
       this.nameControl.disable();
@@ -219,6 +278,48 @@ export class ProjectEditPageComponent implements OnInit {
     for (const member of team.members) {
       this.memberControls.get(this.memberKey(team.id, member.userId))?.setValue(isChecked);
     }
+    if (isChecked && !this.isTeamExpanded(team.id)) {
+      this.toggleTeamExpanded(team.id);
+    }
+  }
+
+  onMemberToggle(team: TeamWithMembersOutput): void {
+    const teamControl = this.teamControls.get(team.id);
+    let count = 0;
+    for (const member of team.members) {
+      if (this.memberControls.get(this.memberKey(team.id, member.userId))?.value) {
+        count += 1;
+      }
+    }
+    if (teamControl && teamControl.value !== count > 0) {
+      teamControl.setValue(count > 0);
+    }
+  }
+
+  toggleTeamExpanded(teamId: string): void {
+    this.expandedTeams.update((expanded) => {
+      const next = new Set(expanded);
+      if (next.has(teamId)) {
+        next.delete(teamId);
+      } else {
+        next.add(teamId);
+      }
+      return next;
+    });
+  }
+
+  isTeamExpanded(teamId: string): boolean {
+    return this.expandedTeams().has(teamId);
+  }
+
+  selectedCount(teamId: string): number {
+    return this.selectedCountByTeam().get(teamId) ?? 0;
+  }
+
+  isTeamIndeterminate(teamId: string): boolean {
+    const count = this.selectedCount(teamId);
+    const total = this.teams().find((team) => team.id === teamId)?.members.length ?? 0;
+    return count > 0 && count < total;
   }
 
   navigateBack(): void {

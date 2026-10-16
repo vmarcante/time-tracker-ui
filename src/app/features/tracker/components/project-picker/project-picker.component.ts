@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, output, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
@@ -38,7 +38,7 @@ export class ProjectPickerComponent implements OnInit {
   private apiAdapter = inject(ApiAdapterService);
   private authTokenService = inject(AuthTokenService);
 
-  readonly select = output<ProjectSummaryOutput>();
+  readonly select = output<ProjectSummaryOutput | null>();
 
   readonly groups = signal<ProjectGroup[]>([]);
   readonly loading = signal(true);
@@ -48,7 +48,29 @@ export class ProjectPickerComponent implements OnInit {
   readonly newProjectName = new FormControl<string>('');
   readonly newClientName = new FormControl<string>('');
 
+  readonly searchControl = new FormControl('', { nonNullable: true });
+  readonly search = signal('');
+
+  readonly filteredGroups = computed(() => {
+    const term = this.search();
+    if (!term) return this.groups();
+    return this.groups()
+      .map((group) => ({
+        ...group,
+        projects: group.projects.filter(
+          (project) =>
+            project.name.toLowerCase().includes(term) ||
+            (project.clientName ?? '').toLowerCase().includes(term),
+        ),
+      }))
+      .filter((group) => group.projects.length > 0);
+  });
+
   ngOnInit(): void {
+    this.searchControl.valueChanges.subscribe((value) =>
+      this.search.set(value.trim().toLowerCase()),
+    );
+
     const companyId = this.authTokenService.currentUser()?.companyId ?? null;
 
     this.apiAdapter.executeRequest(this.trackerApi.listPersonalProjects(), {
@@ -82,6 +104,10 @@ export class ProjectPickerComponent implements OnInit {
 
   onSelect(project: ProjectSummaryOutput): void {
     this.select.emit(project);
+  }
+
+  onSelectNoProject(): void {
+    this.select.emit(null);
   }
 
   toggleCreate(): void {

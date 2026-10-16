@@ -1,7 +1,15 @@
 <div class="time-entrie" [class.time-entrie--compact]="compact()">
   <div class="time-entrie__info">
     <div class="time-entrie__header">
-      <span class="time-entrie__name">{{ entry().name }}</span>
+      <app-inline-input
+        class="time-entrie__name"
+        [value]="entry().name"
+        [editTitle]="'tracker.entries.rename' | translate"
+        [required]="true"
+        [maxLength]="120"
+        [disabled]="savingName()"
+        (save)="onNameSave($event)"
+      />
     </div>
 
     @if (entry().description && !compact()) {
@@ -10,9 +18,15 @@
 
     <div class="time-entrie__details">
       <span class="time-entrie__scope">
-        {{ entry().projectName }}
-        @if (entry().clientName; as clientName) {
-          <span class="time-entrie__scope-client">{{ clientName }}</span>
+        @if (entry().projectName) {
+          {{ entry().projectName }}
+          @if (entry().clientName; as clientName) {
+            <span class="time-entrie__scope-client">{{ clientName }}</span>
+          }
+        } @else {
+          <span class="time-entrie__scope-none">
+            {{ 'tracker.entries.noProject' | translate }}
+          </span>
         }
       </span>
     </div>
@@ -63,6 +77,8 @@
       [rounded]="true"
       [color]="'primary'"
       [customClass]="'time-entrie__toggle'"
+      [disabled]="anotherRunning()"
+      [hoverTitleDisabled]="'tracker.entries.anotherRunning' | translate"
       (buttonClick)="toggleRunning()"
     />
   </div>
