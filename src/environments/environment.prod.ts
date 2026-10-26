@@ -1,7 +1,7 @@
 export const environment = {
   environmentName: 'production',
   production: true,
-  apiUrl: 'https://api.time-tracker.com',
+  apiUrl: '/api',
   defaultLanguage: 'pt',
   storageKeys: {
     language: 'time-tracker-app-language',
