@@ -47,6 +47,10 @@
         "next": "Próximo alerta",
         "buttonAction": "Ação do alerta"
       }
+    },
+    "errors": {
+      "generic": "Não foi possível concluir a operação. Tente novamente.",
+      "network": "Sem conexão com o servidor. Verifique sua internet e tente novamente."
     }
   },
   "validation": {

@@ -47,6 +47,10 @@
         "next": "Next alert",
         "buttonAction": "Alert action"
       }
+    },
+    "errors": {
+      "generic": "Could not complete the operation. Please try again.",
+      "network": "No connection to the server. Check your internet and try again."
     }
   },
   "validation": {

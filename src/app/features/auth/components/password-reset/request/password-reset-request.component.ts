@@ -61,6 +61,7 @@ export class PasswordResetRequestComponent {
 
     this.apiAdapterService.executeRequest(request, {
       customLoadingName: 'forgotPassword',
+      showErrorToast: false,
       onSuccess: () => {
         this.isSubmitted.set(true);
       },

@@ -1,18 +1,33 @@
 import { Injectable, inject, signal, DestroyRef } from '@angular/core';
 import { Observable, Subscription, forkJoin } from 'rxjs';
-import { ForkJoinRequestOptions, RequestOptions, ApiResponse, ApiTypedResponse } from '../../types';
+import {
+  ApiErrorResponse,
+  ForkJoinRequestOptions,
+  RequestOptions,
+  ApiResponse,
+  ApiTypedResponse,
+} from '../../types';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ToastrService } from '../toastr.service';
+import { TranslationService } from '../translation.service';
 
 type ApiTypedTuple<T extends readonly unknown[]> = { [K in keyof T]: ApiTypedResponse<T[K]> };
+
+const ERROR_TOAST_DEDUPE_MS = 3000;
+const PUBLIC_URL_PREFIX = '/public/';
+const REFRESH_URL_PATH = '/public/auth/refresh';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiAdapterService {
   private destroyRef = inject(DestroyRef);
+  private toastrService = inject(ToastrService);
+  private translationService = inject(TranslationService);
 
   private requestsSubscriptionsMap = new Map<string, Subscription>();
   private looseSubscriptions = new Set<Subscription>();
+  private recentErrorToasts = new Map<string, number>();
 
   isLoading = signal(false);
   customLoadings = signal<Map<string, boolean>>(new Map());
@@ -61,6 +76,10 @@ export class ApiAdapterService {
         }
       },
       error: (error) => {
+        if (options.showErrorToast ?? true) {
+          this.notifyError(error, options.errorMessage);
+        }
+
         if (options.onError) {
           options.onError(error);
         }
@@ -175,5 +194,58 @@ export class ApiAdapterService {
       return this.customLoadings().get(customLoadingName) ?? false;
     }
     return this.isLoading();
+  }
+
+  private notifyError(error: ApiErrorResponse | undefined, customMessage?: string): void {
+    if (this.isSessionExpiredError(error)) {
+      return;
+    }
+
+    const message = this.resolveErrorMessage(error, customMessage);
+    if (this.isDuplicateErrorToast(message)) {
+      return;
+    }
+
+    this.toastrService.errorMessage(message);
+  }
+
+  private isSessionExpiredError(error: ApiErrorResponse | undefined): boolean {
+    if (error?.status !== 401) {
+      return false;
+    }
+
+    const url = error.url ?? '';
+    return !url.includes(PUBLIC_URL_PREFIX) || url.includes(REFRESH_URL_PATH);
+  }
+
+  private isDuplicateErrorToast(message: string): boolean {
+    const now = Date.now();
+
+    this.recentErrorToasts.forEach((shownAt, key) => {
+      if (now - shownAt >= ERROR_TOAST_DEDUPE_MS) {
+        this.recentErrorToasts.delete(key);
+      }
+    });
+
+    if (this.recentErrorToasts.has(message)) {
+      return true;
+    }
+
+    this.recentErrorToasts.set(message, now);
+    return false;
+  }
+
+  private resolveErrorMessage(error: ApiErrorResponse | undefined, customMessage?: string): string {
+    if (customMessage) {
+      return customMessage;
+    }
+
+    const apiMessage = error?.error?.data?.message;
+    if (typeof apiMessage === 'string' && apiMessage.trim()) {
+      return apiMessage;
+    }
+
+    const fallbackKey = error?.status === 0 ? 'common.errors.network' : 'common.errors.generic';
+    return this.translationService.translate(fallbackKey);
   }
 }

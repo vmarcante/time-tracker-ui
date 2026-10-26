@@ -123,12 +123,14 @@ export class SettingsPageComponent implements OnInit {
       }),
       {
         ignoreLoading: true,
+        showErrorToast: false,
         onSuccess: () => {
           if (localeChanged) {
             this.apiAdapterService.executeRequest(
               this.personApiService.updateLocale(locale!),
               {
                 ignoreLoading: true,
+                showErrorToast: false,
                 onSuccess: () => {
                   const langCode = locale!.startsWith('pt') ? 'pt' : 'en';
                   this.languageService.setLanguage(langCode as SupportedLanguages);

@@ -120,6 +120,7 @@ export class PasswordResetConfirmationComponent implements OnInit {
 
     this.apiAdapterService.executeRequest(request, {
       customLoadingName: 'resetPassword',
+      showErrorToast: false,
       onSuccess: () => {
         this.isSubmitted.set(true);
         this.startCountdown();

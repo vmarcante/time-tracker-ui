@@ -44,6 +44,7 @@ export class RegisterConfirmationComponent implements OnInit {
     const request = this.registerApiService.confirmRegistration({ accessToken: token });
     this.apiService.executeRequest(request, {
       ignoreLoading: true,
+      showErrorToast: false,
       onSuccess: () => {
         this.status = 'success';
         this.cdr.detectChanges();

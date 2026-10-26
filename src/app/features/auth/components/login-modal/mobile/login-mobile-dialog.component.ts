@@ -60,6 +60,7 @@ export class LoginMobileDialogComponent {
     const request = this.authService.login(loginData);
     this.apiAdapterService.executeRequest(request, {
       customLoadingName: 'login',
+      showErrorToast: false,
       onSuccess: () => {
         this.dialogRef.close(true);
       },

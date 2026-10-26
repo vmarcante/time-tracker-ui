@@ -130,6 +130,7 @@ export class OnboardingModalComponent implements OnInit {
 
       this.apiAdapterService.executeRequest(request, {
         customLoadingName: 'onboarding',
+        showErrorToast: false,
         onSuccess: (response) => this.handleOnboardingSuccess(response.data),
         onError: (error) => this.handleError(error, 'onboarding.errors.company'),
       });
@@ -157,6 +158,7 @@ export class OnboardingModalComponent implements OnInit {
 
       this.apiAdapterService.executeRequest(request, {
         customLoadingName: 'onboarding',
+        showErrorToast: false,
         onSuccess: () => this.finishOnboarding(),
         onError: (error) => this.handleOwnerError(error),
       });
@@ -169,6 +171,7 @@ export class OnboardingModalComponent implements OnInit {
 
       this.apiAdapterService.executeRequest(request, {
         customLoadingName: 'onboarding',
+        showErrorToast: false,
         onSuccess: () => this.finishOnboarding(),
         onError: (error) => this.handleError(error, 'onboarding.errors.independent'),
       });
@@ -216,6 +219,7 @@ export class OnboardingModalComponent implements OnInit {
 
     this.apiAdapterService.executeRequest(this.invitationApiService.accept(invitation.companyId), {
       ignoreLoading: true,
+      showErrorToast: false,
       onSuccess: () => {
         this.toastrService.successMessage(
           this.translationService.translate('onboarding.invitations.accepted', {
@@ -236,6 +240,7 @@ export class OnboardingModalComponent implements OnInit {
 
     this.apiAdapterService.executeRequest(this.invitationApiService.decline(invitation.companyId), {
       ignoreLoading: true,
+      showErrorToast: false,
       onSuccess: () => {
         this.processingCompanyId.set(null);
         this.invitations.update((list) =>

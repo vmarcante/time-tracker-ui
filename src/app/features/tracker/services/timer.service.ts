@@ -74,6 +74,7 @@ export class TimerService {
     if (this.busy()) return;
     this.busy.set(true);
     this.apiAdapter.executeRequest(this.api.startTimer(input), {
+      showErrorToast: false,
       onSuccess: (response) => {
         this.syncFromDetail(response.data);
         this.busy.set(false);
@@ -90,6 +91,7 @@ export class TimerService {
     if (this.busy()) return;
     this.busy.set(true);
     this.apiAdapter.executeRequest(this.api.stopTimer(), {
+      showErrorToast: false,
       onSuccess: (response) => {
         this.setRunning(null);
         this.busy.set(false);

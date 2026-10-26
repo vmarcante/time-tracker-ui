@@ -95,6 +95,7 @@ export class LoginModalComponent {
     const request = this.authService.login(loginInput);
     this.apiAdapterService.executeRequest(request, {
       customLoadingName: 'login',
+      showErrorToast: false,
       onSuccess: () => {
         this.close();
         this.redirectAfterLogin();

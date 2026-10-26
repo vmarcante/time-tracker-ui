@@ -16,6 +16,7 @@ export interface RequestOptions<T> {
   customLoadingName?: string;
   subscriptionName?: string;
   ignoreLoading?: boolean;
+  showErrorToast?: boolean;
   onSuccess?: (response: T) => void;
   onError?: (error: ApiErrorResponse) => void;
 }
@@ -26,6 +27,7 @@ export interface ForkJoinRequestOptions<T extends readonly unknown[]> {
   customLoadingName?: string;
   subscriptionName?: string;
   ignoreLoading?: boolean;
+  showErrorToast?: boolean;
   onSuccessForkJoin?: (responses: T) => void;
   onError?: (error: ApiErrorResponse) => void;
 }
