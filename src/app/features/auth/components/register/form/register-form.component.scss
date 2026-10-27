@@ -64,13 +64,16 @@ app-stepped-panel-layout {
   font-size: 0.8rem;
 }
 
-.register-invite {
-  margin: var(--spacing-xs) 0 0;
+.register-panel__invite {
+  margin: 0 0 var(--spacing-md);
   padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-md, 8px);
+  border-left: 3px solid var(--color-primary);
+  border-radius: 0 var(--radius-md, 8px) var(--radius-md, 8px) 0;
   background: var(--color-surface-hover, rgba(0, 0, 0, 0.04));
-  color: var(--color-text-secondary);
-  font-size: 0.8rem;
+  color: var(--color-text-primary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.5;
 }
 
 .register-form {

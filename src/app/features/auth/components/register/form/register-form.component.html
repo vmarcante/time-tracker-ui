@@ -11,6 +11,11 @@
     (stepClick)="goToStep($event)"
   >
     <ng-template #panelTpl let-step>
+      @if (invitedCompanyName()) {
+        <p class="register-panel__invite">
+          {{ 'auth.register.invite.sideMessage' | translate:{ company: invitedCompanyName() } }}
+        </p>
+      }
       <p class="register-panel__description">
         @if (step === 1) {
           {{ 'auth.register.steps.1Description' | translate }}
@@ -40,11 +45,6 @@
       <div class="register-header">
         <h1 class="register-header__title">{{ 'auth.register.title' | translate }}</h1>
         <p class="register-header__subtitle">{{ 'auth.register.subtitle' | translate }}</p>
-        @if (invitedCompanyName()) {
-          <p class="register-invite">
-            {{ 'auth.register.invite.message' | translate:{ company: invitedCompanyName() } }}
-          </p>
-        }
       </div>
 
       <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
