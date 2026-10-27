@@ -6,9 +6,23 @@
         <h3 class="stats__title">{{ 'workspace.overview.stats.title' | translate }}</h3>
         <span class="stats__subtitle">{{ 'workspace.overview.stats.subtitle' | translate }}</span>
       </div>
-      <a class="stats__link" routerLink="/workspace/time-entries">
-        {{ 'workspace.overview.stats.viewAll' | translate }}
-      </a>
+      <div class="stats__head-actions">
+        @if (canExportReport()) {
+          <button
+            type="button"
+            class="stats__export stats__export--icon"
+            [disabled]="exporting()"
+            (click)="exportReport()"
+            [attr.aria-label]="'workspace.timeEntries.stats.export' | translate"
+            [title]="'workspace.timeEntries.stats.export' | translate"
+          >
+            <app-icon name="actions/download" size="1rem" />
+          </button>
+        }
+        <a class="stats__link" routerLink="/workspace/time-entries">
+          {{ 'workspace.overview.stats.viewAll' | translate }}
+        </a>
+      </div>
     </div>
 
     @if (loading()) {
@@ -75,6 +89,23 @@
             {{ 'workspace.timeEntries.stats.custom' | translate }}
           </button>
         </div>
+        @if (canExportReport()) {
+          <button
+            type="button"
+            class="stats__export"
+            [disabled]="exporting()"
+            (click)="exportReport()"
+            [title]="'workspace.timeEntries.stats.exportHint' | translate"
+          >
+            <app-icon name="actions/download" size="1rem" />
+            <span>{{
+              (exporting()
+                ? 'workspace.timeEntries.stats.exporting'
+                : 'workspace.timeEntries.stats.export'
+              ) | translate
+            }}</span>
+          </button>
+        }
       </div>
     </div>
 

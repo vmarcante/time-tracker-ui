@@ -360,7 +360,10 @@
         "vsPrevious": "vs previous period",
         "avgPerDay": "Avg {{value}}/day",
         "bestDay": "Best day: {{date}} ({{value}})",
-        "empty": "No data in this period"
+        "empty": "No data in this period",
+        "export": "Export report (PDF)",
+        "exporting": "Generating PDF…",
+        "exportHint": "Full company report in PDF, using the period shown above"
       }
     }
   }

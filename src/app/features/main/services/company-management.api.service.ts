@@ -1,4 +1,6 @@
 import { Injectable, inject } from '@angular/core';
+import { HttpResponse } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { HttpService } from '../../../shared/services/api/http.service';
 import { ApiResponse, PageWrapper } from '../../../shared/types';
 import { CompanyRole } from '../../auth/models';
@@ -304,5 +306,15 @@ export class CompanyManagementApiService {
     if (filters.projectId) params['projectId'] = filters.projectId;
     if (filters.teamIds?.length) params['teamIds'] = filters.teamIds.join(',');
     return this.httpService.get(`/companies/${companyId}/time-entries/stats`, { params });
+  }
+
+  downloadCompanyReportPdf(
+    companyId: string,
+    filters: { from?: string | null; to?: string | null } = {},
+  ): Observable<HttpResponse<Blob>> {
+    const params: Record<string, string | number> = {};
+    if (filters.from) params['from'] = filters.from;
+    if (filters.to) params['to'] = filters.to;
+    return this.httpService.getFile(`/companies/${companyId}/reports/pdf`, { params });
   }
 }

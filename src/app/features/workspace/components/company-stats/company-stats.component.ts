@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { ApiAdapterService } from '../../../../shared/services/api/api-adapter.service';
 import {
   DateRange,
@@ -68,6 +69,7 @@ const PROJECT_PALETTE = [
     RouterLink,
     ReactiveFormsModule,
     TranslatePipe,
+    IconComponent,
     DaterangeInputComponent,
     PeopleFilterComponent,
   ],
@@ -93,6 +95,13 @@ export class CompanyStatsComponent implements OnInit {
 
   readonly stats = signal<CompanyTimeEntryStatsOutput | null>(null);
   readonly loading = signal(true);
+  readonly exporting = signal(false);
+
+  /* Relatorio PDF completo da empresa: apenas quem administra a empresa. */
+  readonly canExportReport = computed(() => {
+    const role = this.authTokenService.currentUser()?.companyRole;
+    return role === 'OWNER' || role === 'ADMIN';
+  });
   readonly preset = signal<StatsPeriod>(30);
   readonly presets: StatsPreset[] = [7, 30, 90];
   readonly customRange = signal<{ start: Date; end: Date } | null>(null);
@@ -269,25 +278,7 @@ export class CompanyStatsComponent implements OnInit {
       return;
     }
 
-    let from: Date;
-    let to: Date;
-    const custom = this.customRange();
-    if (this.variant() !== 'compact' && this.preset() === 'custom' && custom) {
-      from = new Date(custom.start);
-      from.setHours(0, 0, 0, 0);
-      to = new Date(custom.end);
-      to.setHours(23, 59, 59, 0);
-    } else {
-      const days = this.variant() === 'compact' ? 7 : (this.preset() as StatsPreset);
-      to = new Date();
-      to.setHours(23, 59, 59, 0);
-      from = new Date();
-      from.setDate(from.getDate() - (days - 1));
-      from.setHours(0, 0, 0, 0);
-    }
-
-    const fromParam = this.toApiDateTime(from);
-    const toParam = this.toApiDateTime(to);
+    const { fromParam, toParam } = this.currentRange();
     const userIds = this.selectedUserIds();
     const teamIds = this.selectedTeamIds();
 
@@ -312,6 +303,67 @@ export class CompanyStatsComponent implements OnInit {
         onError: () => this.loading.set(false),
       },
     );
+  }
+
+  /** Período efetivo atualmente exibido, nos mesmos parâmetros enviados à API. */
+  private currentRange(): { fromParam: string; toParam: string } {
+    let from: Date;
+    let to: Date;
+    const custom = this.customRange();
+    if (this.variant() !== 'compact' && this.preset() === 'custom' && custom) {
+      from = new Date(custom.start);
+      from.setHours(0, 0, 0, 0);
+      to = new Date(custom.end);
+      to.setHours(23, 59, 59, 0);
+    } else {
+      const days = this.variant() === 'compact' ? 7 : (this.preset() as StatsPreset);
+      to = new Date();
+      to.setHours(23, 59, 59, 0);
+      from = new Date();
+      from.setDate(from.getDate() - (days - 1));
+      from.setHours(0, 0, 0, 0);
+    }
+    return { fromParam: this.toApiDateTime(from), toParam: this.toApiDateTime(to) };
+  }
+
+  /** Baixa o relatório PDF completo da empresa usando o período exibido na tela. */
+  exportReport(): void {
+    const companyId = this.companyId;
+    if (!companyId || this.exporting()) return;
+
+    const { fromParam, toParam } = this.currentRange();
+    this.exporting.set(true);
+    this.apiAdapter.executeRequest(
+      this.companyApi.downloadCompanyReportPdf(companyId, { from: fromParam, to: toParam }),
+      {
+        ignoreLoading: true,
+        onSuccess: (response) => {
+          this.saveFile(response.body, this.reportFileName(response.headers));
+          this.exporting.set(false);
+        },
+        onError: () => this.exporting.set(false),
+      },
+    );
+  }
+
+  private reportFileName(headers: { get(name: string): string | null }): string {
+    const disposition = headers.get('content-disposition') ?? '';
+    const encoded = /filename\*=(?:UTF-8'')?([^;]+)/i.exec(disposition)?.[1];
+    if (encoded) {
+      return decodeURIComponent(encoded.trim().replace(/^"|"$/g, ''));
+    }
+    const simple = /filename="?([^";]+)"?/i.exec(disposition)?.[1];
+    return simple?.trim() || 'report.pdf';
+  }
+
+  private saveFile(blob: Blob | null, fileName: string): void {
+    if (!blob) return;
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+    URL.revokeObjectURL(url);
   }
 
   /** Cor determinística por projectId — estável entre presets e ordenações. */

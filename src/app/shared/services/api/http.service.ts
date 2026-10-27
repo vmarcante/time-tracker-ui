@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { Observable, from, throwError } from 'rxjs';
+import { catchError, mergeMap } from 'rxjs/operators';
 import { LanguageService } from '../language.service';
 import { HttpOptions } from '../../types';
 import { environment } from '../../../../environments/environment';
@@ -40,6 +41,44 @@ export class HttpService {
       headers: this.getHeaders(options),
       observe: 'body',
     });
+  }
+
+  getFile(endpointUrl: string, options?: HttpOptions): Observable<HttpResponse<Blob>> {
+    const url = `${this.baseApiUrl}${endpointUrl}`;
+    return this.http
+      .get(url, {
+        ...options,
+        headers: this.getHeaders(options),
+        observe: 'response',
+        responseType: 'blob',
+      })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          if (error.error instanceof Blob && error.error.type === 'application/json') {
+            return from(error.error.text()).pipe(
+              mergeMap((text) => {
+                let parsed: unknown = null;
+                try {
+                  parsed = JSON.parse(text);
+                } catch {
+                  /* mantém null */
+                }
+                return throwError(
+                  () =>
+                    new HttpErrorResponse({
+                      error: parsed,
+                      headers: error.headers,
+                      status: error.status,
+                      statusText: error.statusText,
+                      url: error.url ?? undefined,
+                    }),
+                );
+              }),
+            );
+          }
+          return throwError(() => error);
+        }),
+      );
   }
 
   post<T>(endpointUrl: string, body: any, options?: HttpOptions): Observable<T> {
