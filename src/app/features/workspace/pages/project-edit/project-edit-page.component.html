@@ -198,7 +198,7 @@
         </section>
       </div>
 
-      @if (canEdit()) {
+      @if (canEdit() || canManageMembers()) {
         <div class="project-page__actions">
           <app-button
             type="button"

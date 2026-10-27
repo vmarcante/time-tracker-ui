@@ -94,6 +94,27 @@ export class ProjectEditPageComponent implements OnInit {
     return role === 'OWNER' || role === 'ADMIN';
   });
 
+  readonly canManageMembers = computed(() => {
+    if (this.canEdit()) {
+      return true;
+    }
+    const userId = this.authTokenService.currentUser()?.id;
+    const teams = this.teams();
+    if (!userId || teams.length === 0) {
+      return false;
+    }
+    return teams.every((team) => this.isTeamLead(team.id));
+  });
+
+  isTeamLead(teamId: string): boolean {
+    const userId = this.authTokenService.currentUser()?.id;
+    if (!userId) {
+      return false;
+    }
+    const team = this.teams().find((t) => t.id === teamId);
+    return !!team?.members.some((m) => m.userId === userId && m.role === 'LEAD');
+  }
+
   readonly nameControl = new FormControl('', {
     nonNullable: true,
     validators: [Validators.required, Validators.minLength(2), Validators.maxLength(200)],
@@ -229,11 +250,11 @@ export class ProjectEditPageComponent implements OnInit {
       end: parseIsoDate(project.endDate),
     });
 
-    const editable = this.canEdit();
+    const editable = (teamId: string): boolean => this.canEdit() || this.isTeamLead(teamId);
     for (const team of teams) {
       const teamSelected = linkedTeamIds.has(team.id);
       const teamControl = new FormControl<boolean>(teamSelected, { nonNullable: true });
-      if (!editable) teamControl.disable();
+      if (!editable(team.id)) teamControl.disable();
       this.teamControls.set(team.id, teamControl);
 
       const linkedMembers = memberIdsByTeam.get(team.id) ?? new Set<string>();
@@ -241,7 +262,7 @@ export class ProjectEditPageComponent implements OnInit {
         const memberControl = new FormControl<boolean>(linkedMembers.has(member.userId), {
           nonNullable: true,
         });
-        if (!editable) memberControl.disable();
+        if (!editable(team.id)) memberControl.disable();
         memberControl.valueChanges.subscribe(() => this.selectionVersion.update((v) => v + 1));
         this.memberControls.set(this.memberKey(team.id, member.userId), memberControl);
       }
@@ -329,7 +350,7 @@ export class ProjectEditPageComponent implements OnInit {
   save(): void {
     const project = this.project();
     const companyId = this.companyId;
-    if (!project || !companyId || this.saving() || !this.canEdit()) {
+    if (!project || !companyId || this.saving() || (!this.canEdit() && !this.canManageMembers())) {
       return;
     }
 
