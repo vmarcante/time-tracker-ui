@@ -197,7 +197,7 @@ export class ApiAdapterService {
   }
 
   private notifyError(error: ApiErrorResponse | undefined, customMessage?: string): void {
-    if (this.isSessionExpiredError(error)) {
+    if (this.isSessionExpiredError(error) || this.isSilentError(error)) {
       return;
     }
 
@@ -207,6 +207,12 @@ export class ApiAdapterService {
     }
 
     this.toastrService.errorMessage(message);
+  }
+
+  private isSilentError(error: ApiErrorResponse | undefined): boolean {
+    const err = error as { data?: { key?: string }; error?: { key?: string; data?: { key?: string } } } | undefined;
+    const key = err?.data?.key ?? err?.error?.data?.key ?? err?.error?.key;
+    return key === 'user.onboarding.pending';
   }
 
   private isSessionExpiredError(error: ApiErrorResponse | undefined): boolean {
