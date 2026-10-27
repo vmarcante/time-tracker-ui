@@ -71,7 +71,8 @@
     },
     "passwordStrength": "A senha deve conter maiúsculas, minúsculas, números e caracteres especiais",
     "checkAvailability": "Por favor, verifique se o username e email estão disponíveis",
-    "passwordMismatch": "As senhas não coincidem"
+    "passwordMismatch": "As senhas não coincidem",
+    "invalidCnpj": "CNPJ inválido. Confira os dígitos informados."
   },
   "language": {
     "switcher": {

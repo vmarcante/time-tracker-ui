@@ -222,7 +222,14 @@ export class TextInputComponent {
       );
     }
 
-    return '';
+    if (errors['cnpj']) {
+      return (
+        customMessages['cnpj'] || this.translationService.translate('validation.invalidCnpj')
+      );
+    }
+
+    const customKey = Object.keys(errors).find((key) => customMessages[key]);
+    return customKey ? customMessages[customKey]! : '';
   }
 
   // Methods

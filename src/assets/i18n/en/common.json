@@ -71,7 +71,8 @@
     },
     "passwordStrength": "Password must contain uppercase, lowercase, numbers and special characters",
     "checkAvailability": "Please check if username and email are available",
-    "passwordMismatch": "Passwords do not match"
+    "passwordMismatch": "Passwords do not match",
+    "invalidCnpj": "Invalid CNPJ. Check the digits entered."
   },
   "language": {
     "switcher": {
