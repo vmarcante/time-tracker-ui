@@ -52,7 +52,10 @@ describe('CompanyPageComponent', () => {
           },
         },
         { provide: ToastrService, useValue: toastr },
-        { provide: TranslationService, useValue: { translate: (key: string) => `t:${key}` } },
+        {
+          provide: TranslationService,
+          useValue: { translate: (key: string) => `t:${key}`, currentTranslations: () => ({}) },
+        },
         { provide: LanguageService, useValue: { language: () => 'pt' } },
         { provide: WorkspaceCompanyService, useValue: workspaceCompany },
       ],
@@ -76,9 +79,7 @@ describe('CompanyPageComponent', () => {
     const { component } = setup('OWNER');
 
     expect(component.formattedDocument()).toBe('12.345.678/0001-90');
-    expect(component.documentControl.value).toBe('12.345.678/0001-90');
     expect(component.legalNameControl.value).toBe('Acme Tecnologia Ltda');
-    expect(component.documentControl.disabled).toBe(true);
   });
 
   it('does not save an invalid form', () => {
@@ -117,5 +118,49 @@ describe('CompanyPageComponent', () => {
     expect(workspaceCompany.set).toHaveBeenCalled();
     expect(toastr.successMessage).toHaveBeenCalled();
     expect(component.saving()).toBe(false);
+  });
+
+  describe('copy CNPJ', () => {
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('swaps to a temporary success state without showing a toast', async () => {
+      vi.useFakeTimers();
+      const writeText = vi.fn(() => Promise.resolve());
+      Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
+      const { component, toastr } = setup('OWNER');
+
+      component.copyDocument();
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(writeText).toHaveBeenCalledWith('12.345.678/0001-90');
+      expect(component.copied()).toBe(true);
+      expect(toastr.successMessage).not.toHaveBeenCalled();
+
+      await vi.advanceTimersByTimeAsync(1800);
+
+      expect(component.copied()).toBe(false);
+    });
+
+    it('restarts the timer when copying twice in a row', async () => {
+      vi.useFakeTimers();
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText: vi.fn(() => Promise.resolve()) },
+        configurable: true,
+      });
+      const { component } = setup('OWNER');
+
+      component.copyDocument();
+      await vi.advanceTimersByTimeAsync(1000);
+      component.copyDocument();
+      await vi.advanceTimersByTimeAsync(1000);
+
+      expect(component.copied()).toBe(true);
+
+      await vi.advanceTimersByTimeAsync(800);
+
+      expect(component.copied()).toBe(false);
+    });
   });
 });

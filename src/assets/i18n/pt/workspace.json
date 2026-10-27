@@ -370,27 +370,12 @@
       "nav": "Empresa",
       "title": "Empresa",
       "notFound": "Não foi possível carregar os dados da empresa",
-      "hero": {
-        "eyebrow": "Sua empresa",
-        "document": "CNPJ",
-        "copy": "Copiar CNPJ",
-        "copied": "CNPJ copiado"
-      },
-      "facts": {
-        "createdAt": "Cadastrada em",
-        "updatedAt": "Última atualização",
-        "timezone": "Fuso horário"
-      },
       "form": {
         "title": "Dados cadastrais",
-        "hintOwner": "Como proprietário, você pode editar a razão social, o nome fantasia e a descrição.",
+        "hintOwner": "Como proprietário, você pode editar a razão social, o nome fantasia e a descrição. O nome fantasia é o exibido no menu e nos relatórios.",
         "hintReadonly": "Somente o proprietário da empresa pode alterar estes dados.",
         "saved": "Dados da empresa atualizados",
         "save": "Salvar alterações",
-        "document": {
-          "label": "CNPJ",
-          "hint": "O CNPJ identifica a empresa e não pode ser alterado"
-        },
         "legalName": {
           "label": "Razão social",
           "placeholder": "Razão social da empresa",
@@ -398,13 +383,20 @@
         },
         "tradeName": {
           "label": "Nome fantasia",
-          "placeholder": "Nome fantasia (opcional)",
-          "hint": "É o nome exibido no menu e nos relatórios"
+          "placeholder": "Nome fantasia (opcional)"
         },
         "description": {
           "label": "Descrição",
           "placeholder": "Conte um pouco sobre a empresa (opcional)"
         }
+      },
+      "summary": {
+        "document": "CNPJ",
+        "documentNote": "O CNPJ identifica a empresa e não pode ser alterado.",
+        "copy": "Copiar CNPJ",
+        "copied": "CNPJ copiado",
+        "createdAt": "Cadastrada em",
+        "updatedAt": "Última atualização"
       }
     }
   }

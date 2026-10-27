@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
@@ -39,10 +39,13 @@ export class CompanyPageComponent implements OnInit {
   private languageService = inject(LanguageService);
   private toastr = inject(ToastrService);
   private translation = inject(TranslationService);
+  private destroyRef = inject(DestroyRef);
 
   readonly company = this.workspaceCompany.company;
   readonly loading = signal(true);
   readonly saving = signal(false);
+  readonly copied = signal(false);
+  private copyTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly canEdit = computed(() => this.authTokenService.currentUser()?.companyRole === 'OWNER');
   readonly displayName = this.workspaceCompany.displayName;
@@ -61,7 +64,6 @@ export class CompanyPageComponent implements OnInit {
     nonNullable: true,
     validators: [Validators.maxLength(1000)],
   });
-  readonly documentControl = new FormControl({ value: '', disabled: true }, { nonNullable: true });
 
   readonly form = new FormGroup({
     legalName: this.legalNameControl,
@@ -71,6 +73,12 @@ export class CompanyPageComponent implements OnInit {
 
   private get companyId(): string | null {
     return this.authTokenService.currentUser()?.companyId ?? null;
+  }
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      if (this.copyTimer) clearTimeout(this.copyTimer);
+    });
   }
 
   ngOnInit(): void {
@@ -101,7 +109,9 @@ export class CompanyPageComponent implements OnInit {
     const document = this.formattedDocument();
     if (!document || !navigator.clipboard) return;
     navigator.clipboard.writeText(document).then(() => {
-      this.toastr.successMessage(this.translation.translate('workspace.company.hero.copied'));
+      this.copied.set(true);
+      if (this.copyTimer) clearTimeout(this.copyTimer);
+      this.copyTimer = setTimeout(() => this.copied.set(false), 1800);
     });
   }
 
@@ -135,7 +145,6 @@ export class CompanyPageComponent implements OnInit {
 
   private fillForm(company: CompanyDetailOutput | null): void {
     if (!company) return;
-    this.documentControl.setValue(DocumentsValidators.formatCnpj(company.document));
     this.form.reset(
       {
         legalName: company.legalName,

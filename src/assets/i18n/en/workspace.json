@@ -370,27 +370,12 @@
       "nav": "Company",
       "title": "Company",
       "notFound": "Could not load the company data",
-      "hero": {
-        "eyebrow": "Your company",
-        "document": "CNPJ",
-        "copy": "Copy CNPJ",
-        "copied": "CNPJ copied"
-      },
-      "facts": {
-        "createdAt": "Registered on",
-        "updatedAt": "Last updated",
-        "timezone": "Time zone"
-      },
       "form": {
         "title": "Company details",
-        "hintOwner": "As the owner, you can edit the legal name, trade name and description.",
+        "hintOwner": "As the owner, you can edit the legal name, trade name and description. The trade name is the one shown in the menu and reports.",
         "hintReadonly": "Only the company owner can change these details.",
         "saved": "Company details updated",
         "save": "Save changes",
-        "document": {
-          "label": "CNPJ",
-          "hint": "The CNPJ identifies the company and cannot be changed"
-        },
         "legalName": {
           "label": "Legal name",
           "placeholder": "Company legal name",
@@ -398,13 +383,20 @@
         },
         "tradeName": {
           "label": "Trade name",
-          "placeholder": "Trade name (optional)",
-          "hint": "This is the name shown in the menu and reports"
+          "placeholder": "Trade name (optional)"
         },
         "description": {
           "label": "Description",
           "placeholder": "Tell us a bit about the company (optional)"
         }
+      },
+      "summary": {
+        "document": "CNPJ",
+        "documentNote": "The CNPJ identifies the company and cannot be changed.",
+        "copy": "Copy CNPJ",
+        "copied": "CNPJ copied",
+        "createdAt": "Registered on",
+        "updatedAt": "Last updated"
       }
     }
   }
