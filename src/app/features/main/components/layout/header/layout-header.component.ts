@@ -8,6 +8,7 @@ import {
   inject,
   signal,
   computed,
+  effect,
   viewChild,
   ElementRef,
 } from '@angular/core';
@@ -67,6 +68,12 @@ export class LayoutHeaderComponent implements OnInit, OnDestroy {
   isAuthenticated = this.authTokenService.isAuthenticated;
   currentUser = this.authTokenService.currentUser;
   userLoading = this.authTokenService.currentUserLoading;
+
+  private loginRequestEffect = effect(() => {
+    if (this.headerService.loginRequestCount() > 0) {
+      this.loginModal?.open();
+    }
+  });
 
   private readonly navTracker = viewChild<ElementRef<HTMLElement>>('navTracker');
   private readonly navWorkspace = viewChild<ElementRef<HTMLElement>>('navWorkspace');

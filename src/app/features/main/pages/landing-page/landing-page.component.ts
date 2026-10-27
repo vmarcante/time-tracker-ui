@@ -28,6 +28,10 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     this.headerService.clearMobileMenuLinks();
   }
 
+  openLogin(): void {
+    this.headerService.requestLogin();
+  }
+
   private openInviteRegistration(): void {
     const inviteToken = this.route.snapshot.queryParamMap.get('invite');
     if (!inviteToken) {

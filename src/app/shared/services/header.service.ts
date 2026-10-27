@@ -16,4 +16,12 @@ export class HeaderService {
   clearMobileMenuLinks(): void {
     this.mobileMenuLinks.set(null);
   }
+
+  private loginRequest = signal(0);
+
+  readonly loginRequestCount = this.loginRequest.asReadonly();
+
+  requestLogin(): void {
+    this.loginRequest.update((count) => count + 1);
+  }
 }

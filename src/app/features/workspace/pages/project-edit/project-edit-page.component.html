@@ -51,38 +51,65 @@
             </p>
           </div>
           <div class="project-page__fields">
-            <app-text-input
-              [control]="nameControl"
-              [labelIcon]="'objects/folder'"
-              [label]="'workspace.projects.dialog.name.label' | translate"
-              [placeholder]="'workspace.projects.dialog.name.placeholder' | translate"
-              [required]="true"
-            />
-            <app-text-input
-              [control]="clientNameControl"
-              [labelIcon]="'objects/person'"
-              [label]="'workspace.projects.dialog.clientName.label' | translate"
-              [placeholder]="'workspace.projects.dialog.clientName.placeholder' | translate"
-              [required]="true"
-            />
-            <app-textarea-input
-              [control]="descriptionControl"
-              [labelIcon]="'objects/text-file'"
-              [label]="'workspace.projects.dialog.description.label' | translate"
-              [placeholder]="'workspace.projects.dialog.description.placeholder' | translate"
-              [hint]="'workspace.projects.dialog.description.hint' | translate"
-              [rows]="3"
-              [showCounter]="false"
-            />
-            <app-daterange-input
-              [formGroup]="datesGroup"
-              [label]="'workspace.projects.dialog.dates.label' | translate"
-              [startLabel]="'workspace.projects.dialog.dates.start' | translate"
-              [endLabel]="'workspace.projects.dialog.dates.end' | translate"
-              [separator]="'workspace.projects.dialog.dates.separator' | translate"
-              [hint]="'workspace.projects.dialog.dates.hint' | translate"
-              [errorMessages]="dateErrorMessages"
-            />
+            @if (canEdit()) {
+              <app-text-input
+                [control]="nameControl"
+                [labelIcon]="'objects/folder'"
+                [label]="'workspace.projects.dialog.name.label' | translate"
+                [placeholder]="'workspace.projects.dialog.name.placeholder' | translate"
+                [required]="true"
+              />
+              <app-text-input
+                [control]="clientNameControl"
+                [labelIcon]="'objects/person'"
+                [label]="'workspace.projects.dialog.clientName.label' | translate"
+                [placeholder]="'workspace.projects.dialog.clientName.placeholder' | translate"
+                [required]="true"
+              />
+              <app-textarea-input
+                [control]="descriptionControl"
+                [labelIcon]="'objects/text-file'"
+                [label]="'workspace.projects.dialog.description.label' | translate"
+                [placeholder]="'workspace.projects.dialog.description.placeholder' | translate"
+                [hint]="'workspace.projects.dialog.description.hint' | translate"
+                [rows]="3"
+                [showCounter]="false"
+              />
+              <app-daterange-input
+                [formGroup]="datesGroup"
+                [label]="'workspace.projects.dialog.dates.label' | translate"
+                [startLabel]="'workspace.projects.dialog.dates.start' | translate"
+                [endLabel]="'workspace.projects.dialog.dates.end' | translate"
+                [separator]="'workspace.projects.dialog.dates.separator' | translate"
+                [hint]="'workspace.projects.dialog.dates.hint' | translate"
+                [errorMessages]="dateErrorMessages"
+              />
+            } @else {
+              @if (project(); as p) {
+                <div class="project-field">
+                  <span class="project-field__label">{{ 'workspace.projects.dialog.name.label' | translate }}</span>
+                  <span class="project-field__value">{{ p.name }}</span>
+                </div>
+                <div class="project-field">
+                  <span class="project-field__label">{{ 'workspace.projects.dialog.clientName.label' | translate }}</span>
+                  <span class="project-field__value">{{ p.clientName || '—' }}</span>
+                </div>
+                @if (p.description) {
+                  <div class="project-field">
+                    <span class="project-field__label">{{ 'workspace.projects.dialog.description.label' | translate }}</span>
+                    <span class="project-field__value">{{ p.description }}</span>
+                  </div>
+                }
+                @if (p.startDate || p.endDate) {
+                  <div class="project-field">
+                    <span class="project-field__label">{{ 'workspace.projects.dialog.dates.label' | translate }}</span>
+                    <span class="project-field__value">
+                      {{ p.startDate | date:'dd/MM/yyyy' }} – {{ p.endDate | date:'dd/MM/yyyy' }}
+                    </span>
+                  </div>
+                }
+              }
+            }
           </div>
         </section>
 

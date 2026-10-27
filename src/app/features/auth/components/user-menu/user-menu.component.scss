@@ -5,8 +5,11 @@
 }
 
 .user-menu {
-  min-width: 240px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   padding: var(--spacing-xs);
+  overflow: hidden;
 
   &__header {
     padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-md);
@@ -54,6 +57,7 @@
     align-items: center;
     gap: var(--spacing-sm);
     width: 100%;
+    box-sizing: border-box;
     padding: 9px var(--spacing-sm);
     background: transparent;
     border: none;

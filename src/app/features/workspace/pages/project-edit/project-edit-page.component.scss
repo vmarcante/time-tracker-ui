@@ -247,3 +247,22 @@
     border-top: 1px solid var(--color-border);
   }
 }
+
+.project-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  &__label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+  }
+
+  &__value {
+    font-size: 1rem;
+    color: var(--color-text-primary);
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+}
