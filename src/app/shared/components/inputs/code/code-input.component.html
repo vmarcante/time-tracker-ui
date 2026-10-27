@@ -19,6 +19,7 @@
     [class.code-input--readonly]="readonly"
     role="group"
     [attr.aria-label]="label || null"
+    (paste)="onPaste($event)"
   >
     @for (char of chars; track $index) {
       <input
@@ -37,7 +38,6 @@
         [attr.aria-label]="label ? label + ' ' + ($index + 1) : null"
         (input)="onInput($event, $index)"
         (keydown)="onKeyDown($event, $index)"
-        (paste)="onPaste($event)"
         (focus)="onFocus($index)"
         (blur)="onBlur()"
       />

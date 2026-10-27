@@ -24,10 +24,12 @@
 .code-input {
   display: flex;
   gap: var(--spacing-xs, 0.5rem);
+  max-width: 100%;
 
   &__box {
-    width: 2.75rem;
-    height: 3rem;
+    flex: 0 1 2.5rem;
+    min-width: 0;
+    height: 2.75rem;
     padding: 0;
     text-align: center;
     font-size: var(--font-size-input);
@@ -49,7 +51,7 @@
     &--focused {
       outline: none;
       border-color: var(--color-primary);
-      box-shadow: 0 0 0 3px var(--color-primary-light);
+      box-shadow: 0 0 0 2px var(--color-primary-light);
     }
 
     &--filled {

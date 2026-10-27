@@ -99,6 +99,13 @@ export class CodeInputComponent implements OnInit, OnDestroy {
 
   onInput(event: Event, index: number): void {
     const input = event.target as HTMLInputElement;
+    const inputEvent = event as InputEvent;
+
+    if (inputEvent.inputType === 'insertFromPaste') {
+      this.applyPastedText(input.value);
+      return;
+    }
+
     let value = input.value.slice(-1);
     if (this.uppercase) {
       value = value.toUpperCase();
@@ -120,10 +127,10 @@ export class CodeInputComponent implements OnInit, OnDestroy {
 
   onKeyDown(event: KeyboardEvent, index: number): void {
     if (event.key === 'Backspace') {
-      if (!this.chars[index] && index > 0) {
-        event.preventDefault();
-        this.chars[index - 1] = '';
-        this.syncControl();
+      event.preventDefault();
+      this.chars[index] = '';
+      this.syncControl();
+      if (index > 0) {
         this.focus(index - 1);
       }
       return;
@@ -140,7 +147,10 @@ export class CodeInputComponent implements OnInit, OnDestroy {
 
   onPaste(event: ClipboardEvent): void {
     event.preventDefault();
-    const text = event.clipboardData?.getData('text') ?? '';
+    this.applyPastedText(event.clipboardData?.getData('text') ?? '');
+  }
+
+  private applyPastedText(text: string): void {
     const cleaned = this.uppercase ? text.toUpperCase() : text;
     const valid = cleaned.split('').filter((c) => this.charRegex.test(c)).slice(0, this.length);
 
