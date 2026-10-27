@@ -39,15 +39,6 @@
       background-color: var(--color-primary-300);
       animation: landing-float 18s ease-in-out infinite;
     }
-
-    &--2 {
-      bottom: -120px;
-      right: 32%;
-      width: 380px;
-      height: 380px;
-      background-color: color-mix(in srgb, var(--color-accent-light) 30%, transparent);
-      animation: landing-float 24s ease-in-out infinite reverse;
-    }
   }
 }
 
