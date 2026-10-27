@@ -1,6 +1,21 @@
+@use 'utilities/breakpoints' as bp;
+
 .popover {
   position: relative;
   display: inline-block;
+}
+
+.popover__backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: transparent;
+  // O Safari do iOS só entrega `click` a elementos com cara de clicáveis;
+  // sem o cursor, o toque fora do popover não o fecha.
+  cursor: pointer;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .popover__content {
@@ -149,7 +164,32 @@
   }
 }
 
-@media (max-width: 768px) {
+@mixin scrollable-content {
+  .popover__content {
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .popover__arrow {
+    display: none;
+  }
+}
+
+// Toque (sem hover): o backdrop transparente captura o toque fora e fecha o popover.
+@include bp.hover-none {
+  .popover__backdrop {
+    display: block;
+  }
+}
+
+// Celular: o popover vira um cartão centralizado sobre um fundo escurecido.
+@include bp.mobile {
+  .popover__backdrop {
+    display: block;
+    background: rgba(15, 23, 42, 0.4);
+  }
+
   .popover__content {
     top: 50% !important;
     left: 50% !important;
@@ -157,11 +197,12 @@
     right: auto !important;
     bottom: auto !important;
     max-width: calc(100vw - 2rem);
-    max-height: calc(100dvh - 2rem);
-    overflow-y: auto;
   }
 
-  .popover__arrow {
-    display: none;
-  }
+  @include scrollable-content;
+}
+
+// Celular em paisagem ou teclado aberto: continua ancorado, mas rola por dentro.
+@include bp.short-viewport {
+  @include scrollable-content;
 }

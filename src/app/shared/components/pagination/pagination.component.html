@@ -33,6 +33,16 @@
       }
     </ul>
 
+    <span
+      class="pagination__summary"
+      role="status"
+      [attr.aria-label]="
+        ('common.pagination.page' | translate) + ' ' + page() + ' / ' + totalPages()
+      "
+    >
+      {{ page() }} / {{ totalPages() }}
+    </span>
+
     <button
       type="button"
       class="pagination__btn pagination__btn--nav"

@@ -54,6 +54,9 @@ export class TrackerSidePanelComponent implements OnInit {
   readonly monthLoading = signal(false);
   readonly visibleMonth = signal<Date>(new Date());
 
+  /** Só vale no mobile: o calendário nasce recolhido para a lista aparecer sem rolar. */
+  readonly calendarOpen = signal(false);
+
   private readonly locale = computed(() =>
     this.languageService.language() === 'pt' ? 'pt-BR' : 'en-US',
   );
@@ -87,8 +90,13 @@ export class TrackerSidePanelComponent implements OnInit {
 
   // ---------- Seleção de período (dia / semana / mês) ----------
 
+  toggleCalendar(): void {
+    this.calendarOpen.update((open) => !open);
+  }
+
   /** "Hoje" — salta para o mês vigente e filtra o dia. */
   selectToday(): void {
+    this.calendarOpen.set(false);
     const now = new Date();
     const month = new Date(now.getFullYear(), now.getMonth(), 1);
     if (month.getTime() !== this.startOfDay(this.visibleMonth()).getTime()) {
@@ -101,6 +109,7 @@ export class TrackerSidePanelComponent implements OnInit {
 
   /** Handle lateral da semana — seleciona seg–dom; clicar na semana ativa limpa. */
   selectWeek(week: CalendarDay[]): void {
+    this.calendarOpen.set(false);
     const first = week.at(0);
     const last = week.at(-1);
     if (!first || !last) return;
@@ -113,6 +122,7 @@ export class TrackerSidePanelComponent implements OnInit {
 
   /** Título do mês — seleciona 1º→último dia; clicar no mês ativo limpa. */
   selectMonth(): void {
+    this.calendarOpen.set(false);
     if (this.isMonthSelected()) {
       this.periodSelect.emit({ start: null, end: null });
       return;
@@ -236,6 +246,7 @@ export class TrackerSidePanelComponent implements OnInit {
   }
 
   selectDay(day: CalendarDay): void {
+    this.calendarOpen.set(false);
     if (this.isDaySelected(day)) {
       this.periodSelect.emit({ start: null, end: null });
       return;

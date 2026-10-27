@@ -96,8 +96,9 @@ export class ToastrService {
 
     const isMobileOrTablet = this.responsiveService.isMobileOrTablet;
 
+    // No celular o aviso fica logo abaixo do cabeçalho, para não esconder avatar, timer e navegação.
     const position = isMobileOrTablet()
-      ? TOASTR_CONFIG.MOBILE_POSITION
+      ? { ...TOASTR_CONFIG.MOBILE_POSITION, top: `${this.getHeaderBottom()}px` }
       : TOASTR_CONFIG.DESKTOP_POSITION;
 
     const panelClass = isMobileOrTablet()
@@ -112,6 +113,8 @@ export class ToastrService {
       scrollStrategy: this.overlay.scrollStrategies.noop(),
       width: isMobileOrTablet() ? '100%' : undefined,
       maxWidth: isMobileOrTablet() ? '100vw' : undefined,
+      // Em telas de toque o aviso não rouba o foco: isso fecharia o teclado virtual de um campo em edição.
+      ...(isMobileOrTablet() ? { autoFocus: false, restoreFocus: false } : {}),
     });
 
     this.currentAlert.afterClosed().subscribe((clearQueue: boolean) => {
@@ -130,6 +133,11 @@ export class ToastrService {
     if (this.alertQueue.length === 0 && !this.isShowingAlert) {
       this.batchTotal = 0;
     }
+  }
+
+  private getHeaderBottom(): number {
+    const header = document.querySelector('.layout-wrapper__header');
+    return header ? Math.max(0, Math.round(header.getBoundingClientRect().bottom)) : 0;
   }
 
   private openCustomAlert(options: ToastrAlertData): void {

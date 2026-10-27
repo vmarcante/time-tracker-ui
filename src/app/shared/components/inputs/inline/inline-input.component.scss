@@ -1,3 +1,5 @@
+@use 'utilities/breakpoints' as bp;
+
 :host {
   display: inline-flex;
   min-width: 0;
@@ -9,7 +11,8 @@
     color: inherit;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: var(--inline-input-white-space, nowrap);
+    overflow-wrap: var(--inline-input-overflow-wrap, normal);
 
     &--interactive {
       cursor: text;
@@ -20,6 +23,18 @@
       &:focus-visible {
         border-bottom-color: var(--color-border-strong);
         outline: none;
+      }
+
+      // Sem hover o sublinhado é a única pista de que o texto é editável.
+      @include bp.hover-none {
+        text-decoration: underline dashed var(--color-border-strong);
+        text-underline-offset: 3px;
+      }
+
+      // Área de toque de ≈44px sem alterar a altura da linha no layout.
+      @include bp.mobile {
+        padding-block: 12px;
+        margin-block: -12px;
       }
     }
   }

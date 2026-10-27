@@ -1,3 +1,6 @@
+@use 'utilities/breakpoints' as bp;
+@use 'utilities/touch' as *;
+
 .pagination {
   display: flex;
   align-items: center;
@@ -15,12 +18,22 @@
     padding: 0;
   }
 
+  &__summary {
+    display: none;
+    min-width: 4.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-primary);
+  }
+
   &__btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 2rem;
-    height: 2rem;
+    min-width: tap-min(2rem);
+    height: tap-min(2rem);
     padding: 0 var(--spacing-xs);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
@@ -70,5 +83,22 @@
     font-size: 0.75rem;
     color: var(--color-text-secondary);
     white-space: nowrap;
+  }
+
+  // Celular: em vez da lista de páginas, "3 / 12" entre as setas; o total desce para a linha de baixo.
+  @include bp.mobile {
+    &__pages {
+      display: none;
+    }
+
+    &__summary {
+      display: inline-block;
+    }
+
+    &__total {
+      flex-basis: 100%;
+      margin-left: 0;
+      text-align: center;
+    }
   }
 }

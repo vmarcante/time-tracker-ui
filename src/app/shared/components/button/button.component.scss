@@ -1,3 +1,6 @@
+@use 'utilities/breakpoints' as bp;
+@use 'utilities/touch' as *;
+
 :host {
   display: inline-block;
   overflow: visible;
@@ -11,15 +14,15 @@
   font-family: inherit;
   font-weight: 400;
   font-size: 0.8125rem;
-  line-height: 1;
+  line-height: var(--btn-line-height, 1);
   text-align: center;
   text-decoration: none;
-  white-space: nowrap;
+  white-space: var(--btn-white-space, nowrap);
   vertical-align: middle;
   user-select: none;
   border: 1px solid;
   border-radius: 4px;
-  min-height: 33px;
+  min-height: tap-min(33px);
   padding: 9px 12px;
   cursor: pointer;
   outline: none;
@@ -39,7 +42,7 @@
   &--small {
     padding: 4px 6px;
     font-size: 0.6rem;
-    min-height: 20px;
+    min-height: tap-min(20px);
 
     .btn__icon {
       width: 0.6rem;
@@ -50,7 +53,7 @@
   &--medium {
     padding: 10px 20px !important;
     font-size: 0.95rem;
-    min-height: 38px !important;
+    min-height: tap-min(38px) !important;
 
     .btn__icon {
       width: 1rem;
@@ -61,7 +64,7 @@
   &--large {
     padding: 12px 24px !important;
     font-size: 1rem;
-    min-height: 42px !important;
+    min-height: tap-min(42px) !important;
 
     .btn__icon {
       width: 1.125rem;
@@ -84,8 +87,8 @@
       border-radius: 50%;
       aspect-ratio: 1;
       padding: 0;
-      min-width: 2.5rem;
-      min-height: 2.5rem;
+      min-width: tap-min(2.5rem);
+      min-height: tap-min(2.5rem);
       background-color: var(--color-background);
     }
 
@@ -98,10 +101,10 @@
   }
 
   &--circle {
-    width: 2rem !important;
-    height: 2rem !important;
-    min-width: 2rem !important;
-    min-height: 2rem !important;
+    width: tap-min(2rem) !important;
+    height: tap-min(2rem) !important;
+    min-width: tap-min(2rem) !important;
+    min-height: tap-min(2rem) !important;
     padding: 0 !important;
     border-radius: 50% !important;
     aspect-ratio: 1 / 1;
@@ -326,11 +329,13 @@
     }
   }
 
-  &:hover:not(.btn--disabled):not(.btn--loading):not(.btn--primary):not(.btn--secondary):not(
-      .btn--filled
-    ) {
-    filter: brightness(0.9);
-    transform: scale(1.02);
+  @include bp.hover-capable {
+    &:hover:not(.btn--disabled):not(.btn--loading):not(.btn--primary):not(.btn--secondary):not(
+        .btn--filled
+      ) {
+      filter: brightness(0.9);
+      transform: scale(1.02);
+    }
   }
 
   &:active:not(.btn--disabled):not(.btn--loading):not(.btn--primary):not(.btn--secondary) {
@@ -427,10 +432,10 @@
   }
 
   &--icon-only {
-    width: 38px;
-    height: 38px;
+    width: tap-min(38px);
+    height: tap-min(38px);
     padding: 0;
-    min-height: 38px;
+    min-height: tap-min(38px);
   }
 
   &__text {
@@ -477,13 +482,13 @@
 
 @media (max-width: 1400px) {
   .btn {
-    min-height: 26px;
+    min-height: tap-min(26px);
     padding: 7px 10px;
 
     &--icon-only {
-      width: 34px;
-      height: 34px;
-      min-height: 34px;
+      width: tap-min(34px);
+      height: tap-min(34px);
+      min-height: tap-min(34px);
     }
   }
 }

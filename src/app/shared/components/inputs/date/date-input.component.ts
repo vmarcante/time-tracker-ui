@@ -8,6 +8,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatTooltip } from '@angular/material/tooltip';
 import { InputValue } from '../../../types/input.types';
 import { TranslationService } from '../../../../shared/services/translation.service';
+import { createPagePanelClass } from '../../../utils/page-panel-class.util';
 import { IconComponent } from '../../icon/icon.component';
 
 @Component({
@@ -55,6 +56,8 @@ export class DateInputComponent {
   @Input() hideError: boolean = false;
 
   private translationService: TranslationService = inject(TranslationService);
+
+  protected readonly panelClass = createPagePanelClass();
 
   @Output() onValueChange = new EventEmitter<InputValue>();
   @Output() onFocus = new EventEmitter<FocusEvent>();

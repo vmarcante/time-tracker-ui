@@ -100,4 +100,17 @@ export class WorkspaceSidebarComponent implements OnInit {
       onError: () => this.loading.set(false),
     });
   }
+
+  // Na faixa de abas (< 1024px) só rola quando a aba ativa está cortada, centralizando-a.
+  revealActive(isActive: boolean, tab: HTMLElement): void {
+    const strip = tab.closest<HTMLElement>('.workspace-nav');
+    if (!isActive || !strip || strip.scrollWidth <= strip.clientWidth) return;
+
+    const stripRect = strip.getBoundingClientRect();
+    const tabRect = tab.getBoundingClientRect();
+    if (tabRect.left >= stripRect.left && tabRect.right <= stripRect.right) return;
+
+    const offset = tabRect.left - stripRect.left;
+    strip.scrollTo({ left: strip.scrollLeft + offset - (strip.clientWidth - tab.offsetWidth) / 2 });
+  }
 }

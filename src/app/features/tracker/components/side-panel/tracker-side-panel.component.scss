@@ -1,8 +1,24 @@
+@use 'utilities/breakpoints' as bp;
+@use 'utilities/touch' as *;
+
 .side-panel {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
   padding-top: var(--spacing-xl);
+
+  @include bp.tablet-down {
+    gap: var(--spacing-md);
+    padding-top: var(--spacing-md);
+  }
+
+  /* Tablet: resumo e calendário lado a lado; o calendário não cresce até a largura da tela. */
+  @include bp.tablet-only {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+    column-gap: var(--spacing-xl);
+    align-items: start;
+  }
 
   &__block {
     display: flex;
@@ -14,6 +30,21 @@
     &:last-child {
       border-bottom: none;
     }
+
+    @include bp.tablet-down {
+      padding-bottom: var(--spacing-md);
+
+      &:last-child {
+        padding-bottom: 0;
+      }
+    }
+
+    @include bp.tablet-only {
+      &:first-child {
+        padding-bottom: 0;
+        border-bottom: none;
+      }
+    }
   }
 
   &__label {
@@ -22,6 +53,10 @@
     color: var(--color-text-tertiary);
     text-transform: uppercase;
     letter-spacing: 0.06em;
+
+    @include bp.mobile {
+      font-size: var(--font-size-micro);
+    }
   }
 
   /* ---- Resumo ---- */
@@ -39,7 +74,7 @@
   }
 
   &__stat-label {
-    font-size: 0.6875rem;
+    font-size: var(--font-size-micro);
     color: var(--color-text-secondary);
   }
 
@@ -53,7 +88,7 @@
 
   &__delta {
     margin: 0;
-    font-size: 0.6875rem;
+    font-size: var(--font-size-micro);
     color: var(--color-text-tertiary);
 
     &--up {
@@ -72,6 +107,43 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--spacing-xs);
+
+    @include bp.mobile {
+      position: relative;
+    }
+  }
+
+  /* Mobile: recolhe/expande o calendário. A área de toque cobre a linha toda (o "Hoje" fica por cima). */
+  &__period-toggle {
+    display: none;
+
+    @include bp.mobile {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: tap-min(0px);
+      min-height: tap-min(0px);
+      margin-right: auto;
+      padding: 0;
+      border: none;
+      background: none;
+      color: var(--color-text-tertiary);
+      cursor: pointer;
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+      }
+
+      app-icon {
+        transition: transform var(--transition-fast);
+      }
+
+      &--open app-icon {
+        transform: rotate(180deg);
+      }
+    }
   }
 
   &__today-link {
@@ -79,18 +151,50 @@
     border: none;
     background: none;
     font-family: inherit;
-    font-size: 0.6875rem;
+    font-size: var(--font-size-micro);
     color: var(--color-primary-600);
     cursor: pointer;
     transition: color var(--transition-fast);
 
-    &:hover {
-      color: var(--color-primary-700);
-      text-decoration: underline;
+    @include bp.hover-capable {
+      &:hover {
+        color: var(--color-primary-700);
+        text-decoration: underline;
+      }
+    }
+
+    @include bp.mobile {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: tap-min(0px);
+      min-height: tap-min(0px);
+      padding-inline: var(--spacing-sm);
+      font-size: 0.8125rem;
     }
   }
 
   /* ---- Mini calendário ---- */
+
+  /* Fora do mobile o wrapper some do layout e a seção se comporta como antes. */
+  &__calendar {
+    display: contents;
+
+    @include bp.mobile {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xs);
+      width: 100%;
+      max-width: 24rem;
+      margin-inline: auto;
+
+      &--collapsed {
+        display: none;
+      }
+    }
+  }
 
   &__cal-head {
     display: flex;
@@ -114,14 +218,22 @@
       color var(--transition-fast),
       background-color var(--transition-fast);
 
-    &:hover {
-      color: var(--color-primary-700);
-      background-color: var(--color-surface-hover);
+    @include bp.hover-capable {
+      &:hover {
+        color: var(--color-primary-700);
+        background-color: var(--color-surface-hover);
+      }
     }
 
     &--active {
       color: var(--color-primary-700);
       background-color: var(--color-primary-50);
+    }
+
+    @include bp.mobile {
+      min-height: tap-min(0px);
+      padding-inline: var(--spacing-md);
+      font-size: 0.9375rem;
     }
   }
 
@@ -140,9 +252,16 @@
       color var(--transition-fast),
       background-color var(--transition-fast);
 
-    &:hover {
-      color: var(--color-primary-700);
-      background-color: var(--color-surface-hover);
+    @include bp.hover-capable {
+      &:hover {
+        color: var(--color-primary-700);
+        background-color: var(--color-surface-hover);
+      }
+    }
+
+    @include bp.mobile {
+      width: tap-min(1.375rem);
+      height: tap-min(1.375rem);
     }
   }
 
@@ -151,6 +270,10 @@
     display: grid;
     grid-template-columns: 1.25rem repeat(7, 1fr);
     gap: 2px;
+
+    @include bp.mobile {
+      grid-template-columns: 2rem repeat(7, minmax(0, 1fr));
+    }
   }
 
   &__cal-weekday {
@@ -160,6 +283,10 @@
     text-transform: uppercase;
     text-align: center;
     padding-bottom: 0.125rem;
+
+    @include bp.mobile {
+      font-size: var(--font-size-micro);
+    }
   }
 
   &__cal-grid {
@@ -184,15 +311,21 @@
       color var(--transition-fast),
       background-color var(--transition-fast);
 
-    &:hover {
-      color: var(--color-primary-700);
-      background-color: var(--color-surface-hover);
+    @include bp.hover-capable {
+      &:hover {
+        color: var(--color-primary-700);
+        background-color: var(--color-surface-hover);
+      }
     }
 
     &--active {
       color: var(--color-primary-700);
       background-color: var(--color-primary-50);
       font-weight: var(--font-weight-semibold);
+    }
+
+    @include bp.mobile {
+      font-size: var(--font-size-micro);
     }
   }
 
@@ -213,8 +346,16 @@
       background-color var(--transition-fast),
       color var(--transition-fast);
 
-    &:hover {
-      background-color: var(--color-surface-hover);
+    @include bp.hover-capable {
+      &:hover {
+        background-color: var(--color-surface-hover);
+      }
+    }
+
+    @include bp.mobile {
+      aspect-ratio: auto;
+      min-height: tap-min(2.5rem);
+      font-size: 0.875rem;
     }
 
     &--outside {

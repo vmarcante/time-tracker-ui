@@ -1,3 +1,5 @@
+@use 'utilities/breakpoints' as bp;
+
 :host {
   display: block;
 }
@@ -62,6 +64,10 @@
     text-align: left;
     cursor: pointer;
     transition: background-color var(--transition-fast);
+
+    @include bp.mobile {
+      min-height: var(--tap-target-min);
+    }
 
     &:hover {
       background-color: var(--color-surface);

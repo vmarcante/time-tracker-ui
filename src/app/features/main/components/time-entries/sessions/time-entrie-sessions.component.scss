@@ -1,3 +1,5 @@
+@use 'utilities/breakpoints' as bp;
+
 .time-entrie-sessions {
   display: flex;
   flex-direction: column;
@@ -501,5 +503,126 @@
     font-size: 0.875rem;
     color: var(--color-text-tertiary);
     margin-inline-start: auto;
+  }
+
+  // Barra de confirmação da criação por toque: só existe no DOM após um toque na trilha.
+  &__create-bar {
+    position: sticky;
+    bottom: var(--spacing-sm);
+    z-index: 6;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background-color: var(--color-white);
+    border: 1px solid var(--color-black-10);
+    border-radius: var(--radius-md);
+    box-shadow: 0 -4px 16px var(--color-black-10);
+  }
+
+  &__create-range {
+    flex: 1 1 100%;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__create-confirm {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  @include bp.mobile {
+    &__header {
+      align-items: flex-start;
+    }
+
+    &__heading {
+      flex-wrap: wrap;
+      row-gap: 2px;
+    }
+
+    &__total {
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    &__nav-row {
+      flex-wrap: wrap;
+      justify-content: space-between;
+      row-gap: var(--spacing-md);
+      column-gap: var(--spacing-lg);
+    }
+
+    &__nav-btn {
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: -10px;
+      }
+    }
+
+    &__day-btn {
+      width: 44px;
+      height: 44px;
+    }
+
+    &__day-num {
+      font-size: 0.875rem;
+    }
+
+    &__day-name {
+      font-size: 0.75rem;
+    }
+
+    &__timeline {
+      height: min(600px, 60vh);
+      height: min(600px, 60dvh);
+    }
+
+    &__tick-label,
+    &__ghost-label,
+    &__cursor-label {
+      font-size: var(--font-size-micro);
+    }
+
+    // Seletores de 2 classes: precisam vencer as regras `@container segment` acima.
+    .time-entrie-sessions__segment-description {
+      font-size: 0.75rem;
+    }
+
+    .time-entrie-sessions__segment-duration,
+    .time-entrie-sessions__segment-start {
+      font-size: 0.6875rem;
+    }
+
+    @container segment (max-height: 12px) {
+      .time-entrie-sessions__segment-duration {
+        display: none;
+      }
+    }
+  }
+
+  @include bp.short-viewport {
+    &__timeline {
+      height: min(600px, 75vh);
+      height: min(600px, 75dvh);
+    }
+  }
+
+  // Redimensionar por arrasto só existe com mouse: no toque as alças seriam inertes.
+  @include bp.hover-none {
+    &__segment-handle {
+      display: none;
+    }
+
+    &__segment:not(.time-entrie-sessions__segment--ghost) {
+      min-height: 20px;
+    }
   }
 }

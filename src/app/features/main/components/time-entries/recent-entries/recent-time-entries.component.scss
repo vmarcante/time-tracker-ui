@@ -1,9 +1,15 @@
+@use 'utilities/breakpoints' as bp;
+
 .recent-entries {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
   margin: 0;
   padding: 0;
+
+  @include bp.mobile {
+    gap: var(--spacing-md);
+  }
 
   &__group {
     display: flex;

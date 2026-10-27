@@ -1,3 +1,5 @@
+@use 'utilities/breakpoints' as bp;
+
 .time-entrie {
   display: flex;
   justify-content: space-between;
@@ -27,6 +29,12 @@
     overflow: hidden;
     min-width: 0;
     flex: 1;
+
+    // O alvo de toque do inline-input excede a linha: não pode ser cortado nem ficar sob o texto seguinte.
+    @include bp.mobile {
+      overflow: visible;
+      z-index: 1;
+    }
   }
 
   &__description {
@@ -46,17 +54,6 @@
   &--compact {
     padding: var(--spacing-sm);
     gap: var(--spacing-md);
-
-    .time-entrie__project {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-
-  &__project {
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text-primary);
   }
 
   &__scope {
@@ -89,6 +86,7 @@
     font-size: 0.875rem;
     flex-shrink: 0;
   }
+
   &__actions {
     display: flex;
     align-items: center;
@@ -119,12 +117,6 @@
     flex-shrink: 0;
   }
 
-  &__time {
-    color: var(--color-text-secondary);
-    font-size: 0.875rem;
-    flex-shrink: 0;
-  }
-
   &__tags {
     display: flex;
     flex-wrap: wrap;
@@ -151,8 +143,52 @@
     }
   }
 
-  &__toggle,
-  &__details-button {
-    flex-shrink: 0;
+  // Celular estreito: sem quebra, a coluna de informações sobra com ~75–140px.
+  // As ações descem para uma linha própria e o texto longo quebra em vez de vazar.
+  @include bp.phone {
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+
+    &__info {
+      flex: 1 1 100%;
+    }
+
+    &__actions {
+      flex: 1 1 100%;
+      justify-content: flex-end;
+
+      &--stacked {
+        align-items: center;
+      }
+    }
+
+    &__datetime {
+      margin-right: auto;
+
+      &--stacked {
+        align-items: flex-start;
+      }
+    }
+
+    &__description {
+      overflow-wrap: anywhere;
+    }
+
+    &__details {
+      flex-wrap: wrap;
+    }
+
+    &__scope {
+      flex-wrap: wrap;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    &__tag {
+      display: block;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 }

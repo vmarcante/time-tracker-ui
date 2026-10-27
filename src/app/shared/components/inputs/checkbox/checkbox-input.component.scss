@@ -10,6 +10,8 @@
   cursor: pointer;
   user-select: none;
   position: relative;
+  // O token só existe nas telas em celular: o rótulo inteiro vira um alvo de toque de 44px.
+  min-height: var(--tap-min, auto);
 
   &:has(.checkbox-input:disabled) {
     cursor: not-allowed;

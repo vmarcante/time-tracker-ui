@@ -4,6 +4,8 @@
 // Estilos globais para sobrescrever o comportamento padrão
 // do Angular Material Form Field em toda a aplicação
 
+@use 'utilities/breakpoints' as bp;
+
 // Precisa estar fora de qualquer seletor para ser global
 .mat-mdc-text-field-wrapper {
   padding: 0 !important;
@@ -371,6 +373,42 @@ textarea.mat-mdc-input-element {
 .mat-calendar-body-cell .mat-calendar-body-selected {
   background-color: var(--color-primary) !important;
   color: #ffffff !important;
+}
+
+// ============================================
+// CELULAR — select e datepicker abertos a partir de uma tela
+// ============================================
+// Os painéis ficam no overlay, fora do `.layout-wrapper`. A classe `app-overlay--page`
+// (ver `createPagePanelClass`) marca os que vieram de uma tela e deixa os de modais como estão.
+@include bp.mobile {
+  .app-overlay--page {
+    .mat-mdc-option {
+      min-height: var(--tap-target-min) !important;
+      font-size: 1rem !important;
+
+      .mdc-list-item__primary-text {
+        font-size: 1rem !important;
+      }
+    }
+
+    .mat-calendar-period-button {
+      min-height: var(--tap-target-min) !important;
+    }
+  }
+
+  // O botão do calendário fica dentro do campo, que já tem 44px de altura nas telas.
+  .layout-wrapper .mat-datepicker-toggle .mat-mdc-icon-button {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: var(--tap-target-min) !important;
+    height: var(--tap-target-min) !important;
+
+    .mat-mdc-button-touch-target {
+      width: var(--tap-target-min) !important;
+      height: var(--tap-target-min) !important;
+    }
+  }
 }
 
 // ============================================

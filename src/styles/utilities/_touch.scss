@@ -1,0 +1,6 @@
+// Alvo de toque mínimo ativo.
+// `--tap-min` só é definido em `.layout-wrapper` no mobile (layout-wrapper.component.scss).
+// Fora dele (desktop, tablet, modais e overlays) vale 0px e o tamanho original é mantido.
+@function tap-min($size) {
+  @return max($size, var(--tap-min, 0px));
+}

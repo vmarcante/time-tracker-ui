@@ -1,3 +1,6 @@
+@use 'utilities/breakpoints' as bp;
+@use 'utilities/touch' as *;
+
 .tags-picker {
   padding: var(--spacing-xs) var(--spacing-sm) var(--spacing-sm);
 
@@ -35,15 +38,22 @@
       background-color var(--transition-fast),
       color var(--transition-fast);
 
-    &:hover {
-      border-color: var(--color-primary-500);
-      color: var(--color-text-primary);
+    @include bp.hover-capable {
+      &:hover {
+        border-color: var(--color-primary-500);
+        color: var(--color-text-primary);
+      }
     }
 
     &--selected {
       border-color: var(--color-primary-500);
       background-color: var(--color-primary-50);
       color: var(--color-text-primary);
+    }
+
+    @include bp.mobile {
+      min-height: tap-min(0px);
+      padding-inline: var(--spacing-md);
     }
   }
 

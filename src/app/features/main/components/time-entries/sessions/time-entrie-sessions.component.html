@@ -175,6 +175,31 @@
     </div>
   </div>
 
+  @if (pendingCreate(); as pending) {
+    <div
+      class="time-entrie-sessions__create-bar"
+      role="group"
+      [attr.aria-label]="'timeEntry.createSession' | translate"
+    >
+      <span class="time-entrie-sessions__create-range">{{ pending.label }}</span>
+      <app-button
+        [icon]="{ iconName: 'actions/close', iconOnly: true, color: 'var(--color-text-secondary)' }"
+        [rounded]="true"
+        [color]="'secondary'"
+        [hoverTitle]="'common.cancel' | translate"
+        (buttonClick)="cancelPendingCreate()"
+      />
+      <app-button
+        class="time-entrie-sessions__create-confirm"
+        [text]="'timeEntry.createSession' | translate"
+        [rounded]="true"
+        [color]="'primary'"
+        [size]="{ medium: true, fullWidth: true }"
+        (buttonClick)="confirmPendingCreate()"
+      />
+    </div>
+  }
+
   <ul class="time-entrie-sessions__list" role="list" aria-label="Lista de sessões">
     @for (session of sessions(); track $index) {
       <li class="time-entrie-sessions__session">

@@ -6,6 +6,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSelectChange } from '@angular/material/select';
 import { InputValue, SelectOption } from '../../../types/input.types';
 import { TranslationService } from '../../../../shared/services/translation.service';
+import { createPagePanelClass } from '../../../utils/page-panel-class.util';
 import { IconComponent } from '../../icon/icon.component';
 
 @Component({
@@ -42,6 +43,8 @@ export class SelectInputComponent {
   @Input() hideError: boolean = false;
 
   private translationService: TranslationService = inject(TranslationService);
+
+  protected readonly panelClass = createPagePanelClass();
 
   @Output() onValueChange = new EventEmitter<InputValue>();
   @Output() onFocus = new EventEmitter<FocusEvent>();

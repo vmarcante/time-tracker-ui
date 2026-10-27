@@ -446,6 +446,35 @@ Cor
 
 ---
 
+# Responsividade
+
+## Breakpoints
+
+| Faixa   | Largura        | Mixin (`utilities/breakpoints`)     |
+| ------- | -------------- | ----------------------------------- |
+| Celular | < 600px        | `bp.phone` (refina dentro do mobile) |
+| Mobile  | < 768px        | `bp.mobile`                         |
+| Tablet  | 768px – 1023px | `bp.tablet-only` / `bp.tablet-down` |
+| Desktop | ≥ 1024px       | `bp.desktop`                        |
+
+## Mobile (conteúdo das páginas)
+
+| Item                     | Desktop | Mobile                    |
+| ------------------------ | ------- | ------------------------- |
+| Altura de campos         | 36px    | 44px (`--input-height`)   |
+| Alvo de toque mínimo     | —       | 44px (`--tap-target-min`) |
+| Texto de campos          | 13px    | 16px (evita zoom no iOS)  |
+| Texto auxiliar           | 11px    | 12px                      |
+| Margem lateral da página | 24px    | 16px (`--page-gutter`)    |
+
+Modais, login e cadastro mantêm os tamanhos de desktop. Efeitos de hover (escala, sombra) só valem com mouse (`bp.hover-capable`).
+
+Padrões: header sempre no fluxo (menu de contexto em 2ª linha), popover como cartão centralizado, toast em largura total abaixo do header, paginação compacta ("3 / 12") e sidebar do workspace como faixa horizontal rolável. Convenções de código: mixins em `src/styles/utilities/_breakpoints.scss`, `tap-min()` em `_touch.scss` e tokens em `_variables.scss`.
+
+Tracker e detalhe do lançamento: no mobile o calendário lateral fica recolhido atrás de um botão de período (tablet: resumo e calendário lado a lado), filtros empilham em largura total e o painel da sessão selecionada vira um _bottom sheet_ fixo na base da tela (≤ 1023px). Em dispositivos de toque, tocar na linha do tempo mostra uma sessão-fantasma com a barra "Criar sessão"/cancelar; com mouse o clique cria direto. O desktop (≥ 1025px) permanece idêntico.
+
+---
+
 # Princípios
 
 - Clareza

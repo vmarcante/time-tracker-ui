@@ -1,10 +1,12 @@
 <div class="workspace-nav">
   <!-- Cabeçalho da empresa -->
   <a
+    #home
     class="workspace-nav__header"
     routerLink="/workspace"
     routerLinkActive="workspace-nav__header--active"
     [routerLinkActiveOptions]="{ exact: true }"
+    (isActiveChange)="revealActive($event, home)"
     [attr.aria-label]="'workspace.overview.title' | translate"
   >
     <div class="workspace-nav__company-icon">
@@ -28,9 +30,11 @@
     } @else {
       @for (item of navItems(); track item.route) {
         <a
+          #link
           class="workspace-nav__item"
           [routerLink]="item.route"
           routerLinkActive="workspace-nav__item--active"
+          (isActiveChange)="revealActive($event, link)"
           [class.workspace-nav__item--alert]="item.badgeText() !== null"
           [attr.aria-current]="null"
         >

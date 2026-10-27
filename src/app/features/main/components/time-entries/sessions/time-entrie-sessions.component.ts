@@ -14,6 +14,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { SessionView } from '../../../../tracker/models/tracker.model';
 import { AvailableMonth, AvailableYear, DateUtil } from '../../../../../shared/utils/date-util';
+import { TranslatePipe } from '../../../../../shared/pipes/translate.pipe';
+import { ButtonComponent } from '../../../../../shared/components/button/button.component';
 
 interface TimelineSegment {
   top: number;
@@ -38,10 +40,11 @@ interface DayOption {
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+const TOUCH_CREATE_MINUTES = 15;
 
 @Component({
   selector: 'app-time-entrie-sessions',
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe, ButtonComponent],
   templateUrl: './time-entrie-sessions.component.html',
   styleUrl: './time-entrie-sessions.component.scss',
 })
@@ -86,6 +89,11 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
     label: string;
     duration: string;
   } | null>(null);
+
+  // Toque: o 1º toque só posiciona a prévia; a sessão é criada na confirmação.
+  protected readonly pendingCreate = signal<{ start: string; end: string; label: string } | null>(
+    null,
+  );
   private readonly boundOnDragMove = (e: MouseEvent) => this.onDragMove(e);
   private readonly boundOnDragEnd = (e: MouseEvent) => this.onDragEnd(e);
 
@@ -380,6 +388,7 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
   }
 
   protected selectDay(date: Date): void {
+    this.cancelPendingCreate();
     this.selectedDate.set(date);
     this.dayChange.emit(date);
     requestAnimationFrame(() => {
@@ -494,6 +503,7 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
       days[days.length - 1]?.day ??
       new Date();
 
+    this.cancelPendingCreate();
     this.selectedDate.set(selectedDay);
     this.dayChange.emit(selectedDay);
     requestAnimationFrame(() => {
@@ -514,13 +524,19 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
 
   private scrollActiveDay(): void {
     const container = this.daySelectorScrollRef()?.nativeElement;
-    if (!container) {
-      return;
-    }
-    const activeBtn = container.querySelector<HTMLElement>(
+    const activeBtn = container?.querySelector<HTMLElement>(
       '.time-entrie-sessions__day-btn--active',
     );
-    activeBtn?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+    if (!container || !activeBtn) {
+      return;
+    }
+    // Rolagem horizontal explícita: scrollIntoView também rolaria a página inteira.
+    const box = container.getBoundingClientRect();
+    const btn = activeBtn.getBoundingClientRect();
+    container.scrollTo({
+      left: container.scrollLeft + (btn.left - box.left) - (box.width - btn.width) / 2,
+      behavior: 'smooth',
+    });
   }
 
   // --- Date helpers ---
@@ -567,9 +583,54 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
     const y = event.clientY - rect.top;
     const percent = Math.max(0, Math.min(100, (y / rect.height) * 100));
     const snapped = this.snapToMinutes((percent / 100) * 1440);
+    if (this.isTouchTap(event)) {
+      this.previewTouchCreate(snapped);
+      return;
+    }
     const date = new Date(this.dayStart());
     date.setHours(0, snapped, 0, 0);
     this.hourClick.emit(date.toISOString());
+  }
+
+  protected confirmPendingCreate(): void {
+    const pending = this.pendingCreate();
+    if (!pending) {
+      return;
+    }
+    this.cancelPendingCreate();
+    this.sessionCreate.emit({ start: pending.start, end: pending.end });
+  }
+
+  protected cancelPendingCreate(): void {
+    if (this.pendingCreate() === null) {
+      return;
+    }
+    this.pendingCreate.set(null);
+    this.createPreview.set(null);
+  }
+
+  private isTouchTap(event: MouseEvent): boolean {
+    const pointerType = (event as PointerEvent).pointerType;
+    if (pointerType) {
+      return pointerType === 'touch';
+    }
+    return (
+      typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches
+    );
+  }
+
+  private previewTouchCreate(tappedMin: number): void {
+    const startMin = Math.min(tappedMin, 1440 - TOUCH_CREATE_MINUTES);
+    const start = new Date(this.dayStart() + startMin * 60_000);
+    const end = new Date(start.getTime() + TOUCH_CREATE_MINUTES * 60_000);
+    const label = `${this.timeLabel(start)} – ${this.timeLabel(end)}`;
+    this.createPreview.set({
+      top: (startMin / 1440) * 100,
+      height: (TOUCH_CREATE_MINUTES / 1440) * 100,
+      label,
+      duration: `${TOUCH_CREATE_MINUTES}min`,
+    });
+    this.pendingCreate.set({ start: start.toISOString(), end: end.toISOString(), label });
   }
 
   protected onTrackMouseDown(event: MouseEvent, trackEl: HTMLElement): void {
@@ -655,6 +716,7 @@ export class TimeEntrieSessionsComponent implements OnInit, AfterViewInit, OnDes
 
   protected onSessionClick(session: SessionView, event: MouseEvent): void {
     event.stopPropagation();
+    this.cancelPendingCreate();
     this.sessionClick.emit(session);
   }
 

@@ -1,3 +1,5 @@
+@use 'utilities/breakpoints' as bp;
+
 .time-entrie-detail {
   display: flex;
   flex-direction: column;
@@ -60,7 +62,9 @@
     line-height: 1.2;
   }
 
-  &__body {
+  // O esqueleto de loading espelha o layout real (corpo, informações e sessões).
+  &__body,
+  &__loading {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-md);
@@ -73,11 +77,13 @@
     }
   }
 
-  &__info {
+  &__info,
+  &__loading-info {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-md);
     width: 280px;
+    max-width: 100%;
     flex: 0 0 280px;
     background-color: var(--color-background);
     border: 1px solid var(--color-border);
@@ -120,6 +126,18 @@
     }
   }
 
+  @keyframes session-panel-enter-sheet {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   &__session-panel-header {
     display: flex;
     justify-content: space-between;
@@ -134,14 +152,14 @@
   }
 
   &__session-panel-date {
-    font-size: 0.6875rem;
+    font-size: var(--font-size-micro);
     font-weight: var(--font-weight-medium);
     color: var(--color-text-tertiary);
     text-transform: capitalize;
   }
 
   &__session-panel-duration-inline {
-    font-size: 0.6875rem;
+    font-size: var(--font-size-micro);
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-tertiary);
     font-variant-numeric: tabular-nums;
@@ -227,7 +245,7 @@
   }
 
   &__session-panel-label {
-    font-size: 0.6875rem;
+    font-size: var(--font-size-micro);
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-tertiary);
     text-transform: uppercase;
@@ -286,26 +304,6 @@
     }
   }
 
-  &__session-panel-textarea {
-    width: 100%;
-    flex: 1;
-    min-height: 80px;
-    padding: var(--spacing-sm);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    background-color: var(--color-background);
-    color: var(--color-text-primary);
-    font-family: inherit;
-    font-size: 0.875rem;
-    resize: vertical;
-    box-sizing: border-box;
-
-    &:focus-visible {
-      outline: 2px solid var(--color-primary-500);
-      outline-offset: 2px;
-    }
-  }
-
   &__session-panel-text {
     font-size: 0.875rem;
     color: var(--color-text-primary);
@@ -334,8 +332,10 @@
     gap: 2px;
   }
 
-  &__meta-label {
-    font-size: 0.6875rem;
+  &__meta-label,
+  &__label,
+  &__tags-label {
+    font-size: var(--font-size-micro);
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-tertiary);
     text-transform: uppercase;
@@ -395,19 +395,11 @@
     }
   }
 
-  &__label {
-    font-size: 0.6875rem;
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-
-    &--with-action {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--spacing-xs);
-    }
+  &__label--with-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xs);
   }
 
   &__icon-action {
@@ -505,14 +497,6 @@
     order: 2;
   }
 
-  &__tags-label {
-    font-size: 0.6875rem;
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
   &__tags {
     display: flex;
     flex-wrap: wrap;
@@ -556,32 +540,6 @@
       width: 1.75rem;
       height: 1.75rem;
     }
-  }
-
-  &__loading {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-    flex: 1;
-    min-height: 0;
-
-    @media (min-width: 768px) {
-      flex-direction: row;
-      align-items: stretch;
-    }
-  }
-
-  &__loading-info {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-    width: 280px;
-    max-width: 100%;
-    flex: 0 0 280px;
-    background-color: var(--color-background);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-md);
   }
 
   &__loading-topbar {
@@ -642,6 +600,122 @@
     &--timeline {
       flex: 1;
       min-height: 320px;
+    }
+  }
+
+  @include bp.tablet-down {
+    // Painel da sessão fixo na base da viewport: sem isso ele fica abaixo da timeline, fora da tela.
+    &__session-panel {
+      position: sticky;
+      bottom: var(--spacing-sm);
+      z-index: 5;
+      max-height: min(50dvh, 26rem);
+      overflow-y: auto;
+      box-shadow: 0 -4px 16px var(--color-black-10);
+      animation-name: session-panel-enter-sheet;
+    }
+  }
+
+  @include bp.tablet-only {
+    &__body {
+      flex-wrap: wrap;
+    }
+
+    &__session-panel {
+      flex: 1 1 100%;
+      width: auto;
+    }
+  }
+
+  @include bp.hover-none {
+    &__meta-value--editable:not(:disabled) {
+      text-decoration: underline dashed var(--color-border-strong);
+      text-underline-offset: 3px;
+    }
+  }
+
+  @include bp.mobile {
+    padding: var(--spacing-md) var(--page-gutter);
+
+    &__panel {
+      padding: 0;
+    }
+
+    // Em coluna o `flex-basis` vira altura: 280/260px forçam um mínimo e `0` colapsa a área das sessões.
+    &__info,
+    &__loading-info,
+    &__sessions,
+    &__loading-sessions,
+    &__session-panel {
+      width: auto;
+      flex: 0 0 auto;
+    }
+
+    &__name {
+      --inline-input-white-space: normal;
+      --inline-input-overflow-wrap: anywhere;
+      font-size: 1.25rem;
+      margin: var(--spacing-xs) 0 var(--spacing-sm);
+    }
+
+    &__value,
+    &__meta-value,
+    &__session-panel-text {
+      overflow-wrap: anywhere;
+    }
+
+    &__value {
+      flex-wrap: wrap;
+    }
+
+    &__meta {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    &__meta-divider {
+      display: none;
+    }
+
+    &__tag {
+      max-width: 100%;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    &__page-back,
+    &__session-panel-add-desc,
+    &__add-description {
+      min-height: var(--tap-target-min);
+    }
+
+    // Área de toque ≈44px sem mexer no layout: o padding é compensado pela margem negativa.
+    &__meta-value--editable,
+    &__session-panel-time {
+      padding: 10px 8px;
+      margin: -10px -8px;
+    }
+
+    &__icon-action {
+      min-width: var(--tap-target-min);
+      min-height: var(--tap-target-min);
+      margin: -12px;
+    }
+
+    &__tag--edit {
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: -8px;
+      }
+    }
+
+    &__time-input {
+      min-height: var(--tap-target-min);
+      width: 6.5rem;
+      font-size: 1rem;
     }
   }
 
@@ -775,6 +849,26 @@
     &--selected {
       border-color: var(--color-text-primary);
       transform: scale(1.1);
+    }
+  }
+
+  @include bp.mobile {
+    &__list {
+      max-height: min(40dvh, 20rem);
+    }
+
+    &__item {
+      min-height: var(--tap-target-min);
+      font-size: 0.875rem;
+    }
+
+    &__colors {
+      gap: var(--spacing-sm);
+    }
+
+    &__swatch {
+      width: 2rem;
+      height: 2rem;
     }
   }
 }

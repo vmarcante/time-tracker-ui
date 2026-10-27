@@ -158,11 +158,14 @@ export class LayoutHeaderComponent implements OnInit, OnDestroy {
     this.indicatorVisible.set(true);
   }
 
-  onMouseEnter(): void {
-    this.isHovered = true;
+  onPointerEnter(event: PointerEvent): void {
+    // Toque dispara pointerenter sem pointerleave imediato: ignora para não "prender" o hover.
+    if (event.pointerType !== 'touch') {
+      this.isHovered = true;
+    }
   }
 
-  onMouseLeave(): void {
+  onPointerLeave(): void {
     this.isHovered = false;
   }
 
@@ -186,7 +189,6 @@ export class LayoutHeaderComponent implements OnInit, OnDestroy {
     const isMobileOrTablet = this.responsiveService.isMobileOrTablet();
 
     return {
-      'layout-wrapper__header--fixed': isMobileOrTablet,
       'layout-wrapper__header--sticky': !isMobileOrTablet && !this.isAuthenticated(),
       'layout-wrapper__header--scrolled': this.isScrolledOrHovered && !this.mobileMenuOpen,
       'layout-wrapper__header--landing': !this.isAuthenticated(),

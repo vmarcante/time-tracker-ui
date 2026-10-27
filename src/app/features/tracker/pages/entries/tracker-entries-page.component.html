@@ -93,7 +93,7 @@
 
   <div class="tracker-entries__filters">
     <app-text-input
-      class="tracker-entries__filter"
+      class="tracker-entries__filter tracker-entries__filter--name"
       [control]="nameFilterControl"
       [showLabel]="false"
       [placeholder]="'tracker.entries.filterName' | translate"
@@ -101,7 +101,7 @@
       [hideError]="true"
     />
     <app-select-input
-      class="tracker-entries__filter"
+      class="tracker-entries__filter tracker-entries__filter--project"
       [control]="projectFilterControl"
       [options]="projectOptions()"
       [showLabel]="false"
@@ -122,6 +122,7 @@
     />
     <app-popover
       #tagFilter
+      class="tracker-entries__tags"
       [options]="{
         position: 'bottom',
         width: '240px',

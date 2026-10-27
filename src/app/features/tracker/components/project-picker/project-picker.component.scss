@@ -1,7 +1,15 @@
+@use 'utilities/breakpoints' as bp;
+@use 'utilities/touch' as *;
+
 .project-picker {
   display: flex;
   flex-direction: column;
   max-height: 420px;
+
+  /* Cabe na área útil do cartão do popover (padding, borda e margem de 2rem). */
+  @include bp.tablet-down {
+    max-height: min(26.25rem, calc(100dvh - 3.75rem));
+  }
 
   /* Bloco de entry: nome inline + seletores (projeto, tags, iniciar) */
   &__entry {
@@ -36,13 +44,16 @@
     flex-shrink: 0;
     transition: color var(--transition-fast), border-color var(--transition-fast);
 
-    &:hover,
-    &--active {
-      color: var(--color-primary-700);
-      border-color: var(--color-primary-500);
+    @include bp.hover-capable {
+      &:hover {
+        color: var(--color-primary-700);
+        border-color: var(--color-primary-500);
+      }
     }
 
     &--active {
+      color: var(--color-primary-700);
+      border-color: var(--color-primary-500);
       border-style: solid;
     }
 
@@ -50,12 +61,21 @@
       width: auto;
       padding: 0 0.5rem;
     }
+
+    @include bp.mobile {
+      min-width: tap-min(0px);
+      min-height: tap-min(0px);
+    }
   }
 
   &__tags-count {
     font-size: 0.625rem;
     font-weight: var(--font-weight-semibold);
     line-height: 1;
+
+    @include bp.mobile {
+      font-size: var(--font-size-micro);
+    }
   }
 
   &__tags-panel {
@@ -83,11 +103,28 @@
       color var(--transition-fast),
       border-color var(--transition-fast);
 
-    &:hover,
+    @include bp.hover-capable {
+      &:hover {
+        color: var(--color-primary-700);
+        border-color: var(--color-primary-500);
+        border-style: solid;
+      }
+    }
+
     &--active {
       color: var(--color-primary-700);
       border-color: var(--color-primary-500);
       border-style: solid;
+    }
+
+    /* No toque não há tooltip: o nome do projeto precisa caber no próprio botão. */
+    @include bp.mobile {
+      flex-shrink: 1;
+      min-width: tap-min(0px);
+      min-height: tap-min(0px);
+      max-width: none;
+      padding-inline: var(--spacing-md);
+      font-size: 0.8125rem;
     }
   }
 
@@ -138,8 +175,15 @@
     flex-shrink: 0;
     transition: filter var(--transition-fast);
 
-    &:hover {
-      filter: brightness(0.92);
+    @include bp.hover-capable {
+      &:hover {
+        filter: brightness(0.92);
+      }
+    }
+
+    @include bp.mobile {
+      min-width: tap-min(0px);
+      min-height: tap-min(0px);
     }
   }
 
@@ -162,6 +206,11 @@
     &:focus-within {
       border-color: var(--color-primary-500);
     }
+
+    @include bp.mobile {
+      min-height: tap-min(0px);
+      padding-inline: var(--spacing-sm);
+    }
   }
 
   &__search-input {
@@ -175,6 +224,12 @@
 
     &::placeholder {
       color: var(--color-text-tertiary);
+    }
+
+    /* Menos de 16px faz o iOS ampliar a página ao focar o campo. */
+    @include bp.mobile {
+      align-self: stretch;
+      font-size: var(--font-size-input);
     }
   }
 
@@ -193,6 +248,11 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       align-items: start;
+
+      /* Duas colunas não cabem no cartão estreito: pessoal e empresa empilham. */
+      @include bp.phone {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
   }
 
@@ -204,6 +264,13 @@
     &--split {
       border-left: 1px solid var(--color-border);
       padding-left: var(--spacing-xs);
+
+      @include bp.phone {
+        margin-top: var(--spacing-xs);
+        padding-left: 0;
+        border-left: none;
+        border-top: 1px solid var(--color-border);
+      }
     }
   }
 
@@ -221,6 +288,10 @@
     color: var(--color-text-tertiary);
     text-transform: uppercase;
     letter-spacing: 0.06em;
+
+    @include bp.mobile {
+      font-size: var(--font-size-micro);
+    }
   }
 
   &__group-add {
@@ -236,9 +307,16 @@
     cursor: pointer;
     transition: color var(--transition-fast), background-color var(--transition-fast);
 
-    &:hover {
-      color: var(--color-primary-700);
-      background-color: var(--color-surface-hover);
+    @include bp.hover-capable {
+      &:hover {
+        color: var(--color-primary-700);
+        background-color: var(--color-surface-hover);
+      }
+    }
+
+    @include bp.mobile {
+      min-width: tap-min(0px);
+      min-height: tap-min(0px);
     }
   }
 
@@ -262,8 +340,14 @@
     text-align: left;
     transition: background-color var(--transition-fast);
 
-    &:hover {
-      background-color: var(--color-surface-hover);
+    @include bp.hover-capable {
+      &:hover {
+        background-color: var(--color-surface-hover);
+      }
+    }
+
+    @include bp.mobile {
+      min-height: tap-min(0px);
     }
   }
 
@@ -281,15 +365,24 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+
+    @include bp.mobile {
+      font-size: 0.875rem;
+    }
   }
 
   &__item-client {
-    font-size: 0.6875rem;
+    font-size: var(--font-size-micro);
     color: var(--color-text-tertiary);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     flex-shrink: 0;
+
+    /* Cliente longo não pode esmagar o nome do projeto. */
+    @include bp.mobile {
+      max-width: 45%;
+    }
   }
 
   &__item--selected {
@@ -324,6 +417,10 @@
     .project-picker__group-label {
       padding: 0;
     }
+
+    @include bp.mobile {
+      flex-wrap: wrap;
+    }
   }
 
   &__form-fields {
@@ -333,6 +430,10 @@
     app-text-input {
       flex: 1 1 0;
       min-width: 0;
+    }
+
+    @include bp.phone {
+      flex-direction: column;
     }
   }
 

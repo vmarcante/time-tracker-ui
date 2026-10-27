@@ -1,3 +1,5 @@
+@use 'utilities/breakpoints' as bp;
+@use 'utilities/touch' as *;
 @use '../../../main/pages/home-page/sections/section-shared' as *;
 
 /* A página preenche a área de conteúdo sem rolar — o scroll fica na lista. */
@@ -28,18 +30,37 @@
     scrollbar-color: var(--color-border) transparent;
   }
 
-  /* A seção vira coluna de altura presa: header/filtros fixos, lista rola. */
+  /* A seção vira coluna de altura presa: header/filtros fixos, lista rola.
+     O teto evita que o `margin: 0 auto` do .section compartilhado (fit-content) a alargue além da trilha. */
   > .section {
     display: flex;
     flex-direction: column;
     min-height: 0;
+    max-width: min(100%, 1100px);
   }
 
-  @media (max-width: 1024px) {
-    grid-template-columns: 1fr;
+  @include bp.tablet-down {
+    grid-template-columns: minmax(0, 1fr);
     grid-template-rows: none;
+    gap: var(--spacing-md);
     height: auto;
     flex: none;
+
+    > app-tracker-side-panel {
+      overflow: visible;
+    }
+
+    /* O gutter já vem do layout: sem padding horizontal na seção (evita gutter duplicado).
+       `margin: 0 auto` do .section compartilhado o dimensiona por fit-content e ele vazaria da trilha. */
+    > .section {
+      width: 100%;
+      min-width: 0;
+      padding: var(--spacing-md) 0;
+
+      .section__header {
+        margin-bottom: var(--spacing-md);
+      }
+    }
   }
 }
 
@@ -77,6 +98,12 @@
         background: var(--color-text-tertiary);
       }
     }
+
+    /* Empilhado a página inteira rola: a lista não pode virar um segundo scroller. */
+    @include bp.tablet-down {
+      flex: none;
+      overflow: visible;
+    }
   }
 
   &__sentinel {
@@ -111,6 +138,29 @@
     > app-popover {
       flex-shrink: 0;
     }
+
+    /* Empilhado: nome | projeto | tags e o período em linha própria; sem divisores verticais. */
+    @include bp.tablet-down {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+      grid-template-areas:
+        'name project tags'
+        'period period period';
+      justify-content: stretch;
+      gap: var(--spacing-sm) var(--spacing-md);
+
+      > * + *::before {
+        display: none;
+      }
+    }
+
+    @include bp.phone {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        'name name'
+        'project tags'
+        'period period';
+    }
   }
 
   &__filter {
@@ -121,11 +171,32 @@
     ::ng-deep .mat-text-input-field {
       width: 100%;
     }
+
+    @include bp.tablet-down {
+      &--name {
+        grid-area: name;
+      }
+
+      &--project {
+        grid-area: project;
+      }
+    }
   }
 
   &__period {
     flex: 0 1 360px;
     min-width: 280px;
+
+    @include bp.tablet-down {
+      grid-area: period;
+      min-width: 0;
+    }
+  }
+
+  &__tags {
+    @include bp.tablet-down {
+      grid-area: tags;
+    }
   }
 
   &__tag-filter {
@@ -145,14 +216,26 @@
       color var(--transition-fast),
       border-color var(--transition-fast);
 
-    &:hover {
-      background-color: var(--color-surface-hover);
+    @include bp.hover-capable {
+      &:hover {
+        background-color: var(--color-surface-hover);
+      }
     }
 
     &--active {
       color: var(--color-primary-600);
       border-color: var(--color-primary-600);
       background-color: var(--color-primary-50);
+    }
+
+    @include bp.tablet-down {
+      justify-content: center;
+      min-height: var(--input-height);
+    }
+
+    @include bp.mobile {
+      padding-inline: var(--spacing-md);
+      font-size: 0.875rem;
     }
   }
 
@@ -166,7 +249,7 @@
     border-radius: 999px;
     background: var(--color-primary-600);
     color: var(--color-surface);
-    font-size: 0.6875rem;
+    font-size: var(--font-size-micro);
     font-weight: 600;
   }
 
@@ -206,6 +289,14 @@
     &--featured {
       height: 110px;
     }
+
+    @include bp.phone {
+      height: 96px;
+
+      &--featured {
+        height: 150px;
+      }
+    }
   }
 
   &__featured {
@@ -217,7 +308,7 @@
   }
 
   &__featured-label {
-    font-size: 0.6875rem;
+    font-size: var(--font-size-micro);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -234,6 +325,10 @@
     border-radius: var(--radius-lg);
     background: transparent;
     transition: border-color var(--transition-fast);
+
+    @include bp.phone {
+      padding: var(--spacing-md);
+    }
   }
 
   :host ::ng-deep &__featured--running .time-entrie {
@@ -274,10 +369,14 @@
       align-items: baseline;
       gap: var(--spacing-xs);
     }
+
+    @include bp.phone {
+      gap: var(--spacing-xs) var(--spacing-md);
+    }
   }
 
   &__featured-meta-label {
-    font-size: 0.6875rem;
+    font-size: var(--font-size-micro);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -299,6 +398,10 @@
   padding: var(--spacing-sm);
   min-width: 220px;
 
+  @include bp.mobile {
+    min-width: 0;
+  }
+
   &__hint {
     font-size: 0.8125rem;
     color: var(--color-text-tertiary);
@@ -314,6 +417,10 @@
     gap: 2px;
     max-height: 180px;
     overflow-y: auto;
+
+    @include bp.mobile {
+      max-height: min(50dvh, 20rem);
+    }
   }
 
   &__item {
@@ -331,8 +438,15 @@
     cursor: pointer;
     transition: background-color var(--transition-fast);
 
-    &:hover {
-      background-color: var(--color-surface-hover);
+    @include bp.hover-capable {
+      &:hover {
+        background-color: var(--color-surface-hover);
+      }
+    }
+
+    @include bp.mobile {
+      min-height: tap-min(0px);
+      font-size: 0.875rem;
     }
 
     &--selected {

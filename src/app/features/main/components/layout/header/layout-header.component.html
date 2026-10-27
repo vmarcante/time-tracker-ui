@@ -1,8 +1,8 @@
 <header
   class="layout-wrapper__header"
   [class]="headerClasses"
-  (mouseenter)="onMouseEnter()"
-  (mouseleave)="onMouseLeave()"
+  (pointerenter)="onPointerEnter($event)"
+  (pointerleave)="onPointerLeave()"
 >
   <div class="layout-wrapper__header__content">
     <a

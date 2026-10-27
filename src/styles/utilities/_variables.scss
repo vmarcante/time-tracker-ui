@@ -1,3 +1,5 @@
+@use 'breakpoints' as bp;
+
 :root {
   // Paleta Primária - Cinza
   --color-primary-50: #f9fafb;
@@ -153,4 +155,14 @@
   --transition-fast: 150ms ease-in-out;
   --transition-base: 200ms ease-in-out;
   --transition-slow: 300ms ease-in-out;
+
+  // Layout responsivo
+  --tap-target-min: 44px;
+  --page-gutter: 1.5rem;
+  --font-size-micro: 0.6875rem;
+
+  @include bp.mobile {
+    --page-gutter: 1rem;
+    --font-size-micro: 0.75rem;
+  }
 }

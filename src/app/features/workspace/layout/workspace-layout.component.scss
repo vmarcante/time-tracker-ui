@@ -1,9 +1,16 @@
+@use 'utilities/breakpoints' as bp;
+
 // WorkspaceLayoutComponent renders directly inside layout-wrapper__content (display: flex, flex-direction: column).
 // The host element (app-workspace-layout) needs to fill that flex container and lay out horizontally.
 :host {
   display: flex;
   flex: 1;
   min-height: 0;
+
+  // Em telas menores a navegação vira uma faixa de abas acima do conteúdo.
+  @include bp.tablet-down {
+    flex-direction: column;
+  }
 }
 
 .workspace-layout {
@@ -14,10 +21,22 @@
     top: 0;
     height: calc(100vh - var(--header-height, 4rem) - var(--footer-height, 3rem));
     overflow-y: auto;
+
+    @include bp.tablet-down {
+      width: auto;
+      height: auto;
+      position: static;
+      overflow: visible;
+    }
   }
 
   &__content {
     flex: 1;
     min-width: 0;
+
+    // Sem a barra lateral o conteúdo encosta nas bordas da tela. Até 560px as próprias páginas já aplicam a margem.
+    @media (min-width: 561px) and (max-width: bp.$bp-tablet-max) {
+      padding-inline: var(--page-gutter);
+    }
   }
 }

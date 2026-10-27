@@ -24,69 +24,86 @@
   <section class="side-panel__block">
     <div class="side-panel__period-head">
       <span class="side-panel__label">{{ 'tracker.sidePanel.period' | translate }}</span>
+      <button
+        type="button"
+        class="side-panel__period-toggle"
+        [class.side-panel__period-toggle--open]="calendarOpen()"
+        aria-controls="side-panel-calendar"
+        [attr.aria-expanded]="calendarOpen()"
+        [attr.aria-label]="'tracker.sidePanel.period' | translate"
+        (click)="toggleCalendar()"
+      >
+        <app-icon name="arrows/chevron-down" size="0.875rem" />
+      </button>
       <button type="button" class="side-panel__today-link" (click)="selectToday()">
         {{ 'tracker.sidePanel.today' | translate }}
       </button>
     </div>
-    <div class="side-panel__cal-head">
-      <button
-        type="button"
-        class="side-panel__cal-nav"
-        (click)="shiftMonth(-1)"
-        [attr.aria-label]="'tracker.sidePanel.prevMonth' | translate"
-      >
-        <app-icon name="arrows/chevron-left" size="0.75rem" />
-      </button>
-      <button
-        type="button"
-        class="side-panel__cal-title"
-        [class.side-panel__cal-title--active]="isMonthSelected()"
-        [attr.title]="'tracker.sidePanel.selectMonth' | translate"
-        (click)="selectMonth()"
-      >
-        {{ monthLabel() }}
-      </button>
-      <button
-        type="button"
-        class="side-panel__cal-nav"
-        (click)="shiftMonth(1)"
-        [attr.aria-label]="'tracker.sidePanel.nextMonth' | translate"
-      >
-        <app-icon name="arrows/chevron-right" size="0.75rem" />
-      </button>
-    </div>
-    <div class="side-panel__cal-weekdays">
-      <span class="side-panel__cal-weekday" aria-hidden="true">#</span>
-      @for (weekday of weekdayLabels(); track $index) {
-        <span class="side-panel__cal-weekday">{{ weekday }}</span>
-      }
-    </div>
-    <div class="side-panel__cal-grid">
-      @for (week of calendarWeeks(); track $index) {
+    <div
+      id="side-panel-calendar"
+      class="side-panel__calendar"
+      [class.side-panel__calendar--collapsed]="!calendarOpen()"
+    >
+      <div class="side-panel__cal-head">
         <button
           type="button"
-          class="side-panel__week"
-          [class.side-panel__week--active]="isWeekSelected(week)"
-          [attr.title]="'tracker.sidePanel.selectWeek' | translate"
-          (click)="selectWeek(week)"
+          class="side-panel__cal-nav"
+          (click)="shiftMonth(-1)"
+          [attr.aria-label]="'tracker.sidePanel.prevMonth' | translate"
         >
-          {{ weekNumber(week.at(0)!.date) }}
+          <app-icon name="arrows/chevron-left" size="0.75rem" />
         </button>
-        @for (day of week; track day.date.getTime()) {
+        <button
+          type="button"
+          class="side-panel__cal-title"
+          [class.side-panel__cal-title--active]="isMonthSelected()"
+          [attr.title]="'tracker.sidePanel.selectMonth' | translate"
+          (click)="selectMonth()"
+        >
+          {{ monthLabel() }}
+        </button>
+        <button
+          type="button"
+          class="side-panel__cal-nav"
+          (click)="shiftMonth(1)"
+          [attr.aria-label]="'tracker.sidePanel.nextMonth' | translate"
+        >
+          <app-icon name="arrows/chevron-right" size="0.75rem" />
+        </button>
+      </div>
+      <div class="side-panel__cal-weekdays">
+        <span class="side-panel__cal-weekday" aria-hidden="true">#</span>
+        @for (weekday of weekdayLabels(); track $index) {
+          <span class="side-panel__cal-weekday">{{ weekday }}</span>
+        }
+      </div>
+      <div class="side-panel__cal-grid">
+        @for (week of calendarWeeks(); track $index) {
           <button
             type="button"
-            class="side-panel__day"
-            [class.side-panel__day--outside]="!day.inMonth"
-            [class.side-panel__day--today]="day.isToday"
-            [class.side-panel__day--selected]="isDaySelected(day)"
-            [class.side-panel__day--in-range]="!isDaySelected(day) && isDayInRange(day)"
-            [style.background-color]="isDayInRange(day) ? null : dayHeat(day)"
-            (click)="selectDay(day)"
+            class="side-panel__week"
+            [class.side-panel__week--active]="isWeekSelected(week)"
+            [attr.title]="'tracker.sidePanel.selectWeek' | translate"
+            (click)="selectWeek(week)"
           >
-            {{ day.date.getDate() }}
+            {{ weekNumber(week.at(0)!.date) }}
           </button>
+          @for (day of week; track day.date.getTime()) {
+            <button
+              type="button"
+              class="side-panel__day"
+              [class.side-panel__day--outside]="!day.inMonth"
+              [class.side-panel__day--today]="day.isToday"
+              [class.side-panel__day--selected]="isDaySelected(day)"
+              [class.side-panel__day--in-range]="!isDaySelected(day) && isDayInRange(day)"
+              [style.background-color]="isDayInRange(day) ? null : dayHeat(day)"
+              (click)="selectDay(day)"
+            >
+              {{ day.date.getDate() }}
+            </button>
+          }
         }
-      }
+      </div>
     </div>
   </section>
 </aside>

@@ -1,18 +1,22 @@
 import {
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
-  HostListener,
+  Injector,
   Input,
   Output,
   inject,
   TemplateRef,
-  AfterViewInit,
   OnDestroy,
   Renderer2,
+  afterNextRender,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PopoverOptions, PopoverPosition } from '../../types';
+
+const VIEWPORT_MARGIN = 16;
+const ANCHOR_GAP = 12;
 
 @Component({
   selector: 'app-popover',
@@ -20,9 +24,11 @@ import { PopoverOptions, PopoverPosition } from '../../types';
   templateUrl: './popover.component.html',
   styleUrl: './popover.component.scss',
 })
-export class PopoverComponent implements AfterViewInit, OnDestroy {
+export class PopoverComponent implements OnDestroy {
   private elementRef = inject(ElementRef);
   private renderer = inject(Renderer2);
+  private changeDetectorRef = inject(ChangeDetectorRef);
+  private injector = inject(Injector);
 
   @Input() options: PopoverOptions = {
     position: 'bottom',
@@ -40,7 +46,8 @@ export class PopoverComponent implements AfterViewInit, OnDestroy {
   isOpen = false;
   calculatedPosition: PopoverPosition = 'bottom';
   arrowOffset: string = '1.5rem';
-  private scrollListener: (() => void) | null = null;
+  private removeListeners: Array<() => void> = [];
+  private repositionFrame: number | null = null;
 
   get contentClasses(): Record<string, boolean> {
     return {
@@ -50,15 +57,8 @@ export class PopoverComponent implements AfterViewInit, OnDestroy {
     };
   }
 
-  ngAfterViewInit(): void {
-    this.scrollListener = this.renderer.listen('window', 'scroll', () => this.updatePosition(), { passive: true });
-    this.updatePosition();
-  }
-
   ngOnDestroy(): void {
-    if (this.scrollListener) {
-      this.scrollListener();
-    }
+    this.detachListeners();
   }
 
   toggle(): void {
@@ -71,7 +71,9 @@ export class PopoverComponent implements AfterViewInit, OnDestroy {
 
   open(): void {
     this.isOpen = true;
-    setTimeout(() => this.updatePosition(), 0);
+    this.attachListeners();
+    this.changeDetectorRef.markForCheck();
+    afterNextRender(() => this.updatePosition(), { injector: this.injector });
   }
 
   close(): void {
@@ -79,7 +81,60 @@ export class PopoverComponent implements AfterViewInit, OnDestroy {
       return;
     }
     this.isOpen = false;
+    this.detachListeners();
+    this.changeDetectorRef.markForCheck();
     this.closed.emit();
+  }
+
+  onBackdropClick(): void {
+    if (this.options.closeOnClickOutside) {
+      this.close();
+    }
+  }
+
+  // Os listeners globais só existem com o popover aberto. O scroll usa captura porque o
+  // scroller da página é o <main>, e não a janela.
+  private attachListeners(): void {
+    if (this.removeListeners.length > 0) {
+      return;
+    }
+
+    this.removeListeners = [
+      this.renderer.listen('document', 'click', (event: MouseEvent) => this.onClickOutside(event)),
+      this.renderer.listen('document', 'keydown.escape', () => this.onEscape()),
+      this.renderer.listen('document', 'scroll', (event: Event) => this.onScroll(event), {
+        capture: true,
+        passive: true,
+      }),
+      this.renderer.listen('window', 'resize', () => this.scheduleReposition()),
+    ];
+  }
+
+  private detachListeners(): void {
+    this.removeListeners.forEach((remove) => remove());
+    this.removeListeners = [];
+
+    if (this.repositionFrame !== null) {
+      cancelAnimationFrame(this.repositionFrame);
+      this.repositionFrame = null;
+    }
+  }
+
+  private onScroll(event: Event): void {
+    if (this.elementRef.nativeElement.contains(event.target as Node)) {
+      return;
+    }
+    this.scheduleReposition();
+  }
+
+  private scheduleReposition(): void {
+    if (this.repositionFrame !== null) {
+      return;
+    }
+    this.repositionFrame = requestAnimationFrame(() => {
+      this.repositionFrame = null;
+      this.updatePosition();
+    });
   }
 
   private updatePosition(): void {
@@ -87,7 +142,6 @@ export class PopoverComponent implements AfterViewInit, OnDestroy {
     const contentElement = this.elementRef.nativeElement.querySelector('.popover__content');
 
     if (!contentElement || !triggerElement) {
-      this.calculatedPosition = 'bottom';
       return;
     }
 
@@ -99,6 +153,7 @@ export class PopoverComponent implements AfterViewInit, OnDestroy {
     const spaceBelow = viewportHeight - triggerRect.bottom;
     const spaceAbove = triggerRect.top;
 
+    const previousPosition = this.calculatedPosition;
     if (this.options.position === 'auto') {
       if (spaceBelow < contentRect.height && spaceAbove > contentRect.height) {
         this.calculatedPosition = 'top';
@@ -111,20 +166,20 @@ export class PopoverComponent implements AfterViewInit, OnDestroy {
 
     let top = 0;
     if (this.calculatedPosition === 'top') {
-      top = triggerRect.top - contentRect.height - 12;
+      top = triggerRect.top - contentRect.height - ANCHOR_GAP;
     } else {
-      top = triggerRect.bottom + 12;
+      top = triggerRect.bottom + ANCHOR_GAP;
     }
+
+    // Sem espaço de nenhum lado, o conteúdo encosta na borda da viewport em vez de sair dela.
+    const maxTop = viewportHeight - contentRect.height - VIEWPORT_MARGIN;
+    const clampedTop = Math.max(VIEWPORT_MARGIN, Math.min(top, maxTop));
+    const verticallyClamped = clampedTop !== top;
+    top = clampedTop;
 
     let left = triggerRect.left + (triggerRect.width / 2) - (contentRect.width / 2);
-    const maxLeft = viewportWidth - contentRect.width - 16;
-    const minLeft = 16;
-
-    if (left > maxLeft) {
-      left = maxLeft;
-    } else if (left < minLeft) {
-      left = minLeft;
-    }
+    const maxLeft = viewportWidth - contentRect.width - VIEWPORT_MARGIN;
+    left = Math.max(VIEWPORT_MARGIN, Math.min(left, maxLeft));
 
     this.renderer.setStyle(contentElement, 'position', 'fixed');
     this.renderer.setStyle(contentElement, 'top', `${top}px`);
@@ -138,11 +193,20 @@ export class PopoverComponent implements AfterViewInit, OnDestroy {
       this.arrowOffset = `${arrowOffset}px`;
       this.renderer.setStyle(arrowElement, 'left', this.arrowOffset);
       this.renderer.setStyle(arrowElement, 'right', 'auto');
+
+      if (verticallyClamped) {
+        this.renderer.setStyle(arrowElement, 'display', 'none');
+      } else {
+        this.renderer.removeStyle(arrowElement, 'display');
+      }
+    }
+
+    if (this.calculatedPosition !== previousPosition) {
+      this.changeDetectorRef.markForCheck();
     }
   }
 
-  @HostListener('document:click', ['$event'])
-  onClickOutside(event: MouseEvent): void {
+  private onClickOutside(event: MouseEvent): void {
     if (!this.isOpen || !this.options.closeOnClickOutside) {
       return;
     }
@@ -153,8 +217,7 @@ export class PopoverComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  @HostListener('document:keydown.escape')
-  onEscape(): void {
+  private onEscape(): void {
     if (!this.isOpen || !this.options.closeOnEscape) {
       return;
     }

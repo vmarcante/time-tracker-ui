@@ -1,0 +1,65 @@
+// Breakpoints do projeto — espelham o ResponsiveService (mobile < 768, tablet 768–1023,
+// desktop ≥ 1024). Use estes mixins em vez de valores soltos de media query.
+// O corte em 1023.98px evita que a largura exata de 1024px caia em dois estados ao mesmo tempo.
+
+$bp-tablet: 768px;
+$bp-desktop: 1024px;
+$bp-mobile-max: 767.98px;
+$bp-tablet-max: 1023.98px;
+$bp-phone-max: 599.98px;
+
+// Celular (< 768px).
+@mixin mobile {
+  @media (max-width: $bp-mobile-max) {
+    @content;
+  }
+}
+
+// Celular estreito (< 600px): subfaixa do mobile, para blocos que ainda cabem em linha única até ~600px.
+@mixin phone {
+  @media (max-width: $bp-phone-max) {
+    @content;
+  }
+}
+
+// Celular e tablet (< 1024px) — mesma condição de `ResponsiveService.isMobileOrTablet`.
+@mixin tablet-down {
+  @media (max-width: $bp-tablet-max) {
+    @content;
+  }
+}
+
+// Somente tablet (768px–1023px).
+@mixin tablet-only {
+  @media (min-width: $bp-tablet) and (max-width: $bp-tablet-max) {
+    @content;
+  }
+}
+
+// Desktop (≥ 1024px).
+@mixin desktop {
+  @media (min-width: $bp-desktop) {
+    @content;
+  }
+}
+
+// Altura útil muito pequena: celular em paisagem ou com o teclado virtual aberto.
+@mixin short-viewport {
+  @media (max-width: $bp-tablet-max) and (max-height: 480px) {
+    @content;
+  }
+}
+
+// Efeitos de hover apenas com mouse, para não deixar o estado "preso" após um toque.
+@mixin hover-capable {
+  @media (hover: hover) and (pointer: fine) {
+    @content;
+  }
+}
+
+// Dispositivos de toque, sem hover.
+@mixin hover-none {
+  @media (hover: none), (pointer: coarse) {
+    @content;
+  }
+}

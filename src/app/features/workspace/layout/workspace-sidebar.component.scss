@@ -1,3 +1,5 @@
+@use 'utilities/breakpoints' as bp;
+
 .workspace-nav {
   display: flex;
   flex-direction: column;
@@ -6,6 +8,27 @@
   flex-shrink: 0;
   border-right: 1px solid var(--color-border);
   background-color: var(--color-bg);
+
+  // Abaixo de 1024px a barra lateral vira uma faixa horizontal de abas rolável
+  // (o link da empresa é a primeira aba e rola junto).
+  @include bp.tablet-down {
+    flex-direction: row;
+    height: auto;
+    width: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+    overflow-x: auto;
+    scrollbar-width: thin;
+
+    // Em telas de toque a barra de rolagem some; a aba cortada já indica que há mais itens.
+    @include bp.hover-none {
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+  }
 
   &__header {
     display: flex;
@@ -16,6 +39,14 @@
     text-decoration: none;
     color: inherit;
     transition: background-color var(--transition-fast);
+
+    @include bp.tablet-down {
+      flex-shrink: 0;
+      max-width: 11rem;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-bottom: none;
+      border-right: 1px solid var(--color-border);
+    }
 
     &:hover {
       background-color: var(--color-surface);
@@ -56,6 +87,10 @@
     color: var(--color-text-tertiary);
     text-transform: uppercase;
     letter-spacing: 0.06em;
+
+    @include bp.tablet-down {
+      display: none;
+    }
   }
 
   &__company-name {
@@ -73,6 +108,13 @@
     gap: 2px;
     padding: var(--spacing-sm);
     flex: 1;
+
+    @include bp.tablet-down {
+      flex: none;
+      flex-direction: row;
+      gap: var(--spacing-xs);
+      padding: var(--spacing-xs) var(--spacing-sm);
+    }
   }
 
   &__item {
@@ -89,6 +131,14 @@
       background-color var(--transition-fast),
       color var(--transition-fast);
     color: var(--color-text-secondary);
+
+    @include bp.tablet-down {
+      width: auto;
+      flex-shrink: 0;
+      min-height: var(--tap-target-min);
+      padding-block: 0;
+      white-space: nowrap;
+    }
 
     &:hover {
       background-color: var(--color-surface);
@@ -182,6 +232,11 @@
     background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-hover) 50%, var(--color-surface) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.4s infinite;
+
+    @include bp.tablet-down {
+      flex: none;
+      width: 4.5rem;
+    }
   }
 }
 

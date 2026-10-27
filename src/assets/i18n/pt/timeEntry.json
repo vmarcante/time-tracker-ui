@@ -35,6 +35,7 @@
     "editTime": "Editar horário",
     "invalidTime": "Horário inválido",
     "endBeforeStart": "O fim deve ser depois do início",
-    "sessionOverlap": "O horário conflita com outra sessão"
+    "sessionOverlap": "O horário conflita com outra sessão",
+    "createSession": "Criar sessão"
   }
 }

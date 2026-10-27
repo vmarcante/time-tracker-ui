@@ -1,6 +1,12 @@
+@use 'utilities/breakpoints' as bp;
+
 .timer-widget {
   display: flex;
   align-items: center;
+
+  @include bp.tablet-down {
+    min-width: 0;
+  }
 
   &__pill {
     display: flex;
@@ -11,6 +17,14 @@
     background-color: var(--color-primary-50);
     border: 1px solid var(--color-primary-300);
     transition: opacity var(--transition-fast);
+
+    @include bp.tablet-down {
+      min-width: 0;
+    }
+
+    @include bp.mobile {
+      padding-left: 0.75rem;
+    }
 
     &--busy {
       opacity: 0.7;
@@ -40,6 +54,17 @@
     cursor: pointer;
     min-width: 0;
     max-width: 240px;
+
+    // Área de toque de 44px sem aumentar a pílula.
+    @include bp.mobile {
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: -12px 0;
+      }
+    }
   }
 
   &__elapsed {
@@ -50,6 +75,7 @@
     flex-shrink: 0;
   }
 
+  // No celular só o tempo fica visível; o nome da entrada abre pelo próprio botão.
   &__entry-name {
     font-size: 0.8125rem;
     font-weight: var(--font-weight-medium);
@@ -57,6 +83,10 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+
+    @include bp.mobile {
+      display: none;
+    }
   }
 
   &__stop {
@@ -72,6 +102,18 @@
     cursor: pointer;
     flex-shrink: 0;
     transition: background-color var(--transition-fast);
+
+    @include bp.mobile {
+      position: relative;
+      width: 28px;
+      height: 28px;
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: -8px;
+      }
+    }
 
     &:hover:not(:disabled) {
       filter: brightness(0.9);
@@ -97,6 +139,18 @@
     transition:
       border-color var(--transition-fast),
       background-color var(--transition-fast);
+
+    @include bp.mobile {
+      position: relative;
+      width: 2.5rem;
+      height: 2.5rem;
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: -2px;
+      }
+    }
 
     &:hover:not(:disabled) {
       border-color: var(--color-success);

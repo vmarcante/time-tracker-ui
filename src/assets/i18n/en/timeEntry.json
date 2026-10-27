@@ -35,6 +35,7 @@
     "editTime": "Edit time",
     "invalidTime": "Invalid time",
     "endBeforeStart": "End must be after start",
-    "sessionOverlap": "Time overlaps another session"
+    "sessionOverlap": "Time overlaps another session",
+    "createSession": "Create session"
   }
 }

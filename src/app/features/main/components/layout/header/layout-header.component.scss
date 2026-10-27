@@ -1,3 +1,5 @@
+@use 'utilities/breakpoints' as bp;
+
 .layout-wrapper__header {
   background-color: var(--color-primary);
   padding: 1rem 15rem;
@@ -7,14 +9,6 @@
   align-items: center;
   position: relative;
   transition: background-color 0.3s ease;
-
-  &--fixed {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-  }
 
   &--sticky {
     position: sticky;
@@ -45,6 +39,14 @@
   &__timer {
     margin-left: auto;
     margin-right: var(--spacing-md);
+
+    @include bp.tablet-down {
+      min-width: 0;
+    }
+
+    @include bp.mobile {
+      margin: 0;
+    }
   }
 
   &--mobile-menu-open {
@@ -80,6 +82,14 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    @include bp.tablet-down {
+      flex-shrink: 0;
+    }
+
+    @include bp.mobile {
+      min-width: 0;
+    }
   }
 
   &__auth {
@@ -93,16 +103,17 @@
     padding: 1rem 10rem;
   }
 
+  // Inclui 1024px: a faixa de 10rem espreme o conteúdo e quebra o logo com o timer ativo.
   @media (max-width: 1024px) {
-    padding: 1rem 5rem;
+    padding: 1rem var(--page-gutter);
   }
 
-  @media (max-width: 768px) {
-    padding: 1rem 2rem;
-  }
-
-  @media (max-width: 480px) {
-    padding: 0.75rem 1rem;
+  // Celular: logo, timer e avatar na 1ª linha; a navegação Tarefas/Gerência desce para a 2ª.
+  @include bp.mobile {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--page-gutter);
   }
 }
 
@@ -118,12 +129,17 @@
   text-decoration: none;
   cursor: pointer;
 
-  @media (max-width: 1024px) {
+  @include bp.tablet-down {
     font-size: 1.25rem;
   }
 
   @media (max-width: 480px) {
     font-size: 1rem;
+  }
+
+  @include bp.mobile {
+    min-width: 0;
+    min-height: var(--tap-target-min);
   }
 
   &--scrolled {
@@ -146,11 +162,21 @@
     display: flex;
     flex-direction: column;
     line-height: 1;
+
+    @include bp.mobile {
+      min-width: 0;
+    }
   }
 
   &__text {
     color: var(--color-text-inverse);
     transition: color 0.3s ease;
+
+    @include bp.mobile {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
     &--highlight {
       color: var(--color-primary-500);
@@ -325,6 +351,11 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
+
+    // No celular o "Sair" fica apenas no menu do avatar.
+    @include bp.mobile {
+      display: none;
+    }
   }
 
   &__avatar {
@@ -428,6 +459,22 @@
         background-color: transparent;
         color: #fff;
       }
+    }
+  }
+
+  @include bp.mobile {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-left: 0;
+
+    &::before {
+      display: none;
+    }
+
+    &__link {
+      flex: 1;
+      justify-content: center;
+      min-height: var(--tap-target-min);
     }
   }
 }
