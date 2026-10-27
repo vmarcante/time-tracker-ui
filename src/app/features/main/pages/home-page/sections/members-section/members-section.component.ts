@@ -50,7 +50,7 @@ export class MembersSectionComponent implements OnInit {
 
   readonly canManage = (): boolean => {
     const role = this.companyRole;
-    return role === 'OWNER' || role === 'ADMIN';
+    return role === 'OWNER' || role === 'ADMIN' || role === 'MANAGER';
   };
 
   ngOnInit(): void {

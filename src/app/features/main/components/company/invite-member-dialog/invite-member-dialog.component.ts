@@ -110,7 +110,9 @@ export class InviteMemberDialogComponent {
       { value: 'MANAGER', labelKey: 'workspace.members.role.MANAGER' },
       { value: 'MEMBER', labelKey: 'workspace.members.role.MEMBER' },
     ];
-    const allowed = actorRole === 'OWNER' ? allRoles : allRoles.filter((r) => r.value !== 'ADMIN');
+    const LEVELS: Record<CompanyRole, number> = { OWNER: 4, ADMIN: 3, MANAGER: 2, MEMBER: 1 };
+    const actorLevel = LEVELS[actorRole] ?? 0;
+    const allowed = allRoles.filter((r) => LEVELS[r.value] < actorLevel);
     return allowed.map((r) => ({
       value: r.value,
       label: this.translationService.translate(r.labelKey),
