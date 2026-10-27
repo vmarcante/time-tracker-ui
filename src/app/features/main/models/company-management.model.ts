@@ -253,3 +253,21 @@ export interface PreRegisterAndInviteInput {
   age: number | null;
   role: CompanyRole;
 }
+
+export interface CompanyDetailOutput {
+  id: string;
+  legalName: string;
+  tradeName: string | null;
+  document: string;
+  description: string | null;
+  timezone: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string | null;
+}
+
+export interface UpdateCompanyInput {
+  legalName: string;
+  tradeName: string | null;
+  description: string | null;
+}

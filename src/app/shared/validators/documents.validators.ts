@@ -120,6 +120,18 @@ export class DocumentsValidators {
   }
 
   /**
+   * Formats a CNPJ as XX.XXX.XXX/XXXX-XX. Returns the input untouched when it
+   * does not contain exactly 14 digits.
+   */
+  static formatCnpj(value: string | null | undefined): string {
+    const digits = (value ?? '').replace(/\D/g, '');
+    if (digits.length !== 14) {
+      return value ?? '';
+    }
+    return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8, 12)}-${digits.slice(12)}`;
+  }
+
+  /**
    * Valid Brazilian area codes (DDD) — mirrors backend PhoneValidator.
    */
   private static readonly VALID_DDDS = new Set<number>([

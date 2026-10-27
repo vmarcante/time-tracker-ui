@@ -102,6 +102,13 @@
     text-overflow: ellipsis;
   }
 
+  &__company-document {
+    font-size: 0.6875rem;
+    color: var(--color-text-tertiary);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
   &__list {
     display: flex;
     flex-direction: column;

@@ -77,6 +77,14 @@ export const routes: Routes = [
             pathMatch: 'full',
           },
           {
+            path: 'company',
+            loadComponent: () =>
+              import('./features/workspace/pages/company/company-page.component').then(
+                (m) => m.CompanyPageComponent,
+              ),
+            canActivate: [companyRoleGuard(['OWNER', 'ADMIN', 'MANAGER'])],
+          },
+          {
             path: 'members',
             loadComponent: () =>
               import('./features/main/pages/home-page/sections/members-section/members-section.component').then(

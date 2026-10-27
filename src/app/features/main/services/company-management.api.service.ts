@@ -5,6 +5,7 @@ import { HttpService } from '../../../shared/services/api/http.service';
 import { ApiResponse, PageWrapper } from '../../../shared/types';
 import { CompanyRole } from '../../auth/models';
 import {
+  CompanyDetailOutput,
   CompanyMemberOutput,
   CompanyMenuOverviewOutput,
   CompanyOverviewOutput,
@@ -23,6 +24,7 @@ import {
   TeamMemberOutput,
   TeamSummaryOutput,
   TeamWithMembersOutput,
+  UpdateCompanyInput,
   UpdateProjectInput,
   UpdateTeamInput,
 } from '../models/company-management.model';
@@ -32,6 +34,14 @@ import {
 })
 export class CompanyManagementApiService {
   private httpService = inject(HttpService);
+
+  getCompany(companyId: string): ApiResponse<CompanyDetailOutput> {
+    return this.httpService.get(`/companies/${companyId}`);
+  }
+
+  updateCompany(companyId: string, input: UpdateCompanyInput): ApiResponse<CompanyDetailOutput> {
+    return this.httpService.put(`/companies/${companyId}`, input);
+  }
 
   listMembers(
     companyId: string,

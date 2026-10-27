@@ -8,6 +8,8 @@ import { TranslationService } from '../../../shared/services/translation.service
 import { CompanyManagementApiService } from '../../main/services/company-management.api.service';
 import { AuthTokenService } from '../../auth/services/auth-token.service';
 import { CompanyRole } from '../../auth/models/person.model';
+import { DocumentsValidators } from '../../../shared/validators/documents.validators';
+import { WorkspaceCompanyService } from '../services/workspace-company.service';
 
 interface SidebarNavItem {
   route: string;
@@ -28,17 +30,28 @@ export class WorkspaceSidebarComponent implements OnInit {
   private apiAdapter = inject(ApiAdapterService);
   private authTokenService = inject(AuthTokenService);
   private translationService = inject(TranslationService);
+  private workspaceCompany = inject(WorkspaceCompanyService);
 
   private get companyId(): string | null {
     return this.authTokenService.currentUser()?.companyId ?? null;
   }
 
-  readonly companyName = computed(() => this.authTokenService.currentUser()?.name ?? '');
+  readonly companyName = this.workspaceCompany.displayName;
+  readonly companyDocument = computed(() =>
+    DocumentsValidators.formatCnpj(this.workspaceCompany.company()?.document),
+  );
 
   readonly pendingCount = signal<number>(0);
   readonly loading = signal(true);
 
   private readonly allNavItems: SidebarNavItem[] = [
+    {
+      route: '/workspace/company',
+      icon: 'objects/building',
+      labelKey: 'workspace.company.nav',
+      roles: ['OWNER', 'ADMIN', 'MANAGER'],
+      badgeText: () => null,
+    },
     {
       route: '/workspace/requests',
       icon: 'objects/inbox',
@@ -90,6 +103,7 @@ export class WorkspaceSidebarComponent implements OnInit {
   ngOnInit(): void {
     const companyId = this.companyId;
     if (!companyId) return;
+    this.workspaceCompany.load(companyId);
 
     this.apiAdapter.executeRequest(this.companyApi.menuOverview(companyId), {
       ignoreLoading: true,

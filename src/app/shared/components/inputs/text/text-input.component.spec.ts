@@ -43,7 +43,7 @@ describe('TextInputComponent - document errors', () => {
   it('falls back to the default invalid document message', () => {
     const component = create('123');
 
-    expect(component.errorMessage).toBe('t:validation.invalidDocument');
+    expect(component.errorMessage).toBe('t:validation.invalidCnpj');
   });
 
   it('uses any custom message for unknown validator keys', () => {

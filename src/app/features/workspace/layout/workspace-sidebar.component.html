@@ -15,6 +15,9 @@
     <div class="workspace-nav__header-info">
       <span class="workspace-nav__company-label">{{ 'workspace.overview.company' | translate }}</span>
       <span class="workspace-nav__company-name">{{ companyName() }}</span>
+      @if (companyDocument()) {
+        <span class="workspace-nav__company-document">{{ companyDocument() }}</span>
+      }
     </div>
   </a>
 

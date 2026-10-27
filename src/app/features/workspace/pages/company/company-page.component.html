@@ -1,0 +1,144 @@
+<div class="section">
+  <div class="section__header">
+    <div class="section__heading">
+      <h2 class="section__title">{{ 'workspace.company.title' | translate }}</h2>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="company-page__skeleton company-page__skeleton--hero" aria-hidden="true"></div>
+    <div class="company-page__skeleton" aria-hidden="true"></div>
+  } @else if (company(); as data) {
+    <section class="company-hero">
+      <div class="company-hero__icon">
+        <app-icon name="objects/building" size="1.75rem" />
+      </div>
+      <div class="company-hero__info">
+        <span class="company-hero__eyebrow">{{ 'workspace.company.hero.eyebrow' | translate }}</span>
+        <h3 class="company-hero__name">{{ displayName() }}</h3>
+        @if (hasTradeName()) {
+          <p class="company-hero__legal">{{ data.legalName }}</p>
+        }
+        <div class="company-hero__document">
+          <span class="company-hero__document-label">
+            {{ 'workspace.company.hero.document' | translate }}
+          </span>
+          <span class="company-hero__document-value">{{ formattedDocument() }}</span>
+          <button
+            type="button"
+            class="company-hero__copy"
+            (click)="copyDocument()"
+            [attr.aria-label]="'workspace.company.hero.copy' | translate"
+            [title]="'workspace.company.hero.copy' | translate"
+          >
+            <app-icon name="actions/copy" size="0.875rem" />
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div class="company-facts">
+      <div class="company-fact">
+        <span class="company-fact__label">{{ 'workspace.company.facts.createdAt' | translate }}</span>
+        <span class="company-fact__value">{{ formatDate(data.createdAt) }}</span>
+      </div>
+      <div class="company-fact">
+        <span class="company-fact__label">{{ 'workspace.company.facts.updatedAt' | translate }}</span>
+        <span class="company-fact__value">{{ formatDate(data.updatedAt) }}</span>
+      </div>
+      <div class="company-fact">
+        <span class="company-fact__label">{{ 'workspace.company.facts.timezone' | translate }}</span>
+        <span class="company-fact__value">{{ data.timezone }}</span>
+      </div>
+    </div>
+
+    <section class="company-panel">
+      <div class="company-panel__header">
+        <h3 class="company-panel__title">{{ 'workspace.company.form.title' | translate }}</h3>
+        <p class="company-panel__hint">
+          @if (canEdit()) {
+            {{ 'workspace.company.form.hintOwner' | translate }}
+          } @else {
+            {{ 'workspace.company.form.hintReadonly' | translate }}
+          }
+        </p>
+      </div>
+
+      @if (canEdit()) {
+        <form class="company-panel__fields" [formGroup]="form" (ngSubmit)="save()">
+          <app-text-input
+            [control]="documentControl"
+            [labelIcon]="'objects/building'"
+            [label]="'workspace.company.form.document.label' | translate"
+            [hint]="'workspace.company.form.document.hint' | translate"
+            [readonly]="true"
+          />
+          <app-text-input
+            [control]="legalNameControl"
+            [labelIcon]="'objects/building'"
+            [label]="'workspace.company.form.legalName.label' | translate"
+            [placeholder]="'workspace.company.form.legalName.placeholder' | translate"
+            [required]="true"
+            [errorMessages]="{ required: 'workspace.company.form.legalName.required' | translate }"
+          />
+          <app-text-input
+            [control]="tradeNameControl"
+            [labelIcon]="'objects/person'"
+            [label]="'workspace.company.form.tradeName.label' | translate"
+            [placeholder]="'workspace.company.form.tradeName.placeholder' | translate"
+            [hint]="'workspace.company.form.tradeName.hint' | translate"
+          />
+          <app-textarea-input
+            [control]="descriptionControl"
+            [labelIcon]="'objects/text-file'"
+            [label]="'workspace.company.form.description.label' | translate"
+            [placeholder]="'workspace.company.form.description.placeholder' | translate"
+            [maxLength]="1000"
+            [rows]="4"
+          />
+
+          <div class="company-panel__actions">
+            <app-button
+              type="button"
+              color="outline-white"
+              [rounded]="true"
+              [disabled]="saving() || form.pristine"
+              [text]="'common.dialog.cancel' | translate"
+              (buttonClick)="reset()"
+            />
+            <app-button
+              type="submit"
+              color="primary"
+              [rounded]="true"
+              [loading]="saving()"
+              [disabled]="form.pristine"
+              [text]="'workspace.company.form.save' | translate"
+              [icon]="{ iconName: 'status/check', svgIcon: true, color: '#FFF', position: 'right' }"
+            />
+          </div>
+        </form>
+      } @else {
+        <dl class="company-readonly">
+          <div class="company-readonly__row">
+            <dt>{{ 'workspace.company.form.legalName.label' | translate }}</dt>
+            <dd>{{ data.legalName }}</dd>
+          </div>
+          <div class="company-readonly__row">
+            <dt>{{ 'workspace.company.form.tradeName.label' | translate }}</dt>
+            <dd>{{ data.tradeName || '-' }}</dd>
+          </div>
+          <div class="company-readonly__row">
+            <dt>{{ 'workspace.company.form.document.label' | translate }}</dt>
+            <dd>{{ formattedDocument() }}</dd>
+          </div>
+          <div class="company-readonly__row">
+            <dt>{{ 'workspace.company.form.description.label' | translate }}</dt>
+            <dd>{{ data.description || '-' }}</dd>
+          </div>
+        </dl>
+      }
+    </section>
+  } @else {
+    <p class="company-page__empty">{{ 'workspace.company.notFound' | translate }}</p>
+  }
+</div>

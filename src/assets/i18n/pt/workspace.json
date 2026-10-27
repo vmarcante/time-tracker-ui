@@ -365,6 +365,47 @@
         "exporting": "Gerando PDF…",
         "exportHint": "Relatório completo da empresa em PDF, com o período exibido acima"
       }
+    },
+    "company": {
+      "nav": "Empresa",
+      "title": "Empresa",
+      "notFound": "Não foi possível carregar os dados da empresa",
+      "hero": {
+        "eyebrow": "Sua empresa",
+        "document": "CNPJ",
+        "copy": "Copiar CNPJ",
+        "copied": "CNPJ copiado"
+      },
+      "facts": {
+        "createdAt": "Cadastrada em",
+        "updatedAt": "Última atualização",
+        "timezone": "Fuso horário"
+      },
+      "form": {
+        "title": "Dados cadastrais",
+        "hintOwner": "Como proprietário, você pode editar a razão social, o nome fantasia e a descrição.",
+        "hintReadonly": "Somente o proprietário da empresa pode alterar estes dados.",
+        "saved": "Dados da empresa atualizados",
+        "save": "Salvar alterações",
+        "document": {
+          "label": "CNPJ",
+          "hint": "O CNPJ identifica a empresa e não pode ser alterado"
+        },
+        "legalName": {
+          "label": "Razão social",
+          "placeholder": "Razão social da empresa",
+          "required": "A razão social é obrigatória"
+        },
+        "tradeName": {
+          "label": "Nome fantasia",
+          "placeholder": "Nome fantasia (opcional)",
+          "hint": "É o nome exibido no menu e nos relatórios"
+        },
+        "description": {
+          "label": "Descrição",
+          "placeholder": "Conte um pouco sobre a empresa (opcional)"
+        }
+      }
     }
   }
 }
