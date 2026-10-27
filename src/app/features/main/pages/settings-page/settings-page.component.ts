@@ -56,7 +56,7 @@ export class SettingsPageComponent implements OnInit {
 
   readonly localeOptions = computed(() => [
     { value: 'pt-BR', label: this.translationService.translate('profile.locale.pt-BR') },
-    { value: 'en-US', label: this.translationService.translate('profile.locale.en-US') },
+    // { value: 'en-US', label: this.translationService.translate('profile.locale.en-US') }, // Temporariamente desabilitado
   ]);
 
   readonly nameControl = new FormControl('', [
