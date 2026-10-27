@@ -148,13 +148,14 @@
   }
 
   &__image {
-    height: 2.5rem;
+    height: 2.25rem;
     width: auto;
     display: block;
-    color: var(--color-primary-500);
+    flex-shrink: 0;
+    border-radius: var(--radius-md);
 
     @media (max-width: 480px) {
-      height: 2rem;
+      height: 1.75rem;
     }
   }
 
@@ -203,10 +204,6 @@
   &--highlight {
     color: var(--color-primary-500);
   }
-}
-
-.layout-wrapper__header--authenticated .header-logo__image {
-  filter: brightness(0) invert(1);
 }
 
 .layout-wrapper__header--authenticated .header-logo__text {

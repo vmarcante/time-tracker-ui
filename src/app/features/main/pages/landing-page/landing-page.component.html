@@ -1,15 +1,86 @@
 <div class="landing-page">
+  <div class="landing-bg" aria-hidden="true">
+    <span class="landing-bg__glow landing-bg__glow--1"></span>
+    <span class="landing-bg__glow landing-bg__glow--2"></span>
+    <div class="landing-bg__grid"></div>
+  </div>
+
   <section class="hero">
     <div class="hero__content">
-      <h1 class="hero__title">Controle suas horas de trabalho de forma simples</h1>
-      <p class="hero__subtitle">Registre seu tempo de trabalho, acompanhe suas horas e gere relatórios corporativos. Uma solução simples para monitorar sua produtividade e de sua empresa.</p>
+      <h1 class="hero__title">
+        Controle suas horas de trabalho de forma <span class="hero__title-highlight">simples</span>
+      </h1>
+      <p class="hero__subtitle">
+        Registre seu tempo de trabalho, acompanhe suas horas e gere relatórios corporativos. Uma
+        solução simples para monitorar sua produtividade e de sua empresa.
+      </p>
       <div class="hero__actions">
         <app-button
           [text]="'Começar Agora'"
           [color]="'primary'"
           [rounded]="true"
+          [size]="{ large: true }"
           (buttonClick)="openLogin()"
         ></app-button>
+      </div>
+      <ul class="hero__highlights">
+        <li>Cronômetro em um clique</li>
+        <li>Times e projetos</li>
+        <li>Relatórios em PDF</li>
+      </ul>
+    </div>
+
+    <div class="hero__visual" aria-hidden="true">
+      <div class="dial">
+        <svg class="dial__svg" viewBox="0 0 400 400">
+          @for (tick of ticks; track tick) {
+            <line
+              class="dial__tick"
+              [class.dial__tick--major]="tick % 5 === 0"
+              x1="200"
+              [attr.y1]="tick % 5 === 0 ? 20 : 26"
+              x2="200"
+              y2="36"
+              [attr.transform]="'rotate(' + tick * 6 + ' 200 200)'"
+            />
+          }
+          <circle class="dial__track" cx="200" cy="200" r="140" />
+          <circle
+            class="dial__progress"
+            cx="200"
+            cy="200"
+            r="140"
+            transform="rotate(-90 200 200)"
+          />
+          <line class="dial__hand dial__hand--minute" x1="200" y1="214" x2="200" y2="96" />
+          <line class="dial__hand dial__hand--second" x1="200" y1="228" x2="200" y2="72" />
+          <circle class="dial__cap" cx="200" cy="200" r="10" />
+          <circle class="dial__cap-inner" cx="200" cy="200" r="4" />
+        </svg>
+      </div>
+
+      <div class="float-card float-card--timer">
+        <span class="float-card__label"><span class="float-card__live"></span>Em andamento</span>
+        <span class="float-card__project">Portal do Cliente</span>
+        <span class="float-card__time">{{ elapsed() }}</span>
+      </div>
+
+      <div class="float-card float-card--week">
+        <span class="float-card__label">Esta semana</span>
+        <span class="float-card__total">32h 40m</span>
+        <div class="float-card__bars">
+          @for (bar of weekBars; track $index) {
+            <div class="float-card__bar">
+              <span
+                class="float-card__bar-fill"
+                [class.float-card__bar-fill--today]="bar.today"
+                [style.height.%]="bar.value"
+                [style.animation-delay.ms]="$index * 150"
+              ></span>
+              <span class="float-card__bar-label">{{ bar.label }}</span>
+            </div>
+          }
+        </div>
       </div>
     </div>
   </section>
