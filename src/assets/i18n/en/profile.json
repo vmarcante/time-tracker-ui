@@ -18,7 +18,8 @@
       "username": "Username",
       "role": "Access profile",
       "affiliation": "Affiliation type",
-      "companyRole": "Company role"
+      "companyRole": "Company role",
+      "company": "Company"
     },
     "role": {
       "ADMINISTRATOR": "Administrator",

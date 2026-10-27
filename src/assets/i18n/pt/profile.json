@@ -18,7 +18,8 @@
       "username": "Usuário",
       "role": "Perfil de acesso",
       "affiliation": "Tipo de afiliação",
-      "companyRole": "Papel na empresa"
+      "companyRole": "Papel na empresa",
+      "company": "Empresa"
     },
     "role": {
       "ADMINISTRATOR": "Administrador",

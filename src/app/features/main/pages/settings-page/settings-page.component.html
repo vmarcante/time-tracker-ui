@@ -44,6 +44,13 @@
             }
           </div>
 
+          @if (companyName()) {
+            <div class="settings-page__info-row">
+              <span class="settings-page__info-label">{{ 'profile.field.company' | translate }}</span>
+              <span class="settings-page__info-value">{{ companyName() }}</span>
+            </div>
+          }
+
           @if (currentUser()?.companyRole) {
             <div class="settings-page__info-row">
               <span class="settings-page__info-label">{{ 'profile.field.companyRole' | translate }}</span>

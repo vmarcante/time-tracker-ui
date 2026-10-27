@@ -11,6 +11,7 @@ import { SelectInputComponent } from '../../../../shared/components/inputs/selec
 import { AuthTokenService } from '../../../auth/services/auth-token.service';
 import { resolvePostLoginRoute } from '../../../../shared/utils/role-redirect.util';
 import { PersonApiService } from '../../../auth/services/api/person.api.service';
+import { CompanyManagementApiService } from '../../services/company-management.api.service';
 import { ApiAdapterService } from '../../../../shared/services/api/api-adapter.service';
 import { LanguageService } from '../../../../shared/services/language.service';
 import { TranslationService } from '../../../../shared/services/translation.service';
@@ -36,6 +37,7 @@ import { DocumentsValidators } from '../../../../shared/validators/documents.val
 export class SettingsPageComponent implements OnInit {
   private authTokenService = inject(AuthTokenService);
   private personApiService = inject(PersonApiService);
+  private companyApiService = inject(CompanyManagementApiService);
   private apiAdapterService = inject(ApiAdapterService);
   private languageService = inject(LanguageService);
   private translationService = inject(TranslationService);
@@ -90,7 +92,22 @@ export class SettingsPageComponent implements OnInit {
         locale: this.normalizeLocale(user.locale),
       });
       this.emailControl.setValue(user.email);
+      this.loadCompanyName(user.companyId);
     }
+  }
+
+  readonly companyName = signal<string | null>(null);
+
+  private loadCompanyName(companyId: string | null): void {
+    if (!companyId) {
+      return;
+    }
+    this.apiAdapterService.executeRequest(this.companyApiService.getCompany(companyId), {
+      ignoreLoading: true,
+      onSuccess: (response) => {
+        this.companyName.set(response.data.tradeName ?? response.data.legalName);
+      },
+    });
   }
 
   private normalizeLocale(locale: string | null | undefined): string {
