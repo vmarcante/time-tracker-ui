@@ -317,6 +317,7 @@ export class OnboardingModalComponent implements OnInit {
       this.companyApiService.getByDocument(control.value),
       {
         ignoreLoading: true,
+        showErrorToast: false,
         onSuccess: (response) => this.ownerCompanyExists.set(response.data),
         onError: () => this.ownerCompanyExists.set(null),
       },
@@ -338,6 +339,7 @@ export class OnboardingModalComponent implements OnInit {
       this.companyApiService.getByDocument(control.value),
       {
         ignoreLoading: true,
+        showErrorToast: false,
         onSuccess: (response) => {
           this.companyPreview.set(response.data);
           this.companyLookupStatus.set('found');
