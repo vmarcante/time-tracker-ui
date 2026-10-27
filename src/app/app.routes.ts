@@ -47,6 +47,7 @@ export const routes: Routes = [
               import('./features/tracker/pages/entries/tracker-entries-page.component').then(
                 (m) => m.TrackerEntriesPageComponent,
               ),
+            canActivate: [translationContextGuard('timeEntry')],
           },
           {
             path: 'entries/:id',
