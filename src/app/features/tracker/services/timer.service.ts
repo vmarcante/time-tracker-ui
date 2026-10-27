@@ -1,9 +1,10 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ApiAdapterService } from '../../../shared/services/api/api-adapter.service';
 import { ToastrService } from '../../../shared/services/toastr.service';
 import { TranslationService } from '../../../shared/services/translation.service';
 import { TrackerApiService } from './tracker.api.service';
+import { AuthTokenService } from '../../auth/services/auth-token.service';
 import {
   RunningTimerOutput,
   StartTimerInput,
@@ -18,6 +19,22 @@ export class TimerService {
   private apiAdapter = inject(ApiAdapterService);
   private toastr = inject(ToastrService);
   private translationService = inject(TranslationService);
+  private authTokenService = inject(AuthTokenService);
+
+  private lastUserId: string | null = null;
+
+  private readonly userWatch = effect(() => {
+    const userId = this.authTokenService.currentUser()?.id ?? null;
+    if (userId === this.lastUserId) {
+      return;
+    }
+    this.lastUserId = userId;
+    this.running.set(null);
+    this.initialized = false;
+    if (userId) {
+      this.init();
+    }
+  });
 
   readonly running = signal<RunningTimerOutput | null>(null);
   readonly loading = signal(false);
