@@ -7,6 +7,7 @@ import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/materia
 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { pendingOnboardingInterceptor } from './core/interceptors/pending-onboarding.interceptor';
 import { AuthService } from './features/auth/services/auth.service';
 import { PtBrDateAdapter, PT_BR_DATE_FORMATS } from './shared/adapters/pt-br-date.adapter';
 
@@ -19,7 +20,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideAnimations(),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([pendingOnboardingInterceptor, authInterceptor])),
     provideNgxMask(),
     provideAppInitializer(() => {
       const authService = inject(AuthService);
