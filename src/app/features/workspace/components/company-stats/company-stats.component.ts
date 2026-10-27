@@ -305,8 +305,8 @@ export class CompanyStatsComponent implements OnInit {
     );
   }
 
-  /** Período efetivo atualmente exibido, nos mesmos parâmetros enviados à API. */
-  private currentRange(): { fromParam: string; toParam: string } {
+  /** Período efetivo atualmente exibido, como datas locais. */
+  private currentPeriod(): { from: Date; to: Date } {
     let from: Date;
     let to: Date;
     const custom = this.customRange();
@@ -323,6 +323,12 @@ export class CompanyStatsComponent implements OnInit {
       from.setDate(from.getDate() - (days - 1));
       from.setHours(0, 0, 0, 0);
     }
+    return { from, to };
+  }
+
+  /** Período efetivo atualmente exibido, nos mesmos parâmetros enviados à API. */
+  private currentRange(): { fromParam: string; toParam: string } {
+    const { from, to } = this.currentPeriod();
     return { fromParam: this.toApiDateTime(from), toParam: this.toApiDateTime(to) };
   }
 
@@ -331,10 +337,13 @@ export class CompanyStatsComponent implements OnInit {
     const companyId = this.companyId;
     if (!companyId || this.exporting()) return;
 
-    const { fromParam, toParam } = this.currentRange();
+    const { from, to } = this.currentPeriod();
     this.exporting.set(true);
     this.apiAdapter.executeRequest(
-      this.companyApi.downloadCompanyReportPdf(companyId, { from: fromParam, to: toParam }),
+      this.companyApi.downloadCompanyReportPdf(companyId, {
+        from: this.toApiDate(from),
+        to: this.toApiDate(to),
+      }),
       {
         ignoreLoading: true,
         onSuccess: (response) => {
@@ -421,5 +430,9 @@ export class CompanyStatsComponent implements OnInit {
       `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}` +
       `T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
     );
+  }
+
+  private toApiDate(date: Date): string {
+    return this.toApiDateTime(date).substring(0, 10);
   }
 }
