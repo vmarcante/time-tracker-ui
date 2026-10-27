@@ -24,6 +24,7 @@ import {
   TeamMemberOutput,
   TeamSummaryOutput,
   TeamWithMembersOutput,
+  MembershipOrigin,
   UpdateCompanyInput,
   UpdateProjectInput,
   UpdateTeamInput,
@@ -65,10 +66,15 @@ export class CompanyManagementApiService {
     companyId: string,
     pageNumber = 1,
     pageSize = 10,
+    origin?: MembershipOrigin,
   ): ApiResponse<PageWrapper<CompanyMemberOutput>> {
     return this.httpService.get(`/companies/${companyId}/members/pending`, {
-      params: { pageNumber, pageSize },
+      params: { pageNumber, pageSize, ...(origin ? { origin } : {}) },
     });
+  }
+
+  cancelInvite(companyId: string, membershipId: string): ApiResponse<void> {
+    return this.httpService.post(`/companies/${companyId}/members/${membershipId}/cancel-invite`, {});
   }
 
   listResolved(
@@ -79,6 +85,10 @@ export class CompanyManagementApiService {
     return this.httpService.get(`/companies/${companyId}/members/resolved`, {
       params: { pageNumber, pageSize },
     });
+  }
+
+  resendInvite(companyId: string, membershipId: string): ApiResponse<CompanyMemberOutput> {
+    return this.httpService.post(`/companies/${companyId}/members/${membershipId}/resend-invite`, {});
   }
 
   approveMembership(companyId: string, membershipId: string): ApiResponse<CompanyMemberOutput> {

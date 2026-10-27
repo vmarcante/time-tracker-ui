@@ -2,13 +2,14 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RegisterApiService } from '../../../services/api/register.api.service';
-import { CreateUserInput } from '../../../models';
+import { CreateUserInput, InviteInfoOutput } from '../../../models';
 import { TranslatePipe } from '../../../../../shared/pipes/translate.pipe';
 import { TranslationService } from '../../../../../shared/services/translation.service';
 import { ApiAdapterService } from '../../../../../shared/services';
 import { debounceTime, distinctUntilChanged, switchMap, map, catchError } from 'rxjs/operators';
 import { from, of } from 'rxjs';
 import { TextInputComponent } from '../../../../../shared/components/inputs/text/text-input.component';
+import { CodeInputComponent } from '../../../../../shared/components/inputs/code/code-input.component';
 import { IntegerInputComponent } from '../../../../../shared/components/inputs/integer/integer-input.component';
 import { ToggleInputComponent } from '../../../../../shared/components/inputs/toggle/toggle-input.component';
 import { SteppedPanelLayoutComponent } from '../../../../../shared/components/stepped-panel-layout/stepped-panel-layout.component';
@@ -17,7 +18,7 @@ import { ProgressBarComponent } from '../../../../../shared/components/progress-
 import { StepProgressConfig, ButtonColorType } from '../../../../../shared/types';
 import { InputValidators } from '../../../../../shared/validators/input.validators';
 import { DocumentsValidators } from '../../../../../shared/validators/documents.validators';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DialogShellComponent } from '../../../../../shared/components/dialogs/dialog-shell/dialog-shell.component';
 import { ResponsiveService } from '../../../../../shared/services/responsive.service';
 
@@ -28,6 +29,7 @@ import { ResponsiveService } from '../../../../../shared/services/responsive.ser
     ReactiveFormsModule,
     TranslatePipe,
     TextInputComponent,
+    CodeInputComponent,
     IntegerInputComponent,
     ToggleInputComponent,
     SteppedPanelLayoutComponent,
@@ -44,6 +46,7 @@ export class RegisterFormComponent implements OnInit {
   // ===========
 
   private registerApiService = inject(RegisterApiService);
+  private dialogData = inject<{ inviteToken?: string } | null>(MAT_DIALOG_DATA, { optional: true });
   private apiAdapterService = inject(ApiAdapterService);
   private translationService = inject(TranslationService);
   protected responsiveService = inject(ResponsiveService);
@@ -66,6 +69,10 @@ export class RegisterFormComponent implements OnInit {
   emailAvailability = signal<'checking' | 'available' | 'unavailable' | null>(null);
   isCompleted = signal(false);
   registeredEmail = signal('');
+  inviteToken = signal<string | null>(null);
+  invitedCompanyName = signal('');
+  preRegisteredEmail = signal(false);
+  inviteCodeChecking = signal(false);
 
   // ===========
   // LIFECYCLE
@@ -78,6 +85,8 @@ export class RegisterFormComponent implements OnInit {
   ngOnInit(): void {
     this.setupUsernameValidation();
     this.setupEmailValidation();
+    this.setupInviteCodeValidation();
+    this.loadInviteInfo();
   }
 
   // ===========
@@ -260,6 +269,7 @@ export class RegisterFormComponent implements OnInit {
           DocumentsValidators.fullName,
         ]),
         email: new FormControl('', [Validators.required, Validators.email]),
+        inviteCode: new FormControl('', [Validators.pattern(/^[A-Za-z0-9]{6}$/)]),
         phone: new FormControl('', [DocumentsValidators.phoneNumber]),
         age: new FormControl('', [Validators.required, Validators.min(18), Validators.max(120)]),
         password: new FormControl('', [
@@ -368,9 +378,13 @@ export class RegisterFormComponent implements OnInit {
             ),
           ).pipe(
             map((response) => {
-              const isAvailable = response.data;
+              const isAvailable = response.data.available;
               const availability = isAvailable ? 'available' : 'unavailable';
               this.emailAvailability.set(availability);
+              this.preRegisteredEmail.set(response.data.preRegistered === true);
+              if (response.data.preRegistered !== true) {
+                this.resetInviteState();
+              }
               InputValidators.insertErrorOnControl(control, 'availability', !isAvailable);
               return isAvailable;
             }),
@@ -383,7 +397,8 @@ export class RegisterFormComponent implements OnInit {
         }),
       )
       .subscribe((isAvailable) => {
-        if (isAvailable && this.currentStep === 1) {
+        const waitingInviteCode = this.preRegisteredEmail() && !this.inviteToken();
+        if (isAvailable && this.currentStep === 1 && !waitingInviteCode) {
           this.nextStep();
         }
       });
@@ -418,6 +433,15 @@ export class RegisterFormComponent implements OnInit {
       return false;
     }
 
+    if (step === 1 && this.preRegisteredEmail() && !this.inviteToken()) {
+      const codeControl = this.registerForm.get('inviteCode');
+      if (codeControl) {
+        codeControl.markAsTouched();
+        InputValidators.insertErrorOnControl(codeControl, 'required', true);
+      }
+      return false;
+    }
+
     if (step === 2 && this.usernameAvailability() !== 'available') {
       return false;
     }
@@ -448,6 +472,7 @@ export class RegisterFormComponent implements OnInit {
       phone: formValue.phone || '',
       password: formValue.password,
       age: formValue.age,
+      inviteToken: this.inviteToken() ?? undefined,
     };
 
     const request = this.registerApiService.register(userData);
@@ -462,6 +487,89 @@ export class RegisterFormComponent implements OnInit {
       },
       onError: (error: unknown) => {},
     });
+  }
+
+  private loadInviteInfo(): void {
+    const token = this.dialogData?.inviteToken;
+    if (!token) {
+      return;
+    }
+
+    this.apiAdapterService.executeRequest(this.registerApiService.getInviteInfo(token), {
+      onSuccess: (response) => {
+        this.applyInvite(response.data as InviteInfoOutput, token);
+      },
+      onError: () => {},
+    });
+  }
+
+  private applyInvite(info: InviteInfoOutput, token: string): void {
+    this.inviteToken.set(token);
+    this.invitedCompanyName.set(info.companyName || '');
+    this.preRegisteredEmail.set(true);
+    this.registerForm.patchValue({
+      email: info.email,
+      name: info.name,
+      phone: info.phone ?? '',
+      age: info.age ?? '',
+    });
+    const codeControl = this.registerForm.get('inviteCode');
+    codeControl?.setErrors(null);
+  }
+
+  private resetInviteState(): void {
+    this.inviteToken.set(null);
+    this.invitedCompanyName.set('');
+  }
+
+  private setupInviteCodeValidation(): void {
+    const codeControl = this.registerForm.get('inviteCode');
+    if (!codeControl) {
+      return;
+    }
+
+    codeControl.valueChanges
+      .pipe(
+        debounceTime(400),
+        distinctUntilChanged(),
+        switchMap((rawCode) => {
+          const code = (rawCode || '').trim().toUpperCase();
+          InputValidators.insertErrorOnControl(codeControl, 'invalid', false);
+          InputValidators.insertErrorOnControl(codeControl, 'mismatch', false);
+          if (!code || codeControl.invalid) {
+            return of(null);
+          }
+
+          this.inviteCodeChecking.set(true);
+          return from(
+            this.apiAdapterService.executeRequestWithPromise(
+              this.registerApiService.getInviteInfo(code),
+              { customLoadingName: 'inviteCode' },
+            ),
+          ).pipe(
+            map((response) => ({ code, info: response.data as InviteInfoOutput })),
+            catchError(() => {
+              InputValidators.insertErrorOnControl(codeControl, 'invalid', true);
+              return of(null);
+            }),
+          );
+        }),
+      )
+      .subscribe((result) => {
+        this.inviteCodeChecking.set(false);
+        if (!result) {
+          return;
+        }
+
+        const emailControl = this.registerForm.get('email');
+        const typedEmail = (emailControl?.value || '').trim().toLowerCase();
+        if ((result.info.email || '').toLowerCase() !== typedEmail) {
+          InputValidators.insertErrorOnControl(codeControl, 'mismatch', true);
+          return;
+        }
+
+        this.applyInvite(result.info, result.code);
+      });
   }
 
   private getStepButtonColor(step: number, isValid: boolean): ButtonColorType {

@@ -164,7 +164,18 @@
         },
         "cancel": "Cancelar",
         "confirm": "Confirmar reprovação"
-      }
+      },
+      "resend": "Reenviar convite",
+      "resendSuccess": "Convite reenviado por e-mail",
+      "invitesTitle": "Convites enviados",
+      "cancel": "Cancelar convite",
+      "cancelDialog": {
+        "title": "Cancelar convite",
+        "message": "Cancelar o convite para {name}? O link e o código deixam de funcionar.",
+        "cancel": "Voltar",
+        "confirm": "Cancelar convite"
+      },
+      "cancelSuccess": "Convite cancelado"
     },
     "teams": {
       "title": "Times",

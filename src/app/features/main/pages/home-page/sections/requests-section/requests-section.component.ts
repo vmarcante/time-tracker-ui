@@ -7,6 +7,7 @@ import { IconComponent } from '../../../../../../shared/components/icon/icon.com
 import { PaginationComponent } from '../../../../../../shared/components/pagination/pagination.component';
 import { ApiAdapterService } from '../../../../../../shared/services/api/api-adapter.service';
 import { DialogService } from '../../../../../../shared/services/dialog.service';
+import { ToastrService } from '../../../../../../shared/services/toastr.service';
 import { TranslationService } from '../../../../../../shared/services/translation.service';
 import { ConfirmationDialogComponent } from '../../../../../../shared/components/dialogs/confirmation/confirmation-dialog.component';
 import { ConfirmationDialogConfiguration } from '../../../../../../shared/types';
@@ -32,6 +33,7 @@ export class RequestsSectionComponent implements OnInit {
   private apiAdapter = inject(ApiAdapterService);
   private dialogService = inject(DialogService);
   private translationService = inject(TranslationService);
+  private toastr = inject(ToastrService);
   private authTokenService = inject(AuthTokenService);
   private router = inject(Router);
 
@@ -43,13 +45,19 @@ export class RequestsSectionComponent implements OnInit {
     this.router.navigate(['/workspace']);
   }
 
-  // Pending
+  // Pending requests (people asking to join)
   readonly pending = signal<CompanyMemberOutput[]>([]);
   readonly pendingPage = signal<PageWrapper<CompanyMemberOutput> | null>(null);
   readonly pendingLoading = signal(true);
   readonly pendingCurrentPage = signal(1);
   readonly processingId = signal<string | null>(null);
   readonly expandedId = signal<string | null>(null);
+
+  // Pending invites (sent by the company, awaiting the invitee)
+  readonly invites = signal<CompanyMemberOutput[]>([]);
+  readonly invitesPage = signal<PageWrapper<CompanyMemberOutput> | null>(null);
+  readonly invitesLoading = signal(true);
+  readonly invitesCurrentPage = signal(1);
 
   // Resolved (history)
   readonly resolved = signal<CompanyMemberOutput[]>([]);
@@ -59,6 +67,7 @@ export class RequestsSectionComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadPending(1);
+    this.loadInvites(1);
     this.loadResolved(1);
   }
 
@@ -66,7 +75,7 @@ export class RequestsSectionComponent implements OnInit {
     if (!this.companyId) return;
     this.pendingLoading.set(true);
     this.apiAdapter.executeRequest(
-      this.companyApi.listPending(this.companyId, pageNumber, 10),
+      this.companyApi.listPending(this.companyId, pageNumber, 10, 'REQUEST'),
       {
         ignoreLoading: true,
         onSuccess: (response) => {
@@ -158,6 +167,98 @@ export class RequestsSectionComponent implements OnInit {
             ),
           );
         },
+      },
+    );
+  }
+
+  loadInvites(pageNumber: number): void {
+    if (!this.companyId) return;
+    this.invitesLoading.set(true);
+    this.apiAdapter.executeRequest(
+      this.companyApi.listPending(this.companyId, pageNumber, 10, 'INVITE'),
+      {
+        ignoreLoading: true,
+        onSuccess: (response) => {
+          this.invitesPage.set(response.data);
+          this.invites.set(response.data.content);
+          this.invitesCurrentPage.set(pageNumber);
+          this.invitesLoading.set(false);
+        },
+        onError: () => this.invitesLoading.set(false),
+      },
+    );
+  }
+
+  cancelInvite(member: CompanyMemberOutput): void {
+    const dialogData: ConfirmationDialogConfiguration = {
+      title: this.translationService.translate('workspace.requests.cancelDialog.title'),
+      message: this.translationService.translate('workspace.requests.cancelDialog.message', {
+        name: member.name,
+      }),
+      closeable: true,
+      buttons: {
+        cancel: {
+          show: true,
+          text: this.translationService.translate('workspace.requests.cancelDialog.cancel'),
+          order: 1,
+          name: 'cancel',
+          color: 'outline-white',
+        },
+        confirmation: {
+          show: true,
+          text: this.translationService.translate('workspace.requests.cancelDialog.confirm'),
+          order: 2,
+          name: 'confirm',
+          color: 'error',
+        },
+      },
+    };
+
+    this.dialogService.openDialog<ConfirmationDialogComponent, { confirm?: boolean }>(
+      ConfirmationDialogComponent,
+      {
+        width: '480px',
+        data: dialogData,
+        closeCallback: (result) => {
+          if (!result?.confirm) return;
+          if (!this.companyId) return;
+          this.processingId.set(member.membershipId);
+          this.apiAdapter.executeRequest(
+            this.companyApi.cancelInvite(this.companyId, member.membershipId),
+            {
+              ignoreLoading: true,
+              onSuccess: () => {
+                this.processingId.set(null);
+                this.invites.update((list) =>
+                  list.filter((m) => m.membershipId !== member.membershipId),
+                );
+                this.toastr.successMessage(
+                  this.translationService.translate('workspace.requests.cancelSuccess'),
+                );
+                this.loadResolved(1);
+              },
+              onError: () => this.processingId.set(null),
+            },
+          );
+        },
+      },
+    );
+  }
+
+  resendInvite(member: CompanyMemberOutput): void {
+    if (!this.companyId) return;
+    this.processingId.set(member.membershipId);
+    this.apiAdapter.executeRequest(
+      this.companyApi.resendInvite(this.companyId, member.membershipId),
+      {
+        ignoreLoading: true,
+        onSuccess: () => {
+          this.processingId.set(null);
+          this.toastr.successMessage(
+            this.translationService.translate('workspace.requests.resendSuccess'),
+          );
+        },
+        onError: () => this.processingId.set(null),
       },
     );
   }

@@ -58,6 +58,21 @@ app-stepped-panel-layout {
   }
 }
 
+.register-invite-hint {
+  margin: var(--spacing-xs) 0 var(--spacing-xs);
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+}
+
+.register-invite {
+  margin: var(--spacing-xs) 0 0;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-md, 8px);
+  background: var(--color-surface-hover, rgba(0, 0, 0, 0.04));
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+}
+
 .register-form {
   display: flex;
   flex-direction: column;

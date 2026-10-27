@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpService } from '../../../../shared/services/api/http.service';
 import { ApiResponse } from '../../../../shared/types';
-import { CreateUserInput, CreateUserOutput, ConfirmUserRegistrationInput } from '../../models';
+import { CreateUserInput, CreateUserOutput, ConfirmUserRegistrationInput, InviteInfoOutput, EmailAvailabilityOutput } from '../../models';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +19,13 @@ export class RegisterApiService {
     });
   }
 
-  checkEmailAvailability(email: string): ApiResponse<boolean> {
+  getInviteInfo(token: string): ApiResponse<InviteInfoOutput> {
+    return this.httpService.get('/public/register/invite', {
+      params: { token },
+    });
+  }
+
+  checkEmailAvailability(email: string): ApiResponse<EmailAvailabilityOutput> {
     return this.httpService.get('/public/register/email-available', {
       params: { email },
     });

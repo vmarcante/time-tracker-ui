@@ -164,7 +164,18 @@
         },
         "cancel": "Cancel",
         "confirm": "Confirm rejection"
-      }
+      },
+      "resend": "Resend invite",
+      "resendSuccess": "Invite resent by email",
+      "invitesTitle": "Sent invites",
+      "cancel": "Cancel invite",
+      "cancelDialog": {
+        "title": "Cancel invite",
+        "message": "Cancel the invite for {name}? The link and code stop working.",
+        "cancel": "Back",
+        "confirm": "Cancel invite"
+      },
+      "cancelSuccess": "Invite cancelled"
     },
     "teams": {
       "title": "Teams",

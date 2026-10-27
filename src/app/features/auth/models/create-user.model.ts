@@ -6,6 +6,7 @@ export interface CreateUserInput {
   password: string;
   locale?: string;
   age: number;
+  inviteToken?: string;
 }
 
 export interface CreateUserOutput {

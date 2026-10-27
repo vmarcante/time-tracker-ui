@@ -40,6 +40,11 @@
       <div class="register-header">
         <h1 class="register-header__title">{{ 'auth.register.title' | translate }}</h1>
         <p class="register-header__subtitle">{{ 'auth.register.subtitle' | translate }}</p>
+        @if (invitedCompanyName()) {
+          <p class="register-invite">
+            {{ 'auth.register.invite.message' | translate:{ company: invitedCompanyName() } }}
+          </p>
+        }
       </div>
 
       <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
@@ -55,11 +60,29 @@
                 [placeholder]="'auth.register.form.email.placeholder' | translate"
                 [labelHint]="'auth.register.form.email.labelHint' | translate"
                 [required]="true"
-                [readonly]="currentStep === 2"
+                [readonly]="currentStep === 2 || !!invitedCompanyName()"
                 [errorMessages]="{
                   availability: 'auth.register.validation.unavailable' | translate,
                 }"
               />
+
+              @if (preRegisteredEmail() && !invitedCompanyName() && currentStep === 1) {
+                <p class="register-invite-hint">
+                  {{ 'auth.register.invite.hint' | translate }}
+                </p>
+                <app-code-input
+                  [formGroup]="registerForm"
+                  [controlName]="'inviteCode'"
+                  [length]="6"
+                  [label]="'auth.register.invite.codeLabel' | translate"
+                  [required]="true"
+                  [errorMessages]="{
+                    invalid: 'auth.register.invite.codeInvalid' | translate,
+                    mismatch: 'auth.register.invite.codeMismatch' | translate,
+                    required: 'auth.register.invite.codeRequired' | translate,
+                  }"
+                />
+              }
             </section>
           }
 

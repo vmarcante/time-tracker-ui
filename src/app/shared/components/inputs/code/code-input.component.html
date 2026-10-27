@@ -1,0 +1,50 @@
+@if (effectiveControl) {
+  @if (label) {
+    <label class="code-input-label" [for]="generatedInputId + '-0'">
+      @if (labelIcon) {
+        <app-icon class="code-input-label__icon" [name]="labelIcon" [size]="14" />
+      }
+      <span class="code-input-label__text">
+        {{ label }}
+        @if (required) {
+          <span class="code-input-required">*</span>
+        }
+      </span>
+    </label>
+  }
+
+  <div
+    class="code-input"
+    [class.code-input--error]="!!errorMessage"
+    [class.code-input--readonly]="readonly"
+    role="group"
+    [attr.aria-label]="label || null"
+  >
+    @for (char of chars; track $index) {
+      <input
+        #codeBox
+        type="text"
+        class="code-input__box"
+        [class.code-input__box--filled]="!!char"
+        [class.code-input__box--focused]="focusedIndex === $index"
+        [id]="generatedInputId + '-' + $index"
+        [value]="char"
+        [readonly]="readonly || effectiveControl.disabled"
+        [disabled]="effectiveControl.disabled"
+        [attr.maxlength]="1"
+        [attr.inputmode]="'text'"
+        [attr.autocomplete]="$index === 0 ? 'one-time-code' : 'off'"
+        [attr.aria-label]="label ? label + ' ' + ($index + 1) : null"
+        (input)="onInput($event, $index)"
+        (keydown)="onKeyDown($event, $index)"
+        (paste)="onPaste($event)"
+        (focus)="onFocus($index)"
+        (blur)="onBlur()"
+      />
+    }
+  </div>
+
+  @if (errorMessage) {
+    <span class="code-input-error" role="alert">{{ errorMessage }}</span>
+  }
+}
