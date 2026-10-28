@@ -56,6 +56,11 @@ export class TeamDetailComponent implements OnInit {
   readonly companyMembers = signal<CompanyMemberOutput[]>([]);
   readonly companyProjects = signal<ProjectSummaryOutput[]>([]);
   readonly processing = signal(false);
+  readonly expandedProjectId = signal<string | null>(null);
+
+  toggleProjectMembers(projectId: string): void {
+    this.expandedProjectId.update((id) => (id === projectId ? null : projectId));
+  }
 
   private memberAddPopover = viewChild<PopoverComponent>('memberAdd');
   private projectAddPopover = viewChild<PopoverComponent>('projectAdd');

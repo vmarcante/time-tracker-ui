@@ -282,7 +282,20 @@
                     </div>
                   }
                 }
-                <span class="detail-row__meta">{{ project.memberCount }} {{ 'workspace.teams.members' | translate | lowercase }}</span>
+                <button
+                  type="button"
+                  class="detail-row__meta detail-row__meta--toggle"
+                  [attr.aria-expanded]="expandedProjectId() === project.id"
+                  (click)="toggleProjectMembers(project.id)"
+                >
+                  {{ project.memberCount }} {{ 'workspace.teams.members' | translate | lowercase }}
+                  <app-icon
+                    name="arrows/chevron-down"
+                    size="0.75rem"
+                    class="detail-row__meta-chevron"
+                    [class.detail-row__meta-chevron--open]="expandedProjectId() === project.id"
+                  />
+                </button>
                 <div class="detail-row__actions">
                   @if (canManageCompany()) {
                     <button
@@ -298,6 +311,20 @@
                   }
                 </div>
               </div>
+              @if (expandedProjectId() === project.id) {
+                <div class="detail-item__members">
+                  @if (teamMembersByProject().get(project.id); as projectMembers) {
+                    @for (m of projectMembers; track m.membershipId) {
+                      <div class="detail-item__member">
+                        <span class="detail-item__member-avatar" aria-hidden="true">
+                          {{ m.name.charAt(0).toUpperCase() }}
+                        </span>
+                        <span class="detail-item__member-name">{{ m.name }}</span>
+                      </div>
+                    }
+                  }
+                </div>
+              }
             </div>
           }
         </div>
